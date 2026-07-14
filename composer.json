@@ -13,7 +13,8 @@
         "laravel/tinker": "^3.0",
         "phpcfdi/sat-ws-descarga-masiva": "^1.1",
         "phpoffice/phpspreadsheet": "^5.8",
-        "smalot/pdfparser": "^2.12"
+        "smalot/pdfparser": "^2.12",
+        "spatie/pdf-to-text": "^1.55"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

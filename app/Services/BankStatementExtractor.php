@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\BankProfile;
 use RuntimeException;
-use Smalot\PdfParser\Parser as PdfParser;
 
 /**
  * Extracts a bank statement PDF into structured movements.
@@ -41,7 +40,7 @@ class BankStatementExtractor
         if (mb_strlen(trim($text)) < 50) {
             throw new RuntimeException(
                 'No se pudo leer texto del PDF. ¿Es un estado de cuenta escaneado (imagen)? '
-                . 'Esos requieren OCR y no están soportados en esta fase.'
+                    . 'Esos requieren OCR y no están soportados en esta fase.'
             );
         }
 
@@ -68,7 +67,17 @@ class BankStatementExtractor
         ];
     }
 
-    /** Pure-PHP PDF text extraction. */
+    /**
+     * Extract text from the statement PDF using Poppler's pdftotext (via
+     * spatie/pdf-to-text), with the `layout` flag to preserve column alignment.
+     *
+     * Why not smalot/pdfparser: it builds PCRE patterns from the PDF's content
+     * stream, and on statements containing inline images (the `BI`/`ID`/`EI`
+     * operators — Santander embeds them) it tries to compile the raw image bytes
+     * into a regex and dies with "regular expression is too large". pdftotext is
+     * a native binary that doesn't have this failure mode, and `layout` keeps the
+     * amount columns aligned in the output, which makes the AI's job easier.
+     */
     private function extractText(string $path): string
     {
         if (! is_file($path)) {
@@ -76,12 +85,17 @@ class BankStatementExtractor
         }
 
         try {
-            $parser = new PdfParser();
-            $pdf = $parser->parseFile($path);
-
-            return $pdf->getText();
+            return \Spatie\PdfToText\Pdf::getText(
+                $path,
+                config('services.pdftotext.path'),  // explicit path; null would search PATH
+                ['layout'],
+            );
         } catch (\Throwable $e) {
-            throw new RuntimeException('No se pudo procesar el PDF: ' . $e->getMessage(), previous: $e);
+            throw new RuntimeException(
+                'No se pudo leer el PDF. Verifica que sea un estado de cuenta en PDF con texto '
+                    . '(no una imagen escaneada).',
+                previous: $e,
+            );
         }
     }
 

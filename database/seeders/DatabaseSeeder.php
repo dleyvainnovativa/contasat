@@ -21,20 +21,20 @@ class DatabaseSeeder extends Seeder
         // here we seed a matching local record by email.
         User::updateOrCreate(
             ['email' => 'contador@ejemplo.com'],
-            ['name' => 'Contador', 'firebase_uid' => null],
+            ['name' => 'Contador', 'firebase_uid' => '1WnhuqBHybVwiPQzqi8FxPXf1zH2'],
         );
 
         // A couple of sample clients so the dashboard isn't empty in dev.
-        $samples = [
-            ['rfc' => 'XAXX010101000', 'razon_social' => 'Comercializadora del Golfo SA de CV', 'nombre_comercial' => 'Golfo Distribuciones', 'regimen_fiscal' => 'moral', 'codigo_postal' => '91700'],
-            ['rfc' => 'MELM850101HDF', 'razon_social' => 'María Elena López Martínez', 'nombre_comercial' => null, 'regimen_fiscal' => 'fisica', 'codigo_postal' => '01000'],
-            ['rfc' => 'TSA920315AB1', 'razon_social' => 'Tecnología y Servicios Avanzados SA', 'nombre_comercial' => 'TecServ', 'regimen_fiscal' => 'moral', 'codigo_postal' => '64000'],
-        ];
+        // $samples = [
+        //     ['rfc' => 'XAXX010101000', 'razon_social' => 'Comercializadora del Golfo SA de CV', 'nombre_comercial' => 'Golfo Distribuciones', 'regimen_fiscal' => 'moral', 'codigo_postal' => '91700'],
+        //     ['rfc' => 'MELM850101HDF', 'razon_social' => 'María Elena López Martínez', 'nombre_comercial' => null, 'regimen_fiscal' => 'fisica', 'codigo_postal' => '01000'],
+        //     ['rfc' => 'TSA920315AB1', 'razon_social' => 'Tecnología y Servicios Avanzados SA', 'nombre_comercial' => 'TecServ', 'regimen_fiscal' => 'moral', 'codigo_postal' => '64000'],
+        // ];
 
-        foreach ($samples as $data) {
-            $client = Client::updateOrCreate(['rfc' => $data['rfc']], $data);
-            $this->seedBasicCatalog($client);
-        }
+        // foreach ($samples as $data) {
+        //     $client = Client::updateOrCreate(['rfc' => $data['rfc']], $data);
+        //     $this->seedBasicCatalog($client);
+        // }
 
         // Give the first client a current period at a mid-pipeline status for demo.
         $first = Client::first();

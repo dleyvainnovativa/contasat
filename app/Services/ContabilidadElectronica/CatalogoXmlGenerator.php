@@ -35,8 +35,10 @@ class CatalogoXmlGenerator
         $w->startDocument('1.0', 'UTF-8');
 
         $w->startElementNs('catalogocuentas', 'Catalogo', self::NS);
-        $w->writeAttributeNs('xmlns', 'xsi', null, self::XSI);
-        $w->writeAttributeNs('xsi', 'schemaLocation', self::XSI, self::NS . ' ' . self::XSD);
+        // $w->writeAttributeNs('xmlns', 'xsi', null, self::XSI);
+        // $w->writeAttributeNs('xsi', 'schemaLocation', self::XSI, self::NS . ' ' . self::XSD);
+        $w->writeAttribute('xmlns:xsi', self::XSI);
+        $w->writeAttribute('xsi:schemaLocation', self::NS . ' ' . self::XSD);
         $w->writeAttribute('Version', '1.3');
         $w->writeAttribute('RFC', $client->rfc);
         $w->writeAttribute('Mes', str_pad((string) $period->month, 2, '0', STR_PAD_LEFT));

@@ -37,13 +37,13 @@ class DatabaseSeeder extends Seeder
         // }
 
         // Give the first client a current period at a mid-pipeline status for demo.
-        $first = Client::first();
-        if ($first) {
-            Period::updateOrCreate(
-                ['client_id' => $first->id, 'year' => now()->year, 'month' => now()->month],
-                ['status' => PeriodStatus::Extracted, 'invoice_count' => 42, 'movement_count' => 38, 'matched_count' => 30],
-            );
-        }
+        // $first = Client::first();
+        // if ($first) {
+        //     Period::updateOrCreate(
+        //         ['client_id' => $first->id, 'year' => now()->year, 'month' => now()->month],
+        //         ['status' => PeriodStatus::Extracted, 'invoice_count' => 42, 'movement_count' => 38, 'matched_count' => 30],
+        //     );
+        // }
     }
 
     /** A minimal SAT-coded catalog so account assignment has something to point at. */

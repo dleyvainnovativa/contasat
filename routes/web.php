@@ -10,8 +10,11 @@ use App\Http\Controllers\ReconciliationController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SatController;
 use App\Http\Controllers\StatementController;
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\InvoiceViewController;
+use App\Http\Controllers\InvoiceClassificationController;
+use App\Http\Controllers\GlobalCatalogController;
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | Web routes
@@ -28,7 +31,7 @@ Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logou
 
 Route::middleware('firebase')->group(function () {
 
-    Route::get('/', fn () => redirect()->route('dashboard'));
+    Route::get('/', fn() => redirect()->route('dashboard'));
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Clients
@@ -43,8 +46,19 @@ Route::middleware('firebase')->group(function () {
     Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
     Route::post('/invoices/upload', [InvoiceController::class, 'upload'])->name('invoices.upload');
     Route::get('/invoices/uploads/{upload}/status', [InvoiceController::class, 'status'])->name('invoices.status');
-    Route::get('/invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
     Route::get('/invoices/{invoice}/xml', [InvoiceController::class, 'xml'])->name('invoices.xml');
+
+    // Block B filtered views — constrained wildcard, declared AFTER the literal
+    // and {invoice}/xml routes so it can never shadow them.
+    Route::get('/invoices/{view}', [InvoiceViewController::class, 'show'])
+        ->whereIn('view', ['ingreso', 'gasto', 'nomina', 'pago_emitido', 'pago_recibido'])
+        ->name('invoices.view');
+    Route::get('/invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
+    Route::get('/invoices/{invoice}/classify', [InvoiceClassificationController::class, 'edit'])
+        ->whereNumber('invoice')->name('invoices.classify.edit');
+    Route::post('/invoices/{invoice}/classify', [InvoiceClassificationController::class, 'update'])
+        ->whereNumber('invoice')->name('invoices.classify.update');
+
 
     // Bank statements (Phase 2) — AI extraction + balance gate
     Route::get('/statements', [StatementController::class, 'index'])->name('statements.index');
@@ -82,4 +96,10 @@ Route::middleware('firebase')->group(function () {
     Route::delete('/sat/clients/{client}/credential', [SatController::class, 'destroyCredential'])->name('sat.credential.destroy');
     Route::post('/sat/clients/{client}/download', [SatController::class, 'requestDownload'])->name('sat.download.request');
     Route::get('/sat/requests/{satRequest}/status', [SatController::class, 'status'])->name('sat.request.status');
+
+    Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
+    Route::post('/accounts/import', [AccountController::class, 'import'])->name('accounts.import');
+
+    Route::get('/catalogo-global', [GlobalCatalogController::class, 'index'])->name('catalog.index');
+    Route::post('/catalogo-global/import', [GlobalCatalogController::class, 'import'])->name('catalog.import');
 });

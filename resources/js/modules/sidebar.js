@@ -24,6 +24,14 @@ export const sidebar = {
             });
         });
 
+        document.querySelectorAll('[data-nav-toggle]').forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                btn.closest('[data-nav-group]')?.classList.toggle('open');
+            });
+        });
+
         document.querySelectorAll('[data-sidebar-close]').forEach((btn) => {
             btn.addEventListener('click', () => this.close());
         });

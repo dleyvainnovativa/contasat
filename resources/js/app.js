@@ -13,11 +13,14 @@ import { forms } from './modules/forms.js';
 import { reveal } from './modules/reveal.js';
 import { theme } from './modules/theme.js';
 import { sidebar } from './modules/sidebar.js';
+import Choices from "choices.js";
+import "choices.js/public/assets/styles/choices.min.css";
 
 const App = { http, toast, loading, modal, forms, reveal, theme, sidebar };
 
 // Expose globally so Blade views and inline handlers can call App.*
 window.App = App;
+window.Choices = Choices;
 
 document.addEventListener('DOMContentLoaded', () => {
     theme.init();      // toggle wiring (initial theme is set by the inline head script)

@@ -1,0 +1,200 @@
+/* ==========================================================================
+   Login — split panel. Append to theme.css.
+   Left: brand panel telling the reconciliation story (hidden on mobile).
+   Right: the form. Everything derives from existing tokens so login and app
+   read as one product. The one bold move is the split + the gradient brand
+   panel; the form stays quiet and disciplined.
+   ========================================================================== */
+
+.login-body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+}
+
+.login-split {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    min-height: 100vh;
+}
+
+/* ---- Brand panel (left) -------------------------------------------------- */
+.login-brand {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3rem;
+    color: #fff;
+    overflow: hidden;
+    /* Brand gradient built from the token ramp — not a flat block. */
+    background:
+        radial-gradient(120% 120% at 0% 0%, var(--brand-500) 0%, var(--brand-700) 55%, var(--brand-800, #1e1b4b) 100%);
+}
+
+/* A faint grid texture — echoes the "ledger / spreadsheet" the product replaces,
+   turned into something quiet and architectural rather than literal. */
+.login-brand::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(120% 100% at 100% 0%, #000 30%, transparent 75%);
+    pointer-events: none;
+}
+
+.login-brand > * { position: relative; z-index: 1; }
+
+.login-brand__top {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    font-weight: 650;
+    font-size: 1.1rem;
+    letter-spacing: -0.02em;
+}
+.login-brand__logo {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: rgba(255,255,255,.14);
+    display: grid; place-items: center; color: #fff;
+    backdrop-filter: blur(4px);
+}
+
+.login-brand__pitch h2 {
+    font-size: clamp(1.6rem, 2.6vw, 2.3rem);
+    font-weight: 650;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    margin: 0 0 1rem;
+}
+.login-brand__pitch p {
+    font-size: 1rem;
+    line-height: 1.55;
+    color: rgba(255,255,255,.82);
+    max-width: 40ch;
+    margin: 0;
+}
+
+/* The pipeline as an ordered list — order is real information here. */
+.login-flow {
+    list-style: none;
+    margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: .85rem;
+    counter-reset: flow;
+}
+.login-flow li {
+    display: flex; align-items: center; gap: .75rem;
+    font-size: .95rem; font-weight: 500;
+    color: rgba(255,255,255,.9);
+    counter-increment: flow;
+}
+.login-flow li::before {
+    content: counter(flow, decimal-leading-zero);
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: .72rem;
+    color: rgba(255,255,255,.55);
+    width: 1.6rem;
+}
+.login-flow li i {
+    width: 1.2rem; text-align: center;
+    color: rgba(255,255,255,.75);
+}
+
+.login-brand__foot {
+    display: flex; gap: 1.25rem;
+    font-size: .72rem; letter-spacing: .04em;
+    color: rgba(255,255,255,.6);
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,.14);
+}
+
+/* ---- Form panel (right) -------------------------------------------------- */
+.login-form-panel {
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+}
+.login-form-inner {
+    width: 100%;
+    max-width: 380px;
+}
+
+.login-mobile-brand {
+    display: none;   /* only shown when the aside is hidden (mobile) */
+    align-items: center;
+    gap: .55rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    color: var(--text);
+}
+.login-mobile-brand .logo-mark {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+    display: grid; place-items: center; color: #fff;
+}
+
+.login-title {
+    font-size: 1.4rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    margin: 0 0 .35rem;
+    color: var(--text);
+}
+.login-sub {
+    color: var(--text-muted);
+    font-size: 13.5px;
+    margin: 0 0 2rem;
+}
+.login-legal {
+    margin: 1.5rem 0 0;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.5;
+}
+
+/* ---- Theme toggle -------------------------------------------------------- */
+.login-theme-toggle {
+    position: fixed;
+    top: 1.25rem; right: 1.25rem;
+    z-index: 10;
+    width: 38px; height: 38px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-soft);
+    cursor: pointer;
+    display: grid; place-items: center;
+    transition: background .12s ease, color .12s ease, border-color .12s ease;
+}
+.login-theme-toggle:hover {
+    background: var(--surface-2);
+    color: var(--text);
+}
+/* On wide screens the toggle sits over the brand panel — make it legible there. */
+@media (min-width: 861px) {
+    .login-theme-toggle {
+        background: rgba(255,255,255,.14);
+        border-color: rgba(255,255,255,.2);
+        color: #fff;
+        backdrop-filter: blur(4px);
+    }
+    .login-theme-toggle:hover { background: rgba(255,255,255,.24); color: #fff; }
+}
+
+/* ---- Responsive: collapse to form-only ---------------------------------- */
+@media (max-width: 860px) {
+    .login-split { grid-template-columns: 1fr; }
+    .login-brand { display: none; }
+    .login-mobile-brand { display: flex; }
+    .login-form-panel { min-height: 100vh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .login-theme-toggle { transition: none; }
+}

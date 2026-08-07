@@ -22,6 +22,8 @@ class CfdiIngestService
 {
     public function __construct(
         private readonly CfdiParser $parser,
+        private readonly \App\Services\PagoComplementService $pagoComplements,
+
     ) {}
 
     /**
@@ -74,6 +76,9 @@ class CfdiIngestService
                 'period_id'    => $period->id,
                 'xml_original' => $xml,
             ]);
+            if ($invoice->tipo_comprobante === 'P') {
+                $this->pagoComplements->process($invoice, $xml);
+            }
 
             if (! empty($parsed['lines'])) {
                 $invoice->lines()->createMany($parsed['lines']);

@@ -1,46 +1,101 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="light">
+<html lang="es">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Iniciar sesión · ContaSAT</title>
+
+    {{-- Anti-FOUC: set the theme before first paint. Must stay inline and
+         blocking — a deferred module runs too late and the light theme flashes.
+         Mirrors the app layout so login and app agree on the stored theme. --}}
+    <script>
+        (function () {
+            var stored = localStorage.getItem('contasat-theme');
+            var mode = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            var el = document.documentElement;
+            el.setAttribute('data-theme', mode);
+            el.setAttribute('data-bs-theme', mode);
+        })();
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;550;600;650;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    @vite(['resources/css/theme.css', 'resources/js/app.js'])
+    @vite(['resources/css/theme.css','resources/css/login.css', 'resources/js/app.js'])
 </head>
-<body>
-<div class="auth-wrap">
-    <div class="auth-card" data-reveal>
-        <div class="d-flex align-items-center gap-2 mb-4">
-            <span class="logo-mark" style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--brand-500),var(--brand-700));display:grid;place-items:center;color:#fff;">
-                <i class="fa-solid fa-file-invoice-dollar"></i>
-            </span>
-            <div>
-                <div style="font-weight:650; letter-spacing:-0.02em; font-size:1.05rem;">ContaSAT</div>
-                <div class="text-muted" style="font-size:12px;">Conciliación fiscal</div>
-            </div>
-        </div>
+<body class="login-body">
 
-        <h1 style="font-size:1.25rem; font-weight:650; margin-bottom:.25rem;">Iniciar sesión</h1>
-        <p class="text-muted mb-4" style="font-size:13.5px;">Accede con tu cuenta para continuar</p>
+    {{-- Theme toggle: floats top-right, above both panels. --}}
+    <button class="login-theme-toggle" data-theme-toggle aria-label="Cambiar tema">
+        <i class="fa-solid fa-moon"></i>
+    </button>
 
-        <div id="login-form">
-            <div class="mb-3">
-                <label class="form-label">Correo</label>
-                <input type="email" id="email" class="form-control" placeholder="tucorreo@ejemplo.com" autocomplete="email">
+    <div class="login-split">
+
+        {{-- Left: the brand panel. Tells what ContaSAT does, in the product's own
+             terms — the reconciliation story, not generic marketing. Hidden on
+             mobile, where only the form remains. --}}
+        <aside class="login-brand" aria-hidden="true">
+            <div class="login-brand__top">
+                <span class="logo-mark login-brand__logo">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                </span>
+                <span class="login-brand__name">ContaSAT</span>
             </div>
-            <div class="mb-4">
-                <label class="form-label">Contraseña</label>
-                <input type="password" id="password" class="form-control" placeholder="••••••••" autocomplete="current-password">
+
+            <div class="login-brand__pitch">
+                <h2>Del CFDI a la póliza,<br>sin la hoja de cálculo.</h2>
+                <p>Descarga, concilia y timbra la contabilidad electrónica de todos tus clientes en un solo lugar.</p>
             </div>
-            <button id="login-btn" class="btn btn-brand w-100 btn-icon justify-content-center">
-                <i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar
-            </button>
-        </div>
+
+            {{-- The pipeline, as the product actually models it. Structure that
+                 encodes something true: this IS an ordered flow. --}}
+            <ol class="login-flow">
+                <li><i class="fa-solid fa-cloud-arrow-down"></i> Descarga masiva del SAT</li>
+                <li><i class="fa-solid fa-code-compare"></i> Conciliación automática</li>
+                <li><i class="fa-solid fa-file-code"></i> Contabilidad electrónica</li>
+            </ol>
+
+            <div class="login-brand__foot">
+                <span class="data">CFDI 4.0</span>
+                <span class="data">Anexo 24</span>
+                <span class="data">e.firma</span>
+            </div>
+        </aside>
+
+        {{-- Right: the form. --}}
+        <main class="login-form-panel">
+            <div class="login-form-inner" data-reveal>
+                {{-- Compact brand, shown only on mobile where the aside is gone. --}}
+                <div class="login-mobile-brand">
+                    <span class="logo-mark"><i class="fa-solid fa-file-invoice-dollar"></i></span>
+                    <span>ContaSAT</span>
+                </div>
+
+                <h1 class="login-title">Iniciar sesión</h1>
+                <p class="login-sub">Accede con tu cuenta para continuar</p>
+
+                <div id="login-form">
+                    <div class="mb-3">
+                        <label class="form-label">Correo</label>
+                        <input type="email" id="email" class="form-control" placeholder="tucorreo@ejemplo.com" autocomplete="email">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Contraseña</label>
+                        <input type="password" id="password" class="form-control" placeholder="••••••••" autocomplete="current-password">
+                    </div>
+                    <button id="login-btn" class="btn btn-brand w-100 btn-icon justify-content-center">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar
+                    </button>
+                </div>
+
+                <p class="login-legal">
+                    Al continuar aceptas el manejo seguro de tus datos fiscales.
+                </p>
+            </div>
+        </main>
     </div>
-</div>
 
 {{-- Firebase Web SDK (modular, via CDN) --}}
 <script type="module">

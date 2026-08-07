@@ -125,7 +125,7 @@
                             <td class="text-end data">${{ number_format($invoice->subtotal, 2) }}</td>
                             <td class="text-end data" style="font-weight:550;">${{ number_format($invoice->total, 2) }}</td>
                             <td class="text-end">
-                                <a href="{{ route('invoices.show', $invoice) }}" class="btn btn-soft" style="padding:.35rem .6rem; font-size:12.5px;">
+                                <a href="{{ route('invoices.view', $invoice) }}" class="btn btn-soft" style="padding:.35rem .6rem; font-size:12.5px;">
                                     <i class="fa-solid fa-eye"></i>
                                 </a>
                             </td>

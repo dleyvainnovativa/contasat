@@ -40,7 +40,7 @@ class ReconciliationController extends Controller
             ->get();
 
         // Exception buckets — the digital "missing lines" tabs.
-        $sinFactura = BankMovement::whereHas('statement', fn ($q) => $q->where('period_id', $period->id))
+        $sinFactura = BankMovement::whereHas('statement', fn($q) => $q->where('period_id', $period->id))
             ->where('estado_conciliacion', 'sin_factura')
             ->orderBy('fecha')
             ->get();
@@ -50,12 +50,12 @@ class ReconciliationController extends Controller
             ->orderBy('fecha_emision')
             ->get();
 
-        $fueraPeriodo = BankMovement::whereHas('statement', fn ($q) => $q->where('period_id', $period->id))
+        $fueraPeriodo = BankMovement::whereHas('statement', fn($q) => $q->where('period_id', $period->id))
             ->where('estado_conciliacion', 'fuera_periodo')
             ->orderBy('fecha')
             ->get();
 
-        $accounts = Account::where('client_id', $period->client_id)
+        $accounts = Account::forClient($period->client_id)
             ->where('activo', true)
             ->where('es_afectable', true)
             ->orderBy('numero_cuenta')
@@ -79,7 +79,7 @@ class ReconciliationController extends Controller
             'accountSuggestions' => $accountSuggestions,
             'counts'             => [
                 'sugeridos'  => $matches->where('estado', 'sugerido')->count(),
-                'confirmados'=> $matches->where('estado', 'confirmado')->count(),
+                'confirmados' => $matches->where('estado', 'confirmado')->count(),
                 'sinFactura' => $sinFactura->count(),
                 'sinMovimiento' => $sinMovimiento->count(),
                 'fueraPeriodo'  => $fueraPeriodo->count(),
@@ -188,7 +188,7 @@ class ReconciliationController extends Controller
 
         $period = $this->context->period();
 
-        $sinFactura = BankMovement::whereHas('statement', fn ($q) => $q->where('period_id', $period->id))
+        $sinFactura = BankMovement::whereHas('statement', fn($q) => $q->where('period_id', $period->id))
             ->where('estado_conciliacion', 'sin_factura')
             ->orderBy('fecha')
             ->get();

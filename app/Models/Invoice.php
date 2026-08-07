@@ -13,12 +13,33 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Invoice extends Model
 {
     protected $fillable = [
-        'client_id', 'period_id', 'uuid', 'serie', 'folio',
-        'emisor_rfc', 'emisor_nombre', 'receptor_rfc', 'receptor_nombre',
-        'tipo', 'tipo_comprobante', 'metodo_pago', 'forma_pago', 'uso_cfdi',
-        'subtotal', 'descuento', 'total', 'moneda', 'tipo_cambio',
-        'fecha_emision', 'fecha_timbrado', 'cancelado', 'xml_original',
+        'client_id',
+        'period_id',
+        'uuid',
+        'serie',
+        'folio',
+        'emisor_rfc',
+        'emisor_nombre',
+        'receptor_rfc',
+        'receptor_nombre',
+        'tipo',
+        'tipo_comprobante',
+        'metodo_pago',
+        'forma_pago',
+        'uso_cfdi',
+        'subtotal',
+        'descuento',
+        'total',
+        'moneda',
+        'tipo_cambio',
+        'fecha_emision',
+        'fecha_timbrado',
+        'cancelado',
+        'xml_original',
         'estado_conciliacion',
+        'cuenta_contable_id',
+        'cuenta_abono_id',
+        'clasificacion',
     ];
 
     protected function casts(): array
@@ -47,5 +68,14 @@ class Invoice extends Model
     public function lines(): HasMany
     {
         return $this->hasMany(InvoiceLine::class);
+    }
+    public function cuentaContable(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'cuenta_contable_id');
+    }
+
+    public function cuentaAbono(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'cuenta_abono_id');
     }
 }

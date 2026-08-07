@@ -21,56 +21,91 @@
          active client/period, this is where you go to change it. --}}
     <div class="sidebar__context">
         @if($workContext->hasClient())
-            <a href="{{ route('clients.show', $workContext->client()) }}" class="context-switch">
-                <span class="context-switch__label">Cliente activo</span>
-                <span class="context-switch__value text-truncate">{{ $workContext->client()->display_name }}</span>
-                @if($workContext->hasPeriod())
-                    <span class="context-switch__period data">{{ $workContext->period()->label }}</span>
-                @else
-                    <span class="context-switch__period is-empty">Sin periodo</span>
-                @endif
-            </a>
+        <a href="{{ route('clients.show', $workContext->client()) }}" class="context-switch">
+            <span class="context-switch__label">Cliente activo</span>
+            <span class="context-switch__value text-truncate">{{ $workContext->client()->display_name }}</span>
+            @if($workContext->hasPeriod())
+            <span class="context-switch__period data">{{ $workContext->period()->label }}</span>
+            @else
+            <span class="context-switch__period is-empty">Sin periodo</span>
+            @endif
+        </a>
         @else
-            <a href="{{ route('clients.index') }}" class="context-switch is-empty">
-                <span class="context-switch__label">Sin cliente activo</span>
-                <span class="context-switch__value">Seleccionar cliente</span>
-            </a>
+        <a href="{{ route('clients.index') }}" class="context-switch is-empty">
+            <span class="context-switch__label">Sin cliente activo</span>
+            <span class="context-switch__value">Seleccionar cliente</span>
+        </a>
         @endif
     </div>
 
     <nav class="sidebar__nav">
         <a href="{{ route('dashboard') }}"
-           class="nav-link-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            class="nav-link-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
             <i class="fa-solid fa-gauge-high"></i> Panel
         </a>
         <a href="{{ route('clients.index') }}"
-           class="nav-link-item {{ request()->routeIs('clients.*') ? 'active' : '' }}">
+            class="nav-link-item {{ request()->routeIs('clients.*') ? 'active' : '' }}">
             <i class="fa-solid fa-users"></i> Clientes
+        </a>
+        <a href="{{ route('catalog.index') }}"
+            class="nav-link-item {{ request()->routeIs('catalog.*') ? 'active' : '' }}">
+            <i class="fa-solid fa-layer-group"></i> Catálogo global
+        </a>
+        <a href="{{ route('accounts.index') }}"
+            class="nav-link-item {{ request()->routeIs('accounts.*') ? 'active' : '' }}">
+            <i class="fa-solid fa-sitemap"></i> Catálogo de cuentas
         </a>
 
         <div class="nav-section">Proceso</div>
-         <a href="{{ route('sat.index') }}"
-           class="nav-link-item {{ request()->routeIs('sat.*') ? 'active' : '' }}">
+        <a href="{{ route('sat.index') }}"
+            class="d-none nav-link-item {{ request()->routeIs('sat.*') ? 'active' : '' }}">
             <i class="fa-solid fa-cloud-arrow-down"></i> Descarga SAT
         </a>
-        <a href="{{ route('invoices.index') }}"
-           class="nav-link-item {{ request()->routeIs('invoices.*') ? 'active' : '' }}">
-            <i class="fa-solid fa-file-lines"></i> Facturas
-        </a>
+        <div class="nav-group {{ request()->routeIs('invoices.*') ? 'open' : '' }}" data-nav-group>
+            <a href="{{ route('invoices.index') }}"
+                class="nav-link-item {{ request()->routeIs('invoices.index') ? 'active' : '' }}">
+                <i class="fa-solid fa-file-lines"></i> Facturas
+                <button class="nav-group__toggle" data-nav-toggle aria-label="Desplegar">
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+            </a>
+            <div class="nav-group__items">
+                <a href="{{ route('invoices.view', 'ingreso') }}"
+                    class="nav-sublink {{ request()->routeIs('invoices.view') && request()->route('view') === 'ingreso' ? 'active' : '' }}">
+                    Provisión de ingreso
+                </a>
+                <a href="{{ route('invoices.view', 'gasto') }}"
+                    class="nav-sublink {{ request()->routeIs('invoices.view') && request()->route('view') === 'gasto' ? 'active' : '' }}">
+                    Provisión de gastos
+                </a>
+                <a href="{{ route('invoices.view', 'nomina') }}"
+                    class="nav-sublink {{ request()->routeIs('invoices.view') && request()->route('view') === 'nomina' ? 'active' : '' }}">
+                    Provisión de nómina
+                </a>
+                <a href="{{ route('invoices.view', 'pago_emitido') }}"
+                    class="nav-sublink {{ request()->routeIs('invoices.view') && request()->route('view') === 'pago_emitido' ? 'active' : '' }}">
+                    Complementos pago emitidos
+                </a>
+                <a href="{{ route('invoices.view', 'pago_recibido') }}"
+                    class="nav-sublink {{ request()->routeIs('invoices.view') && request()->route('view') === 'pago_recibido' ? 'active' : '' }}">
+                    Complementos pago recibidos
+                </a>
+            </div>
+        </div>
         <a href="{{ route('statements.index') }}"
-           class="nav-link-item {{ request()->routeIs('statements.*') ? 'active' : '' }}">
+            class="nav-link-item {{ request()->routeIs('statements.*') ? 'active' : '' }}">
             <i class="fa-solid fa-building-columns"></i> Estados de cuenta
         </a>
         <a href="{{ route('reconciliation.index') }}"
-           class="nav-link-item {{ request()->routeIs('reconciliation.*') ? 'active' : '' }}">
+            class="nav-link-item {{ request()->routeIs('reconciliation.*') ? 'active' : '' }}">
             <i class="fa-solid fa-code-compare"></i> Conciliación
         </a>
         <a href="{{ route('reports.index') }}"
-           class="nav-link-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+            class="nav-link-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
             <i class="fa-solid fa-chart-column"></i> Reportes
         </a>
         <a href="{{ route('contabilidad.index') }}"
-           class="nav-link-item {{ request()->routeIs('contabilidad.*') ? 'active' : '' }}">
+            class="nav-link-item {{ request()->routeIs('contabilidad.*') ? 'active' : '' }}">
             <i class="fa-solid fa-file-code"></i> Contabilidad electrónica
         </a>
     </nav>

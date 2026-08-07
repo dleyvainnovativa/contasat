@@ -4,69 +4,93 @@ namespace App\Services;
 
 use App\Models\Account;
 use App\Models\BankMovement;
-use App\Models\Invoice;
 use App\Models\InvoiceMatch;
 use App\Models\Period;
 use Illuminate\Support\Collection;
 
 /**
- * Builds pólizas (double-entry accounting records) from confirmed reconciliation
- * matches. Each póliza balances: total debits (cargo) == total credits (abono).
+ * Builds pólizas (double-entry records) from confirmed reconciliation matches.
  *
- * This is the conceptual bridge to Phase 5: a póliza line carries the CFDI UUID,
- * so the same records serialize directly into contabilidad electrónica later.
+ * REWORKED for Block A: invoice-level classification is now the source of truth.
+ * Each invoice carries cuenta_contable_id (the counterparty subaccount) and
+ * cuenta_abono_id (the revenue/expense counterpart), set by the classification
+ * flow. This builder READS those instead of guessing accounts from a hardcoded
+ * catálogo map. If an invoice isn't classified, it can't produce a póliza — the
+ * builder skips it and flags why, so unclassified invoices are caught before
+ * filing rather than silently mis-posted.
  *
- * The accounting model per match (simplified, income/expense flow):
+ * Accounting model (unchanged in shape, now using the assigned accounts):
  *
- *   Ingreso (emitida invoice, paid by a deposit):
- *     Debe:  Bancos (102)              total
- *     Haber: Ingresos (401)            subtotal
- *     Haber: IVA trasladado (208)      iva
+ *   Ingreso (emitida, paid by deposit):
+ *     Debe:  Bancos (movement's account, or 102)   total
+ *     Haber: cuenta_abono (revenue 4xx)             subtotal
+ *     Haber: IVA trasladado (208)                   iva
+ *   The customer subaccount (cuenta_contable, 105.xx) represents the receivable
+ *   that the deposit clears; in a direct cobro póliza the bank debit stands in
+ *   for it. It is still recorded on the póliza meta for traceability.
  *
- *   Egreso (recibida invoice, paid by a charge):
- *     Debe:  Gastos/Proveedor (601/201) subtotal
- *     Debe:  IVA acreditable (118)       iva
- *     Haber: Bancos (102)               total
- *
- * The bank account comes from the movement's assigned account (learned defaults);
- * the counterpart accounts come from the client's catálogo by CodAgrupador, with
- * safe fallbacks. Nothing here is persisted — it returns structured pólizas for
- * the report and, later, the XML.
+ *   Egreso (recibida, paid by charge):
+ *     Debe:  cuenta_abono (expense 6xx / cost 5xx)  subtotal
+ *     Debe:  IVA acreditable (118)                  iva
+ *     Haber: Bancos (movement's account, or 102)    total
  */
 class PolizaBuilder
 {
-    /**
-     * @return Collection<int, array> one póliza per confirmed match
-     */
+    /** @return Collection<int, array> one póliza per confirmed, classified match */
     public function build(Period $period): Collection
     {
         $matches = InvoiceMatch::where('period_id', $period->id)
             ->where('estado', 'confirmado')
-            ->with(['movement.account', 'invoice'])
+            ->with(['movement.account', 'invoice.cuentaContable', 'invoice.cuentaAbono'])
             ->get();
 
         $catalog = $this->catalogByAgrupador($period->client_id);
 
-        return $matches->map(function (InvoiceMatch $match) use ($catalog) {
-            return $match->invoice->tipo === 'emitida'
-                ? $this->ingresoPoliza($match, $catalog)
-                : $this->egresoPoliza($match, $catalog);
-        })->values();
+        return $matches
+            ->map(fn(InvoiceMatch $m) => $this->buildOne($m, $catalog))
+            ->filter()      // drop unclassified (null) entries
+            ->values();
     }
 
-    /** Income póliza: money in, revenue + IVA trasladado recognized. */
-    private function ingresoPoliza(InvoiceMatch $match, array $catalog): array
+    /**
+     * Invoices in the period that block póliza generation because they lack an
+     * abono classification. Surfaced in the UI so they're fixed before filing.
+     */
+    public function unclassified(Period $period): Collection
+    {
+        return InvoiceMatch::where('period_id', $period->id)
+            ->where('estado', 'confirmado')
+            ->with('invoice')
+            ->get()
+            ->map(fn($m) => $m->invoice)
+            ->filter(fn($inv) => $inv && ! $inv->cuenta_abono_id)
+            ->values();
+    }
+
+    private function buildOne(InvoiceMatch $match, array $catalog): ?array
     {
         $inv = $match->invoice;
-        $mov = $match->movement;
 
-        $bankAccount = $this->bankAccountFor($mov, $catalog);
-        $iva = (float) $this->invoiceIvaTrasladado($inv);
+        // Authoritative: the invoice must be classified. No abono => no póliza.
+        if (! $inv->cuenta_abono_id || ! $inv->cuentaAbono) {
+            return null;
+        }
+
+        return $inv->tipo === 'emitida'
+            ? $this->ingreso($match, $catalog)
+            : $this->egreso($match, $catalog);
+    }
+
+    private function ingreso(InvoiceMatch $match, array $catalog): array
+    {
+        $inv = $match->invoice;
+        $bank = $this->bankAccount($match->movement, $catalog);
+        $iva = $this->iva($inv);
         $base = (float) $inv->subtotal - (float) $inv->descuento;
 
         $lines = [
-            $this->line($bankAccount, 'cargo', (float) $inv->total, 'Cobro ' . $this->counterparty($inv), $inv->uuid),
-            $this->line($catalog['401.01'] ?? null, 'abono', $base, 'Ingreso ' . ($inv->serie . $inv->folio), $inv->uuid),
+            $this->line($bank, 'cargo', (float) $inv->total, 'Cobro ' . $this->counterparty($inv), $inv->uuid),
+            $this->line($inv->cuentaAbono, 'abono', $base, 'Ingreso ' . ($inv->serie . $inv->folio), $inv->uuid),
         ];
 
         if ($iva > 0) {
@@ -76,34 +100,29 @@ class PolizaBuilder
         return $this->assemble($match, 'Ingreso', $lines);
     }
 
-    /** Expense póliza: money out, expense + IVA acreditable recognized. */
-    private function egresoPoliza(InvoiceMatch $match, array $catalog): array
+    private function egreso(InvoiceMatch $match, array $catalog): array
     {
         $inv = $match->invoice;
-        $mov = $match->movement;
-
-        $bankAccount = $this->bankAccountFor($mov, $catalog);
-        $iva = (float) $this->invoiceIvaTrasladado($inv);
+        $bank = $this->bankAccount($match->movement, $catalog);
+        $iva = $this->iva($inv);
         $base = (float) $inv->subtotal - (float) $inv->descuento;
 
         $lines = [
-            $this->line($catalog['601.01'] ?? null, 'cargo', $base, 'Gasto ' . $this->counterparty($inv), $inv->uuid),
+            $this->line($inv->cuentaAbono, 'cargo', $base, 'Gasto ' . $this->counterparty($inv), $inv->uuid),
         ];
 
         if ($iva > 0) {
             $lines[] = $this->line($catalog['118.01'] ?? null, 'cargo', $iva, 'IVA acreditable', $inv->uuid);
         }
 
-        $lines[] = $this->line($bankAccount, 'abono', (float) $inv->total, 'Pago ' . ($inv->serie . $inv->folio), $inv->uuid);
+        $lines[] = $this->line($bank, 'abono', (float) $inv->total, 'Pago ' . ($inv->serie . $inv->folio), $inv->uuid);
 
         return $this->assemble($match, 'Egreso', $lines);
     }
 
-    /** Assemble a póliza and verify it balances. */
     private function assemble(InvoiceMatch $match, string $tipo, array $lines): array
     {
         $lines = array_values(array_filter($lines));
-
         $totalCargo = array_sum(array_column($lines, 'cargo'));
         $totalAbono = array_sum(array_column($lines, 'abono'));
 
@@ -115,6 +134,7 @@ class PolizaBuilder
             'uuid'        => $match->invoice->uuid,
             'rfc'         => $this->counterpartyRfc($match->invoice),
             'monto_total' => (float) $match->invoice->total,
+            'cuenta_contable' => $match->invoice->cuentaContable?->numero_cuenta,
             'lines'       => $lines,
             'total_cargo' => round($totalCargo, 2),
             'total_abono' => round($totalAbono, 2),
@@ -140,52 +160,37 @@ class PolizaBuilder
         ];
     }
 
-    /**
-     * Bank account for a movement: prefer the account the accountant assigned;
-     * fall back to the catálogo's default bank account (102.01).
-     */
-    private function bankAccountFor(?BankMovement $mov, array $catalog): ?Account
+    private function bankAccount(?BankMovement $mov, array $catalog): ?Account
     {
-        if ($mov?->account) {
-            return $mov->account;
-        }
-
-        return $catalog['102.01'] ?? null;
+        return $mov?->account ?? ($catalog['102.01'] ?? null);
     }
 
     /** @return array<string, Account> keyed by codigo_agrupador */
     private function catalogByAgrupador(int $clientId): array
     {
-        return Account::where('client_id', $clientId)
-            ->get()
-            ->keyBy('codigo_agrupador')
-            ->all();
+        return Account::forClient($clientId)->get()->keyBy('codigo_agrupador')->all();
     }
 
-    private function invoiceIvaTrasladado(Invoice $inv): float
+    private function iva($inv): float
     {
-        // Sum line-level IVA trasladado; falls back to total - subtotal if lines empty.
         $fromLines = $inv->lines()->sum('iva_trasladado');
         if ($fromLines > 0) {
             return (float) $fromLines;
         }
-
         $implied = (float) $inv->total - ((float) $inv->subtotal - (float) $inv->descuento);
 
         return max(0.0, round($implied, 2));
     }
 
-    private function counterparty(Invoice $inv): string
+    private function counterparty($inv): string
     {
         return $inv->tipo === 'emitida'
             ? ($inv->receptor_nombre ?: $inv->receptor_rfc)
             : ($inv->emisor_nombre ?: $inv->emisor_rfc);
     }
 
-    private function counterpartyRfc(Invoice $inv): string
+    private function counterpartyRfc($inv): string
     {
-        return $inv->tipo === 'emitida'
-            ? $inv->receptor_rfc
-            : $inv->emisor_rfc;
+        return $inv->tipo === 'emitida' ? $inv->receptor_rfc : $inv->emisor_rfc;
     }
 }

@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use App\Jobs\ClassifyPeriodInvoices;
 use Throwable;
 
 /**
@@ -58,6 +59,9 @@ class ProcessCfdiUpload implements ShouldQueue
             ]);
 
             $this->advancePeriod($upload);
+            if ($summary['imported'] > 0) {
+                ClassifyPeriodInvoices::dispatch($upload->period_id);
+            }
         } catch (Throwable $e) {
             $upload->update([
                 'status'       => 'failed',

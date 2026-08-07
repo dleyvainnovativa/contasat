@@ -22,6 +22,9 @@ class Account extends Model
         'naturaleza',
         'es_afectable',
         'activo',
+        'rfc_asociado',
+        'auto_generada',
+
     ];
 
     protected function casts(): array
@@ -29,6 +32,7 @@ class Account extends Model
         return [
             'es_afectable' => 'boolean',
             'activo'       => 'boolean',
+            'auto_generada' => 'boolean',
         ];
     }
 
@@ -50,5 +54,29 @@ class Account extends Model
     public function getFullLabelAttribute(): string
     {
         return "{$this->numero_cuenta} — {$this->nombre}";
+    }
+
+    public function scopeForClient($query, int $clientId)
+    {
+        return $query->where(function ($q) use ($clientId) {
+            $q->whereNull('client_id')->orWhere('client_id', $clientId);
+        });
+    }
+
+    /** Only the shared SAT catalog rows. */
+    public function scopeGlobal($query)
+    {
+        return $query->whereNull('client_id');
+    }
+
+    /** Only a specific client's minted subaccounts. */
+    public function scopeClientOwned($query, int $clientId)
+    {
+        return $query->where('client_id', $clientId);
+    }
+
+    public function isGlobal(): bool
+    {
+        return $this->client_id === null;
     }
 }

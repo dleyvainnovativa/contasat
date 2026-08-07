@@ -1,5 +1,4 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
-
 /* ==========================================================================
    ContaSAT — theme.css
    Reference aesthetic: Linear meets Stripe. Trustworthy, calm, slightly
@@ -205,6 +204,14 @@ a:hover { color: var(--brand-600); }
     display: flex; align-items: center; justify-content: space-between; gap: 1rem;
 }
 .card-clean .card-clean__body { padding: 1.25rem; }
+
+.card-clean__foot {
+    display: flex;
+    justify-content: flex-end;
+    padding: .75rem 1rem;
+    border-top: 1px solid var(--border);
+}
+.card-clean__foot .pagination { margin: 0; }
 
 /* Stat cards for the dashboard summary row */
 .stat-card {
@@ -529,3 +536,75 @@ nav[role="navigation"] p {
     .page-item:not(.active):not(:first-child):not(:last-child) { display: none; }
     .page-link { padding: .4rem .6rem; font-size: 12.5px; }
 }
+
+
+/* ---- Sidebar collapsible group ------------------------------------------- */
+.nav-group__toggle {
+    margin-left: auto; border: none; background: transparent;
+    color: var(--text-muted); cursor: pointer; padding: .2rem;
+    transition: transform .18s ease;
+}
+.nav-group.open .nav-group__toggle { transform: rotate(180deg); }
+.nav-group__items {
+    max-height: 0; overflow: hidden;
+    transition: max-height .22s ease;
+}
+.nav-group.open .nav-group__items { max-height: 320px; }
+.nav-sublink {
+    display: block; padding: .45rem .75rem .45rem 2.4rem;
+    font-size: 12.5px; color: var(--text-soft);
+    border-radius: var(--radius-sm); text-decoration: none;
+    transition: background .12s ease, color .12s ease;
+}
+.nav-sublink:hover { background: var(--surface-2); color: var(--text); }
+.nav-sublink.active { color: var(--brand-600); font-weight: 550; background: var(--brand-050); }
+
+/* ---- Facturas view tabs -------------------------------------------------- */
+.fac-tabs {
+    display: flex; gap: .25rem; flex-wrap: wrap;
+    border-bottom: 1px solid var(--border); margin-bottom: 1rem; padding-bottom: 0;
+}
+.fac-tab {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .55rem .85rem; font-size: 13px; font-weight: 500;
+    color: var(--text-soft); text-decoration: none;
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+    transition: color .12s ease, border-color .12s ease;
+}
+.fac-tab:hover { color: var(--text); }
+.fac-tab.active { color: var(--brand-600); border-bottom-color: var(--brand-500); }
+.fac-tab__count {
+    background: var(--surface-2); color: var(--text-soft);
+    font-size: 11px; padding: .05rem .4rem; border-radius: 999px; font-weight: 600;
+}
+.fac-tab.active .fac-tab__count { background: var(--brand-050); color: var(--brand-600); }
+
+/* Wide table: let the accounting columns scroll horizontally rather than cram. */
+.table-wide { min-width: 1100px; }
+@media (max-width: 640px) {
+    .fac-tab span { display: none; }   /* icons only on phones */
+    .fac-tab { padding: .55rem .7rem; }
+}
+/* Choices.js — bridge to our tokens */
+.choices { margin-bottom: 0; }
+.choices__inner {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    min-height: 38px;
+    font-size: 13px;
+    color: var(--text);
+}
+.choices.is-focused .choices__inner { border-color: var(--brand-500); }
+.choices__list--dropdown,
+.choices__list[aria-expanded] {
+    background: var(--surface);
+    border-color: var(--border);
+    border-radius: var(--radius-sm);
+}
+.choices__list--dropdown .choices__item--selectable.is-highlighted {
+    background: var(--brand-050);
+    color: var(--brand-600);
+}
+.choices__input { background: var(--surface); color: var(--text); }
+[data-theme="dark"] .choices__list--dropdown { box-shadow: var(--shadow-lg); }

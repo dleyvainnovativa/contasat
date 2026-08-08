@@ -633,6 +633,9 @@ nav[role="navigation"] p {
     border-top: 2px solid var(--border); border-bottom: none;
     font-weight: 650; font-size: 16px; color: var(--text);
 }
+.amount-row:has(+ .amount-row--total) {
+    border-bottom: none;
+}
 
 @media (max-width: 560px) {
     .detail-grid { grid-template-columns: 1fr; gap: .85rem; }

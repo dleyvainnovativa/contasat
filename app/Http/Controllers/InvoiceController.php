@@ -42,7 +42,8 @@ class InvoiceController extends Controller
                         ->orWhere('emisor_rfc', 'like', "%{$term}%")
                         ->orWhere('receptor_rfc', 'like', "%{$term}%")
                         ->orWhere('uuid', 'like', "%{$term}%")
-                        ->orWhere('folio', 'like', "%{$term}%");
+                        ->orWhere('folio', 'like', "%{$term}%")
+                        ->orWhereRaw("CONCAT(COALESCE(serie,''), COALESCE(folio,'')) LIKE ?", ["%{$term}%"]);
                 });
             })
             ->when($request->filled('filtro'), function ($q) use ($request) {

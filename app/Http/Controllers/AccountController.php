@@ -40,6 +40,10 @@ class AccountController extends Controller
                     ->orWhere('codigo_agrupador', 'like', "%{$term}%"));
             })
             ->when($request->boolean('solo_afectables'), fn($q) => $q->where('es_afectable', true))
+            ->when(
+                ! $request->has('todas'),
+                fn($q) => $q->clientOwned($client->id)
+            )
             ->orderBy('numero_cuenta')
             ->paginate(50)
             ->withQueryString();

@@ -14,6 +14,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\InvoiceViewController;
 use App\Http\Controllers\InvoiceClassificationController;
 use App\Http\Controllers\GlobalCatalogController;
+use App\Http\Controllers\PolizaController;
 use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
@@ -58,7 +59,12 @@ Route::middleware('firebase')->group(function () {
         ->whereNumber('invoice')->name('invoices.classify.edit');
     Route::post('/invoices/{invoice}/classify', [InvoiceClassificationController::class, 'update'])
         ->whereNumber('invoice')->name('invoices.classify.update');
-
+    Route::post('/invoices/{invoice}/provision', [PolizaController::class, 'provision'])
+        ->whereNumber('invoice')->name('invoices.provision');
+    Route::post('/invoices/{invoice}/cobro', [PolizaController::class, 'cobro'])
+        ->whereNumber('invoice')->name('invoices.cobro');
+    Route::get('/invoices/{invoice}/cobro-candidates', [PolizaController::class, 'cobroCandidates'])
+        ->whereNumber('invoice')->name('invoices.cobro.candidates');
 
     // Bank statements (Phase 2) — AI extraction + balance gate
     Route::get('/statements', [StatementController::class, 'index'])->name('statements.index');

@@ -149,6 +149,10 @@
                                 data-classify="{{ $inv->id }}" title="Clasificar / confirmar">
                                 <i class="fa-solid fa-pen"></i>
                             </button>
+                            <a href="{{ route('invoices.show', $inv) }}" class="btn btn-soft"
+                                style="padding:.2rem .45rem; font-size:11px;" title="Ver factura">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
                             @endunless
                         </div>
                     </td>

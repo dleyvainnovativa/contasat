@@ -608,3 +608,32 @@ nav[role="navigation"] p {
 }
 .choices__input { background: var(--surface); color: var(--text); }
 [data-theme="dark"] .choices__list--dropdown { box-shadow: var(--shadow-lg); }
+
+/* ---- Invoice detail ------------------------------------------------------ */
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.5rem;
+}
+.detail-grid > div { display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
+.detail-label {
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--text-muted); font-weight: 600;
+}
+.detail-grid .data { word-break: break-all; }
+
+.amount-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: .5rem 0; font-size: 13.5px; color: var(--text-soft);
+    border-bottom: 1px solid var(--border);
+}
+.amount-row:last-child { border-bottom: none; }
+.amount-row--total {
+    margin-top: .35rem; padding-top: .75rem;
+    border-top: 2px solid var(--border); border-bottom: none;
+    font-weight: 650; font-size: 16px; color: var(--text);
+}
+
+@media (max-width: 560px) {
+    .detail-grid { grid-template-columns: 1fr; gap: .85rem; }
+}

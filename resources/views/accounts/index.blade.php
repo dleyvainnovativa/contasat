@@ -57,6 +57,12 @@
                            onchange="this.form.submit()">
                     Solo afectables
                 </label>
+                <label class="d-flex align-items-center gap-2" style="font-size:13px; white-space:nowrap;">
+                    <input type="checkbox" name="todas" value="1"
+                        {{ request()->has('todas') ? 'checked' : '' }}
+                        onchange="this.form.submit()">
+                    Mostrar catálogo global
+                </label>
             </form>
         </div>
         <div class="table-responsive">

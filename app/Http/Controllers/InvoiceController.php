@@ -34,7 +34,6 @@ class InvoiceController extends Controller
         $period = $this->context->period();
 
         $invoices = Invoice::where('period_id', $period->id)
-            ->when($request->filled('tipo'), fn ($q) => $q->where('tipo', $request->string('tipo')))
             ->when($request->filled('q'), function ($q) use ($request) {
                 $term = $request->string('q')->toString();
                 $q->where(function ($sub) use ($term) {
@@ -45,6 +44,16 @@ class InvoiceController extends Controller
                         ->orWhere('uuid', 'like', "%{$term}%")
                         ->orWhere('folio', 'like', "%{$term}%");
                 });
+            })
+            ->when($request->filled('filtro'), function ($q) use ($request) {
+                match ($request->string('filtro')->toString()) {
+                    'ingreso'       => $q->where('tipo_comprobante', 'I')->where('tipo', 'emitida'),
+                    'gasto'         => $q->where('tipo_comprobante', 'I')->where('tipo', 'recibida'),
+                    'nomina'        => $q->where('tipo_comprobante', 'N'),
+                    'pago_emitido'  => $q->where('tipo_comprobante', 'P')->where('tipo', 'emitida'),
+                    'pago_recibido' => $q->where('tipo_comprobante', 'P')->where('tipo', 'recibida'),
+                    default         => $q,
+                };
             })
             ->orderByDesc('fecha_emision')
             ->paginate(25)
@@ -125,11 +134,33 @@ class InvoiceController extends Controller
         ]);
     }
 
-    public function show(Invoice $invoice): View
+    public function show(\App\Models\Invoice $invoice): \Illuminate\View\View
     {
-        $invoice->load('lines');
+        $invoice->load(['lines', 'cuentaContable', 'cuentaAbono', 'client']);
 
-        return view('invoices.show', ['invoice' => $invoice]);
+        // Block C: if this is a payment complement, load the documents it settles.
+        $paymentLinks = collect();
+        if ($invoice->tipo_comprobante === 'P' && class_exists(\App\Models\PaymentDocument::class)) {
+            $paymentLinks = \App\Models\PaymentDocument::where('payment_invoice_id', $invoice->id)
+                ->with('paidInvoice')
+                ->get();
+        }
+
+        // If this invoice is itself paid by complements, show which payments cleared
+        // it (the reverse direction — useful on an income invoice).
+        $paidByLinks = collect();
+        if (in_array($invoice->tipo_comprobante, ['I', 'E'], true) && class_exists(\App\Models\PaymentDocument::class)) {
+            $paidByLinks = \App\Models\PaymentDocument::where('client_id', $invoice->client_id)
+                ->where('iddocumento', $invoice->uuid)
+                ->with('paymentInvoice')
+                ->get();
+        }
+
+        return view('invoices.show', [
+            'invoice'      => $invoice,
+            'paymentLinks' => $paymentLinks,
+            'paidByLinks'  => $paidByLinks,
+        ]);
     }
 
     /** Download the original XML, verbatim (SAT compliance). */

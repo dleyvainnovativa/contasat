@@ -92,8 +92,11 @@ class CounterpartyAccountService
                 );
             }
 
-            $next = Account::clientOwned($client->id)
-                ->where('parent_id', $parent->id)
+            // $next = Account::clientOwned($client->id)
+            //     ->where('parent_id', $parent->id)
+            //     ->where('auto_generada', true)
+            //     ->count() + 1;
+            $next = Account::where('parent_id', $parent->id)
                 ->where('auto_generada', true)
                 ->count() + 1;
 

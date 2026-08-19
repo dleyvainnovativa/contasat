@@ -65,6 +65,9 @@ class InvoiceViewController extends Controller
                     ->orWhere('emisor_rfc', 'like', "%{$term}%"));
             })
             ->with(['cuentaContable', 'cuentaAbono'])
+            // Concepts column shows only on ingreso/gasto (I-type, non-nómina).
+            // Eager-load line descriptions there to build conceptos_resumen without N+1.
+            ->when($tipoComprobante === 'I', fn($q) => $q->with('lines:id,invoice_id,descripcion'))
             ->orderByDesc('fecha_emision');
 
         $invoices = $query->paginate(25)->withQueryString();

@@ -43,20 +43,22 @@
             class="nav-link-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
             <i class="fa-solid fa-gauge-high"></i> Panel
         </a>
+        <div class="nav-section">Configuración Global</div>
         <a href="{{ route('clients.index') }}"
             class="nav-link-item {{ request()->routeIs('clients.*') ? 'active' : '' }}">
             <i class="fa-solid fa-users"></i> Clientes
         </a>
+        <div class="nav-section">Base de Datos</div>
         <a href="{{ route('catalog.index') }}"
             class="nav-link-item {{ request()->routeIs('catalog.*') ? 'active' : '' }}">
-            <i class="fa-solid fa-layer-group"></i> Catálogo global
+            <i class="fa-solid fa-layer-group"></i> Catálogo de cuentas
         </a>
+
+        <div class="nav-section">Proceso</div>
         <a href="{{ route('accounts.index') }}"
             class="nav-link-item {{ request()->routeIs('accounts.*') ? 'active' : '' }}">
             <i class="fa-solid fa-sitemap"></i> Catálogo de cuentas
         </a>
-
-        <div class="nav-section">Proceso</div>
         <a href="{{ route('sat.index') }}"
             class="d-none nav-link-item {{ request()->routeIs('sat.*') ? 'active' : '' }}">
             <i class="fa-solid fa-cloud-arrow-down"></i> Descarga SAT

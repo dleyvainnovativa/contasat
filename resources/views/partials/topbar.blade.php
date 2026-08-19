@@ -4,26 +4,12 @@
      shrinks and truncates rather than moving behind a menu. --}}
 <header class="topbar">
     <button class="theme-toggle d-lg-none" data-sidebar-toggle
-            aria-label="Abrir menú" aria-controls="sidebar" aria-expanded="false">
+        aria-label="Abrir menú" aria-controls="sidebar" aria-expanded="false">
         <i class="fa-solid fa-bars"></i>
     </button>
 
     <div class="topbar__context">
-        @if($workContext->hasClient())
-            <span class="context-chip">
-                <i class="fa-solid fa-building text-muted"></i>
-                <span>{{ $workContext->client()->display_name }}</span>
-            </span>
-            @if($workContext->hasPeriod())
-                <span class="context-chip__sep"><i class="fa-solid fa-chevron-right"></i></span>
-                <span class="context-chip is-period data">{{ $workContext->period()->label }}</span>
-            @endif
-        @else
-            <span class="context-chip is-empty">
-                <i class="fa-solid fa-circle-info"></i>
-                <span>Sin cliente activo</span>
-            </span>
-        @endif
+        @include('partials.topbar_switcher')
     </div>
 
     <div class="topbar__actions">
@@ -31,8 +17,8 @@
             <i class="fa-solid fa-moon"></i>
         </button>
         <button class="theme-toggle"
-                onclick="App.http.post('{{ route('auth.logout') }}').then(r => window.location.href = r.redirect)"
-                aria-label="Cerrar sesión" title="Cerrar sesión">
+            onclick="App.http.post('{{ route('auth.logout') }}').then(r => window.location.href = r.redirect)"
+            aria-label="Cerrar sesión" title="Cerrar sesión">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
         </button>
     </div>

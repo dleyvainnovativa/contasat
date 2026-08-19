@@ -9,7 +9,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
-use App\Services\ClientReceivableService;
 
 class ClientController extends Controller
 {
@@ -45,13 +44,10 @@ class ClientController extends Controller
         $data = $this->validated($request);
 
         $client = Client::create($data);
-        try {
-            app(ClientReceivableService::class)->ensureFor($client);
-        } catch (\Throwable $e) {
-            // Global catalog not imported yet, or parent 105.01 missing. Don't block
-            // client creation; the receivable can be backfilled once the catalog exists.
-            report($e);
-        }
+
+        // The client's receivable subaccount (105.01.#) is no longer minted here.
+        // It's created lazily on the first póliza de provisión, via
+        // CounterpartyAccountService, keyed on the invoice's RFC.
 
         // Selecting a freshly created client as the active one is a natural next step.
         $this->context->setClient($client);
@@ -76,13 +72,7 @@ class ClientController extends Controller
     public function update(Request $request, Client $client): RedirectResponse
     {
         $client->update($this->validated($request, $client));
-        try {
-            app(ClientReceivableService::class)->ensureFor($client);
-        } catch (\Throwable $e) {
-            // Global catalog not imported yet, or parent 105.01 missing. Don't block
-            // client creation; the receivable can be backfilled once the catalog exists.
-            report($e);
-        }
+
         return redirect()
             ->route('clients.show', $client)
             ->with('toast', ['type' => 'success', 'message' => 'Cliente actualizado.']);

@@ -3,31 +3,27 @@
 namespace App\Services\ContabilidadElectronica;
 
 use App\Models\Period;
-use App\Services\PolizaBuilder;
+use App\Models\PolizaLine;
 use XMLWriter;
 
 /**
- * Generates the Balanza de Comprobación XML (SAT Anexo 24, version 1.3).
+ * Balanza de Comprobación XML (SAT Anexo 24 v1.3) — D3.5 rework.
  *
- * Root: BCE:Balanza in namespace
- *   http://www.sat.gob.mx/esquemas/ContabilidadE/1_3/BalanzaComprobacion
- * Required root attributes: Version=1.3, RFC, Mes, Anio, TipoEnvio (N|C).
- * Each Ctas: NumCta, SaldoIni, Debe, Haber, SaldoFin.
+ * Aggregates per-account debits/credits from the PERSISTED póliza lines (the
+ * provisión + cobro entries), instead of from the old on-the-fly builder. Because
+ * provisión and cobro both post to the receivable (one debits it, the other
+ * credits it), the balanza now reflects the true movement through 105.01.# — the
+ * receivable shows activity and nets correctly, which the old combined entry
+ * couldn't represent.
  *
- * The period's debits/credits per account come from the pólizas. Opening balances
- * (SaldoIni) are 0 in this build — carrying forward prior-period closing balances
- * is a future enhancement; the movement columns (Debe/Haber) and the derived
- * SaldoFin are the part the monthly filing actually validates.
+ * SaldoIni remains 0 in this build (opening-balance carry-forward is future work);
+ * Debe/Haber and the derived SaldoFin are what the monthly filing validates.
  */
 class BalanzaXmlGenerator
 {
     private const NS  = 'http://www.sat.gob.mx/esquemas/ContabilidadE/1_3/BalanzaComprobacion';
     private const XSD = 'http://www.sat.gob.mx/esquemas/ContabilidadE/1_3/BalanzaComprobacion/BalanzaComprobacion_1_3.xsd';
     private const XSI = 'http://www.w3.org/2001/XMLSchema-instance';
-
-    public function __construct(
-        private readonly PolizaBuilder $polizas,
-    ) {}
 
     public function generate(Period $period, string $tipoEnvio = 'N'): string
     {
@@ -40,13 +36,13 @@ class BalanzaXmlGenerator
         $w->startDocument('1.0', 'UTF-8');
 
         $w->startElementNs('BCE', 'Balanza', self::NS);
-        $w->writeAttributeNs('xmlns', 'xsi', null, self::XSI);
-        $w->writeAttributeNs('xsi', 'schemaLocation', self::XSI, self::NS . ' ' . self::XSD);
+        $w->writeAttribute('xmlns:xsi', self::XSI);
+        $w->writeAttribute('xsi:schemaLocation', self::NS . ' ' . self::XSD);
         $w->writeAttribute('Version', '1.3');
         $w->writeAttribute('RFC', $client->rfc);
         $w->writeAttribute('Mes', str_pad((string) $period->month, 2, '0', STR_PAD_LEFT));
         $w->writeAttribute('Anio', (string) $period->year);
-        $w->writeAttribute('TipoEnvio', $tipoEnvio); // N = Normal, C = Complementaria
+        $w->writeAttribute('TipoEnvio', $tipoEnvio);
 
         foreach ($totals as $numCta => $t) {
             $saldoIni = 0.0;
@@ -70,23 +66,25 @@ class BalanzaXmlGenerator
     }
 
     /**
-     * Aggregate debit/credit per account number from the period's pólizas.
+     * Aggregate debit/credit per account number from the period's persisted póliza
+     * lines.
+     *
      * @return array<string, array{debe:float, haber:float}>
      */
     private function accountTotals(Period $period): array
     {
         $totals = [];
 
-        foreach ($this->polizas->build($period) as $poliza) {
-            foreach ($poliza['lines'] as $line) {
-                $num = $line['numero_cuenta'];
+        PolizaLine::whereHas('poliza', fn ($q) => $q->where('period_id', $period->id))
+            ->get(['numero_cuenta', 'cargo', 'abono'])
+            ->each(function ($line) use (&$totals) {
+                $num = $line->numero_cuenta;
                 if ($num === '(sin cuenta)') {
-                    continue;
+                    return;
                 }
-                $totals[$num]['debe']  = ($totals[$num]['debe'] ?? 0) + $line['cargo'];
-                $totals[$num]['haber'] = ($totals[$num]['haber'] ?? 0) + $line['abono'];
-            }
-        }
+                $totals[$num]['debe']  = ($totals[$num]['debe'] ?? 0) + (float) $line->cargo;
+                $totals[$num]['haber'] = ($totals[$num]['haber'] ?? 0) + (float) $line->abono;
+            });
 
         ksort($totals);
 

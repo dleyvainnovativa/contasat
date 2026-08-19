@@ -14,13 +14,19 @@ use RuntimeException;
  * Builds the two income pólizas your client's cuadros describe.
  *
  *   PROVISIÓN (accrual, on invoice issue) — "botón provisión":
- *     Debe   105.01.#  (cliente — receivable)   total
- *     Haber  4xx       (ingreso, per concepto)  subtotal − descuento
- *     Haber  208.01    (IVA trasladado)         iva
+ *     Debe   105.01.#  (cliente — receivable)         total
+ *     Haber  4xx       (ingreso, per concepto)        subtotal − descuento
+ *     Haber  209.01    (IVA trasladado NO cobrado)    iva
  *
  *   COBRO (cash, on payment) — "botón fecha de pago":
- *     Debe   102.01    (bancos)                 total
- *     Haber  105.01.#  (cliente — receivable)   total
+ *     Debe   102.01    (bancos)                        total
+ *     Haber  105.01.#  (cliente — receivable)          total
+ *     Debe   209.01    (IVA trasladado NO cobrado)     iva   ← reverses provisión
+ *     Haber  208.01    (IVA trasladado cobrado)        iva   ← now collected
+ *
+ * IVA sobre flujo (cash-basis IVA): at issue the IVA is accrued but not yet
+ * collected, so it sits in 209.01. Collection reclassifies it 209.01 → 208.01.
+ * Both cuadros balance on their own.
  *
  * The receivable (the client's own 105.01.# from D1, or the counterparty's
  * subaccount) is the hinge: provisión creates it, cobro clears it.
@@ -31,8 +37,9 @@ use RuntimeException;
  */
 class ProvisionCobroService
 {
-    private const IVA_TRASLADADO = '208.01';
-    private const BANCOS         = '102.01';
+    private const IVA_TRASLADADO   = '208.01';   // IVA trasladado cobrado
+    private const IVA_NO_COBRADO   = '209.01';   // IVA trasladado no cobrado (devengado)
+    private const BANCOS           = '102.01';
 
     public function __construct(
         private readonly CounterpartyAccountService $counterparty,
@@ -60,7 +67,7 @@ class ProvisionCobroService
         $catalog = $this->catalog($invoice->client_id);
 
         $base = (float) $invoice->subtotal - (float) $invoice->descuento;
-        $iva  = (float) ($invoice->iva_trasladado ?? 0);
+        $iva = (float) ($invoice->iva_trasladado ?: $invoice->lines->sum('iva_trasladado'));
 
         return DB::transaction(function () use ($invoice, $receivable, $catalog, $conceptAccounts, $base, $iva) {
             $poliza = Poliza::create([
@@ -76,8 +83,13 @@ class ProvisionCobroService
             $lines = [];
 
             // Debe: receivable, the full total.
-            $lines[] = $this->line($receivable, 'cargo', (float) $invoice->total,
-                'Cliente ' . $this->counterpartyName($invoice), $invoice->uuid);
+            $lines[] = $this->line(
+                $receivable,
+                'cargo',
+                (float) $invoice->total,
+                'Cliente ' . $this->counterpartyName($invoice),
+                $invoice->uuid
+            );
 
             // Haber: revenue. Either split per concepto (if the UI chose accounts),
             // or a single line to the invoice's abono account.
@@ -98,9 +110,11 @@ class ProvisionCobroService
                 $lines[] = $this->line($revenue, 'abono', $base, 'Ingreso ' . ($invoice->serie . $invoice->folio), $invoice->uuid);
             }
 
-            // Haber: IVA trasladado.
+            // Haber: IVA trasladado NO cobrado. On issue the IVA is accrued but not
+            // yet collected (IVA sobre flujo), so it lands in 209.01. The cobro
+            // póliza reclassifies it to 208.01 when payment arrives.
             if ($iva > 0) {
-                $lines[] = $this->line($catalog[self::IVA_TRASLADADO] ?? null, 'abono', $iva, 'IVA trasladado', $invoice->uuid);
+                $lines[] = $this->line($catalog[self::IVA_NO_COBRADO] ?? null, 'abono', $iva, 'IVA trasladado no cobrado', $invoice->uuid);
             }
 
             $this->persistLines($poliza, $lines);
@@ -139,7 +153,10 @@ class ProvisionCobroService
             ? (BankMovement::find($bankMovementId)?->account ?? ($catalog[self::BANCOS] ?? null))
             : ($catalog[self::BANCOS] ?? null);
 
-        return DB::transaction(function () use ($invoice, $receivable, $bank, $fechaPago, $origen, $bankMovementId, $paymentUuid) {
+        // Same IVA base the provisión used, to reclassify 209.01 → 208.01.
+        $iva = (float) ($invoice->iva_trasladado ?: $invoice->lines->sum('iva_trasladado'));
+
+        return DB::transaction(function () use ($invoice, $receivable, $bank, $catalog, $iva, $fechaPago, $origen, $bankMovementId, $paymentUuid) {
             $poliza = Poliza::create([
                 'client_id'        => $invoice->client_id,
                 'period_id'        => $invoice->period_id,
@@ -157,6 +174,13 @@ class ProvisionCobroService
                 $this->line($bank, 'cargo', (float) $invoice->total, 'Cobro ' . ($invoice->serie . $invoice->folio), $invoice->uuid),
                 $this->line($receivable, 'abono', (float) $invoice->total, 'Cliente ' . $this->counterpartyName($invoice), $invoice->uuid),
             ];
+
+            // IVA reclassification: what was accrued in 209.01 at provisión is now
+            // collected, so it moves to 208.01. Debe 209.01 (reverse) / Haber 208.01.
+            if ($iva > 0) {
+                $lines[] = $this->line($catalog[self::IVA_NO_COBRADO] ?? null, 'cargo', $iva, 'IVA trasladado no cobrado', $invoice->uuid);
+                $lines[] = $this->line($catalog[self::IVA_TRASLADADO] ?? null, 'abono', $iva, 'IVA trasladado cobrado', $invoice->uuid);
+            }
 
             $this->persistLines($poliza, $lines);
 
@@ -191,7 +215,8 @@ class ProvisionCobroService
     private function persistLines(Poliza $poliza, array $lines): void
     {
         $lines = array_values(array_filter($lines));
-        $cargo = 0.0; $abono = 0.0;
+        $cargo = 0.0;
+        $abono = 0.0;
 
         foreach ($lines as $l) {
             PolizaLine::create(['poliza_id' => $poliza->id] + $l);

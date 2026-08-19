@@ -58,6 +58,7 @@ class AccountController extends Controller
             'client'   => $client,
             'accounts' => $accounts,
             'counts'   => $counts,
+            'hiddenColumns' => auth()->user()->pref('accounts_columns', []),
             'q'        => $request->string('q')->toString(),
         ]);
     }
@@ -86,5 +87,23 @@ class AccountController extends Controller
             'summary' => $summary,
             'message' => "Catálogo importado: {$summary['imported']} nuevas, {$summary['updated']} actualizadas.",
         ]);
+    }
+
+    public function store(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'numero_cuenta'    => ['required', 'string', 'max:50'],
+            'nombre'           => ['required', 'string', 'max:200'],
+            'codigo_agrupador' => ['required', 'string', 'max:20'],
+            'naturaleza'       => ['required', 'in:D,A'],
+            'nivel'            => ['required', 'integer', 'min:1', 'max:6'],
+            'es_afectable'     => ['boolean'],
+            'parent_id'        => ['nullable', 'integer', 'exists:accounts,id'],
+        ]);
+        $client = $this->context->client();
+        $data['client_id'] = $client->id;      // GlobalCatalogController sets null instead
+        $data['activo'] = true;
+        $account = Account::create($data);
+        return response()->json(['ok' => true, 'message' => 'Cuenta creada.', 'id' => $account->id]);
     }
 }

@@ -27,7 +27,7 @@ class InvoiceClassificationController extends Controller
     /** Data for the modal: the invoice's current accounts + the candidate list. */
     public function edit(Invoice $invoice): JsonResponse
     {
-        $invoice->load(['cuentaContable', 'cuentaAbono']);
+        $invoice->load(['cuentaContable', 'cuentaAbono', 'lines:id,invoice_id,descripcion,importe,descuento']);
 
         // Candidate abono accounts, same rule the AI classifier uses: revenue for
         // income invoices (4xx), cost/expense for expenses (5xx/6xx). Only
@@ -45,6 +45,41 @@ class InvoiceClassificationController extends Controller
             ->orderBy('numero_cuenta')
             ->get(['id', 'numero_cuenta', 'nombre']);
 
+        // The classify modal can also generate the asientos (provisión + cobro) as
+        // a shortcut, but only for income invoices (emitida, tipo I) — the same
+        // scope ProvisionCobroService supports. For those, feed the extra state the
+        // in-modal asiento UI needs: existing pólizas, revenue accounts, statement
+        // availability, and the invoice lines for per-concepto pickers.
+        $isIncome = $invoice->tipo === 'emitida' && $invoice->tipo_comprobante === 'I';
+
+        $asiento = null;
+        if ($isIncome) {
+            $provision = \App\Models\Poliza::where('invoice_id', $invoice->id)->where('tipo', 'provision')->exists();
+            $cobro     = \App\Models\Poliza::where('invoice_id', $invoice->id)->where('tipo', 'cobro')->exists();
+
+            $revenueAccounts = Account::forClient($invoice->client_id)
+                ->where('es_afectable', true)->where('activo', true)
+                ->where('codigo_agrupador', 'like', '4%')
+                ->orderBy('numero_cuenta')
+                ->get(['id', 'numero_cuenta', 'nombre']);
+
+            $hasStatement = \App\Models\BankStatement::where('period_id', $invoice->period_id)->exists();
+
+            $asiento = [
+                'eligible'          => true,
+                'has_provision'     => $provision,
+                'has_cobro'         => $cobro,
+                'has_uuid'          => (bool) $invoice->uuid,
+                'has_statement'     => $hasStatement,
+                'revenue_accounts'  => $revenueAccounts,
+                'lines'             => $invoice->lines->map(fn($l, $i) => [
+                    'index'       => $i,
+                    'descripcion' => $l->descripcion,
+                    'importe'     => (float) $l->importe,
+                ])->values(),
+            ];
+        }
+
         return response()->json([
             'invoice' => [
                 'id'          => $invoice->id,
@@ -61,6 +96,7 @@ class InvoiceClassificationController extends Controller
                 : null,
             'cuenta_abono_id' => $invoice->cuenta_abono_id,
             'candidates'      => $candidates,
+            'asiento'         => $asiento,
         ]);
     }
 

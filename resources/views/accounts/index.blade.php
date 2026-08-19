@@ -7,9 +7,24 @@
         <h1>Catálogo de cuentas</h1>
         <div class="subtitle">{{ $client->display_name }}</div>
     </div>
-    <button class="btn btn-brand btn-icon" data-import-catalog>
-        <i class="fa-solid fa-file-import"></i> Importar catálogo SAT
-    </button>
+    <div class="d-flex gap-2">
+        {{-- Column selector --}}
+        <div class="dropdown" style="position:relative;">
+            <button class="btn btn-soft btn-icon" id="cols-btn" type="button" style="font-size:12.5px;">
+                <i class="fa-solid fa-table-columns"></i> Columnas
+            </button>
+            <div class="cols-menu" id="cols-menu" style="display:none;">
+                @foreach(['codigo_agrupador'=>'Agrupador','nivel'=>'Nivel','naturaleza'=>'Naturaleza','tipo'=>'Tipo','rfc'=>'RFC asociado'] as $col => $label)
+                    <label class="cols-item">
+                        <input type="checkbox" class="col-toggle" data-col="{{ $col }}" checked> {{ $label }}
+                    </label>
+                @endforeach
+            </div>
+        </div>
+        <button class="btn btn-brand btn-icon" data-create-account type="button">
+            <i class="fa-solid fa-plus"></i> Crear cuenta
+        </button>
+    </div>
 </div>
 
 <div class="row g-3 mb-4" data-reveal>
@@ -33,34 +48,37 @@
     </div>
 </div>
 
-@if($counts['total'] === 0)
+@if($accounts->isEmpty() && ! request()->has('q'))
     <div class="card-clean" data-reveal>
         <div class="empty-state">
             <i class="fa-solid fa-sitemap"></i>
-            <h3>Sin catálogo</h3>
-            <p>Importa el catálogo de código agrupador del SAT para este cliente.<br>
-               Acepta el archivo xlsx o csv tal como lo descargas del SAT.</p>
-            <button class="btn btn-brand btn-icon mt-2" data-import-catalog>
-                <i class="fa-solid fa-file-import"></i> Importar catálogo SAT
+            <h3>Sin cuentas del cliente</h3>
+            <p>Este cliente aún no tiene cuentas propias.<br>
+               El catálogo global está disponible — activa "Mostrar catálogo global" para verlo,
+               o crea una cuenta específica del cliente.</p>
+            <button class="btn btn-brand btn-icon mt-2" data-create-account type="button">
+                <i class="fa-solid fa-plus"></i> Crear cuenta
             </button>
         </div>
     </div>
 @else
     <div class="card-clean" data-reveal>
         <div class="card-clean__head" style="gap:1rem; flex-wrap:wrap;">
-            <form method="get" class="d-flex gap-2" style="flex:1; min-width:220px;">
-                <input type="search" name="q" value="{{ $q }}" class="form-control"
-                       placeholder="Buscar por número, nombre o agrupador…" style="max-width:340px;">
+            <form method="get" class="d-flex gap-2 align-items-center" style="flex:1; min-width:220px; flex-wrap:wrap;">
+                <input type="search" name="q" value="{{ $q ?? '' }}" class="form-control"
+                       placeholder="Buscar por número, nombre o agrupador…" style="max-width:320px;">
                 <label class="d-flex align-items-center gap-2" style="font-size:13px; white-space:nowrap;">
                     <input type="checkbox" name="solo_afectables" value="1"
                            {{ request()->boolean('solo_afectables') ? 'checked' : '' }}
                            onchange="this.form.submit()">
                     Solo afectables
                 </label>
+                {{-- Default: only the client's own accounts. Opt IN to also see the
+                     global catalog. Absence of the param = client-only (default). --}}
                 <label class="d-flex align-items-center gap-2" style="font-size:13px; white-space:nowrap;">
                     <input type="checkbox" name="todas" value="1"
-                        {{ request()->has('todas') ? 'checked' : '' }}
-                        onchange="this.form.submit()">
+                           {{ request()->has('todas') ? 'checked' : '' }}
+                           onchange="this.form.submit()">
                     Mostrar catálogo global
                 </label>
             </form>
@@ -69,93 +87,85 @@
             <table class="table-clean">
                 <thead>
                     <tr>
-                        <th>Número</th><th>Agrupador</th><th>Nombre</th>
-                        <th class="text-center">Nivel</th><th class="text-center">Naturaleza</th>
-                        <th class="text-center">Tipo</th>
+                        <th>Número</th>
+                        <th class="col-codigo_agrupador">Agrupador</th>
+                        <th>Nombre</th>
+                        <th class="col-nivel text-center">Nivel</th>
+                        <th class="col-naturaleza text-center">Naturaleza</th>
+                        <th class="col-tipo text-center">Tipo</th>
+                        <th class="col-rfc">RFC asociado</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($accounts as $account)
                         <tr>
-                            <td class="data" style="font-weight:550;">{{ $account->numero_cuenta }}</td>
-                            <td class="data text-muted">{{ $account->codigo_agrupador }}</td>
-                            <td>
-                                {{ $account->nombre }}
-                                @if($account->rfc_asociado)
-                                    <span class="data text-muted" style="font-size:11px;">· {{ $account->rfc_asociado }}</span>
+                            <td class="data" style="font-weight:550;">
+                                {{ $account->numero_cuenta }}
+                                @if($account->client_id === null)
+                                    <span class="badge-status s-secondary" style="font-size:9.5px; margin-left:.35rem;" title="Cuenta global">G</span>
                                 @endif
                             </td>
-                            <td class="text-center data">{{ $account->nivel }}</td>
-                            <td class="text-center">
+                            <td class="col-codigo_agrupador data text-muted">{{ $account->codigo_agrupador }}</td>
+                            <td>{{ $account->nombre }}</td>
+                            <td class="col-nivel text-center data">{{ $account->nivel }}</td>
+                            <td class="col-naturaleza text-center">
                                 <span class="badge-status s-{{ $account->naturaleza === 'D' ? 'info' : 'secondary' }}" style="font-size:11px;">
                                     {{ $account->naturaleza === 'D' ? 'Deudora' : 'Acreedora' }}
                                 </span>
                             </td>
-                            <td class="text-center">
-                                @if($account->auto_generada)
-                                    <span class="badge-status s-warning" style="font-size:11px;"><i class="fa-solid fa-robot"></i> Auto</span>
-                                @elseif($account->es_afectable)
+                            <td class="col-tipo text-center">
+                                @if($account->es_afectable)
                                     <span class="badge-status s-success" style="font-size:11px;">Afectable</span>
                                 @else
                                     <span class="badge-status s-secondary" style="font-size:11px;">Agrupador</span>
                                 @endif
                             </td>
+                            <td class="col-rfc data text-muted" style="font-size:11.5px;">{{ $account->rfc_asociado ?: '—' }}</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
         </div>
-</div>
+    </div>
 
     <div class="mt-3">{{ $accounts->links() }}</div>
 @endif
 
-{{-- Import modal --}}
-<div class="modal fade" id="import-modal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius:var(--radius-lg); border-color:var(--border); background:var(--surface);">
-            <div class="modal-body p-4">
-                <h5 class="mb-1" style="font-weight:600;">Importar catálogo SAT</h5>
-                <p class="text-muted mb-3" style="font-size:13px;">
-                    Sube el archivo de código agrupador del SAT (xlsx o csv) con las columnas
-                    <span class="data">Nivel · Código agrupador · Nombre</span>.
-                </p>
-                <div class="mb-3">
-                    <input type="file" id="catalog-file" class="form-control" accept=".xlsx,.xls,.csv">
-                </div>
-                <div class="form-hint">
-                    <i class="fa-solid fa-circle-info"></i>
-                    Las cuentas existentes se actualizan; las subcuentas auto-generadas por RFC no se tocan.
-                </div>
-                <div class="d-flex justify-content-end gap-2 mt-4">
-                    <button class="btn btn-soft" data-bs-dismiss="modal">Cancelar</button>
-                    <button class="btn btn-brand btn-icon" id="catalog-submit"><i class="fa-solid fa-check"></i> Importar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+@php $storeRoute = route('accounts.store'); @endphp
+@include('partials.create_account_modal', ['storeRoute' => $storeRoute, 'parentOptions' => $parentOptions ?? []])
 @endsection
 
 @push('scripts')
 <script>
 (function () {
-    document.querySelectorAll('[data-import-catalog]').forEach(b =>
-        b.addEventListener('click', () => App.modal.show('import-modal')));
+    // ---- Column selector (server-persisted) ----
+    const PREF_KEY = 'accounts_columns';
+    const hidden = @json($hiddenColumns ?? []);
 
-    const btn = document.getElementById('catalog-submit');
-    btn?.addEventListener('click', async () => {
-        const file = document.getElementById('catalog-file').files[0];
-        if (!file) { App.toast.warning('Selecciona un archivo.'); return; }
-        const fd = new FormData();
-        fd.append('archivo', file);
-        await App.loading.button(btn, async () => {
+    hidden.forEach(col => {
+        document.querySelectorAll('.col-' + col).forEach(el => el.style.display = 'none');
+        const cb = document.querySelector(`.col-toggle[data-col="${col}"]`);
+        if (cb) cb.checked = false;
+    });
+
+    const colsBtn = document.getElementById('cols-btn');
+    const colsMenu = document.getElementById('cols-menu');
+    colsBtn?.addEventListener('click', () => {
+        colsMenu.style.display = colsMenu.style.display === 'none' ? 'block' : 'none';
+    });
+    document.addEventListener('click', (e) => {
+        if (colsBtn && !colsBtn.contains(e.target) && !colsMenu.contains(e.target)) colsMenu.style.display = 'none';
+    });
+
+    document.querySelectorAll('.col-toggle').forEach(cb => {
+        cb.addEventListener('change', async () => {
+            const col = cb.dataset.col;
+            document.querySelectorAll('.col-' + col).forEach(el => el.style.display = cb.checked ? '' : 'none');
+            const nowHidden = Array.from(document.querySelectorAll('.col-toggle'))
+                .filter(c => !c.checked).map(c => c.dataset.col);
             try {
-                const res = await App.http.post('{{ route('accounts.import') }}', fd);
-                App.toast.success(res.message);
-                App.modal.hide('import-modal');
-                setTimeout(() => window.location.reload(), 1200);
-            } catch (e) { App.toast.error(e.message); }
+                await App.http.post('{{ route('preferences.update') }}', { key: PREF_KEY, value: nowHidden });
+            } catch (e) { /* non-fatal */ }
         });
     });
 })();

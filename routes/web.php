@@ -15,6 +15,8 @@ use App\Http\Controllers\InvoiceViewController;
 use App\Http\Controllers\InvoiceClassificationController;
 use App\Http\Controllers\GlobalCatalogController;
 use App\Http\Controllers\PolizaController;
+use App\Http\Controllers\PreferenceController;
+use App\Http\Controllers\ContextController;
 use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
@@ -108,4 +110,14 @@ Route::middleware('firebase')->group(function () {
 
     Route::get('/catalogo-global', [GlobalCatalogController::class, 'index'])->name('catalog.index');
     Route::post('/catalogo-global/import', [GlobalCatalogController::class, 'import'])->name('catalog.import');
+
+    Route::post('/preferences', [PreferenceController::class, 'update'])->name('preferences.update');
+
+    Route::get('/context/clients', [ContextController::class, 'clients'])->name('context.clients');
+    Route::get('/context/periods/{client}', [ContextController::class, 'periods'])->name('context.periods');
+    Route::post('/context/switch', [ContextController::class, 'switch'])->name('context.switch');
+    Route::post('/context/switch-period', [ContextController::class, 'switchPeriod'])->name('context.switch_period');
+
+    Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.store');
+    Route::post('/catalogo-global/accounts', [GlobalCatalogController::class, 'store'])->name('catalog.store');
 });

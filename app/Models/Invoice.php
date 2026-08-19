@@ -40,6 +40,9 @@ class Invoice extends Model
         'cuenta_contable_id',
         'cuenta_abono_id',
         'clasificacion',
+        'iva_trasladado',
+        'iva_retenido',
+        'isr_retenido'
     ];
 
     protected function casts(): array
@@ -52,6 +55,9 @@ class Invoice extends Model
             'fecha_emision'  => 'datetime',
             'fecha_timbrado' => 'datetime',
             'cancelado'      => 'boolean',
+            'iva_trasladado'       => 'decimal:2',
+            'iva_retenido'       => 'decimal:2',
+            'isr_retenido'       => 'decimal:2',
         ];
     }
 
@@ -77,5 +83,19 @@ class Invoice extends Model
     public function cuentaAbono(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Account::class, 'cuenta_abono_id');
+    }
+
+    /**
+     * All line descriptions concatenated with " | ", for the concepts column in
+     * the ingreso/gasto lists. Reads from the loaded `lines` relation, so callers
+     * should eager-load it to avoid N+1.
+     */
+    public function getConceptosResumenAttribute(): string
+    {
+        return $this->lines
+            ->pluck('descripcion')
+            ->filter()
+            ->map(fn($d) => trim($d))
+            ->implode(' | ');
     }
 }

@@ -85,6 +85,9 @@
                     <th>{{ $view === 'ingreso' || $view === 'pago_emitido' ? 'RFC Receptor' : 'RFC Emisor' }}</th>
                     <th>{{ $view === 'ingreso' || $view === 'pago_emitido' ? 'Nombre Receptor' : 'Nombre Emisor' }}</th>
                     <th>Cuenta contable</th>
+                    @unless($isPago || $isNomina)
+                    <th>Conceptos</th>
+                    @endunless
                     @unless($isPago)
                     <th class="text-end">Subtotal</th>
                     <th class="text-end">IVA</th>
@@ -122,6 +125,11 @@
                         <span class="text-muted">—</span>
                         @endif
                     </td>
+                    @unless($isPago || $isNomina)
+                    @php $conceptos = $inv->conceptos_resumen; @endphp
+                    <td style="font-size:12px; max-width:240px;" class="text-truncate text-muted"
+                        title="{{ $conceptos }}">{{ \Illuminate\Support\Str::limit($conceptos, 50) ?: '—' }}</td>
+                    @endunless
                     @unless($isPago)
                     <td class="text-end data">{{ number_format($inv->subtotal, 2) }}</td>
                     <td class="text-end data">{{ number_format($inv->iva_trasladado, 2) }}</td>

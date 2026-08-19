@@ -588,12 +588,12 @@ nav[role="navigation"] p {
 /* Choices.js — bridge to our tokens */
 .choices { margin-bottom: 0; }
 .choices__inner {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    min-height: 38px;
-    font-size: 13px;
-    color: var(--text);
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-sm) !important;
+    min-height: 38px !important;
+    font-size: 13px !important;
+    color: var(--text) !important;
 }
 .choices.is-focused .choices__inner { border-color: var(--brand-500); }
 .choices__list--dropdown,
@@ -602,12 +602,48 @@ nav[role="navigation"] p {
     border-color: var(--border);
     border-radius: var(--radius-sm);
 }
-.choices__list--dropdown .choices__item--selectable.is-highlighted {
+/* Dropdown, when it opens upward, shares the same surface as the down variant. */
+.choices__list--dropdown.is-flipped,
+.choices__list[aria-expanded].is-flipped {
+    background: var(--surface);
+    border-color: var(--border);
+}
+.choices__list--dropdown .choices__item,
+.choices__list[aria-expanded] .choices__item {
+    color: var(--text);
+}
+.choices__list--dropdown .choices__item--selectable.is-highlighted,
+.choices__list[aria-expanded] .choices__item--selectable.is-highlighted {
     background: var(--brand-050);
     color: var(--brand-600);
 }
-.choices__input { background: var(--surface); color: var(--text); }
-[data-theme="dark"] .choices__list--dropdown { box-shadow: var(--shadow-lg); }
+/* The chosen value shown in the closed control. */
+.choices__list--single .choices__item { color: var(--text); }
+.choices__placeholder { color: var(--text-muted); opacity: 1; }
+/* Both the control's own input and the in-dropdown search box. */
+.choices__input,
+.choices__input--cloned { background: var(--surface); color: var(--text); }
+.choices[data-type*="select-one"] .choices__input { background: var(--surface-2); }
+.choices__list--dropdown .choices__item--selectable.is-disabled {
+    color: var(--text-muted); opacity: .55;
+}
+.choices.is-disabled .choices__inner { background: var(--surface-2); opacity: .7; }
+
+[data-theme="dark"] .choices__list--dropdown,
+[data-theme="dark"] .choices__list[aria-expanded] {
+    background: var(--surface);
+    border-color: var(--border);
+    box-shadow: var(--shadow-lg);
+}
+[data-theme="dark"] .choices__list--single .choices__item,
+[data-theme="dark"] .choices__list--dropdown .choices__item { color: var(--text); }
+[data-theme="dark"] .choices__input,
+[data-theme="dark"] .choices__input--cloned { background: var(--surface); color: var(--text); }
+[data-theme="dark"] .choices[data-type*="select-one"] .choices__input { background: var(--surface-2); }
+[data-theme="dark"] .choices__list--dropdown .choices__item--selectable.is-highlighted {
+    background: var(--surface-2);
+    color: var(--brand-500);
+}
 
 /* ---- Invoice detail ------------------------------------------------------ */
 .detail-grid {
@@ -640,3 +676,17 @@ nav[role="navigation"] p {
 @media (max-width: 560px) {
     .detail-grid { grid-template-columns: 1fr; gap: .85rem; }
 }
+
+.topbar-switcher { display: flex; gap: .5rem; align-items: center; flex: 1 1 auto; min-width: 0; }
+.switcher-field { display: flex; align-items: center; gap: .4rem; min-width: 0; }
+.switcher-field > i { color: var(--text-muted); font-size: 12px; }
+.switcher-field .choices { margin: 0; min-width: 160px; }
+
+.cols-menu {
+    position: absolute; right: 0; top: calc(100% + 4px); z-index: 20;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); box-shadow: var(--shadow-lg);
+    padding: .5rem; min-width: 180px;
+}
+.cols-item { display: flex; align-items: center; gap: .5rem; padding: .35rem .5rem; font-size: 13px; cursor: pointer; border-radius: 6px; }
+.cols-item:hover { background: var(--surface-2); }

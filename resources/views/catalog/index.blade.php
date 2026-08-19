@@ -7,9 +7,27 @@
         <h1>Catálogo global</h1>
         <div class="subtitle">Código agrupador SAT · compartido por todos los clientes</div>
     </div>
-    <button class="btn btn-brand btn-icon" data-import-catalog>
-        <i class="fa-solid fa-file-import"></i> Importar catálogo SAT
-    </button>
+    <div class="d-flex gap-2">
+        {{-- Column selector --}}
+        <div class="dropdown" style="position:relative;">
+            <button class="btn btn-soft btn-icon" id="cols-btn" type="button" style="font-size:12.5px;">
+                <i class="fa-solid fa-table-columns"></i> Columnas
+            </button>
+            <div class="cols-menu" id="cols-menu" style="display:none;">
+                @foreach(['codigo_agrupador'=>'Agrupador','nivel'=>'Nivel','naturaleza'=>'Naturaleza','tipo'=>'Tipo'] as $col => $label)
+                    <label class="cols-item">
+                        <input type="checkbox" class="col-toggle" data-col="{{ $col }}" checked> {{ $label }}
+                    </label>
+                @endforeach
+            </div>
+        </div>
+        <button class="btn btn-soft btn-icon" data-create-account type="button">
+            <i class="fa-solid fa-plus"></i> Crear cuenta
+        </button>
+        <button class="btn btn-brand btn-icon" data-import-catalog type="button">
+            <i class="fa-solid fa-file-import"></i> Importar catálogo SAT
+        </button>
+    </div>
 </div>
 
 <div class="card-clean mb-4" data-reveal style="border-left:3px solid var(--brand-500);">
@@ -43,11 +61,11 @@
 @if($counts['total'] === 0)
     <div class="card-clean" data-reveal>
         <div class="empty-state">
-            <i class="fa-solid fa-layer-group"></i>
-            <h3>Catálogo vacío</h3>
+            <i class="fa-solid fa-sitemap"></i>
+            <h3>Sin catálogo</h3>
             <p>Importa el catálogo de código agrupador del SAT.<br>
                Se comparte con todos los clientes; solo hay que hacerlo una vez.</p>
-            <button class="btn btn-brand btn-icon mt-2" data-import-catalog>
+            <button class="btn btn-brand btn-icon mt-2" data-import-catalog type="button">
                 <i class="fa-solid fa-file-import"></i> Importar catálogo SAT
             </button>
         </div>
@@ -70,24 +88,27 @@
             <table class="table-clean">
                 <thead>
                     <tr>
-                        <th>Número</th><th>Agrupador</th><th>Nombre</th>
-                        <th class="text-center">Nivel</th><th class="text-center">Naturaleza</th>
-                        <th class="text-center">Tipo</th>
+                        <th>Número</th>
+                        <th class="col-codigo_agrupador">Agrupador</th>
+                        <th>Nombre</th>
+                        <th class="col-nivel text-center">Nivel</th>
+                        <th class="col-naturaleza text-center">Naturaleza</th>
+                        <th class="col-tipo text-center">Tipo</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($accounts as $account)
                         <tr>
                             <td class="data" style="font-weight:550;">{{ $account->numero_cuenta }}</td>
-                            <td class="data text-muted">{{ $account->codigo_agrupador }}</td>
+                            <td class="col-codigo_agrupador data text-muted">{{ $account->codigo_agrupador }}</td>
                             <td>{{ $account->nombre }}</td>
-                            <td class="text-center data">{{ $account->nivel }}</td>
-                            <td class="text-center">
+                            <td class="col-nivel text-center data">{{ $account->nivel }}</td>
+                            <td class="col-naturaleza text-center">
                                 <span class="badge-status s-{{ $account->naturaleza === 'D' ? 'info' : 'secondary' }}" style="font-size:11px;">
                                     {{ $account->naturaleza === 'D' ? 'Deudora' : 'Acreedora' }}
                                 </span>
                             </td>
-                            <td class="text-center">
+                            <td class="col-tipo text-center">
                                 @if($account->es_afectable)
                                     <span class="badge-status s-success" style="font-size:11px;">Afectable</span>
                                 @else
@@ -129,11 +150,15 @@
         </div>
     </div>
 </div>
+
+@php $storeRoute = route('catalog.store'); @endphp
+@include('partials.create_account_modal', ['storeRoute' => $storeRoute, 'parentOptions' => $parentOptions ?? []])
 @endsection
 
 @push('scripts')
 <script>
 (function () {
+    // ---- Import ----
     document.querySelectorAll('[data-import-catalog]').forEach(b =>
         b.addEventListener('click', () => App.modal.show('import-modal')));
 
@@ -150,6 +175,37 @@
                 App.modal.hide('import-modal');
                 setTimeout(() => window.location.reload(), 1200);
             } catch (e) { App.toast.error(e.message); }
+        });
+    });
+
+    // ---- Column selector (server-persisted) ----
+    const PREF_KEY = 'global_accounts_columns';
+    const hidden = @json($hiddenColumns ?? []);
+
+    hidden.forEach(col => {
+        document.querySelectorAll('.col-' + col).forEach(el => el.style.display = 'none');
+        const cb = document.querySelector(`.col-toggle[data-col="${col}"]`);
+        if (cb) cb.checked = false;
+    });
+
+    const colsBtn = document.getElementById('cols-btn');
+    const colsMenu = document.getElementById('cols-menu');
+    colsBtn?.addEventListener('click', () => {
+        colsMenu.style.display = colsMenu.style.display === 'none' ? 'block' : 'none';
+    });
+    document.addEventListener('click', (e) => {
+        if (colsBtn && !colsBtn.contains(e.target) && !colsMenu.contains(e.target)) colsMenu.style.display = 'none';
+    });
+
+    document.querySelectorAll('.col-toggle').forEach(cb => {
+        cb.addEventListener('change', async () => {
+            const col = cb.dataset.col;
+            document.querySelectorAll('.col-' + col).forEach(el => el.style.display = cb.checked ? '' : 'none');
+            const nowHidden = Array.from(document.querySelectorAll('.col-toggle'))
+                .filter(c => !c.checked).map(c => c.dataset.col);
+            try {
+                await App.http.post('{{ route('preferences.update') }}', { key: PREF_KEY, value: nowHidden });
+            } catch (e) { /* non-fatal */ }
         });
     });
 })();

@@ -19,6 +19,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'preferences'
     ];
 
     protected $hidden = [
@@ -31,6 +32,22 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'preferences' => 'array',
         ];
+    }
+
+    /** Get a preference by key with a default. */
+    public function pref(string $key, mixed $default = null): mixed
+    {
+        return data_get($this->preferences, $key, $default);
+    }
+
+    /** Set a preference and persist. */
+    public function setPref(string $key, mixed $value): void
+    {
+        $prefs = $this->preferences ?? [];
+        data_set($prefs, $key, $value);
+        $this->preferences = $prefs;
+        $this->save();
     }
 }

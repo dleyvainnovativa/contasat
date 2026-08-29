@@ -39,7 +39,7 @@
 
     /* Semantic (badges, states) — tuned for AA on their soft backgrounds */
     --ok:      #067647;  --ok-bg:      #ecfdf3;
-    --warn:    #b54708;  --warn-bg:    #fffaeb;
+    --warn:    #f27b37;  --warn-bg:    #fffaeb;
     --danger:  #b42318;  --danger-bg:  #fef3f2;
     --info:    #175cd3;  --info-bg:    #eff8ff;
     --neutral: #475467;  --neutral-bg: #f2f4f7;

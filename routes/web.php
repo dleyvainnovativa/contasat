@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\ReconciliationController;
+use App\Http\Controllers\ActivityCalendarController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SatController;
 use App\Http\Controllers\StatementController;
@@ -84,6 +85,11 @@ Route::middleware('firebase')->group(function () {
     Route::post('/reconciliation/link', [ReconciliationController::class, 'link'])->name('reconciliation.link');
     Route::post('/reconciliation/movements/{movement}/account', [ReconciliationController::class, 'assignAccount'])->name('reconciliation.account');
     Route::get('/reconciliation/questions', [ReconciliationController::class, 'questions'])->name('reconciliation.questions');
+
+    // Calendario de actividades — per-client, per-period semáforo board
+    Route::get('/calendario', [ActivityCalendarController::class, 'index'])->name('calendario.index');
+    Route::put('/calendario/{activityKey}/status', [ActivityCalendarController::class, 'updateStatus'])->name('calendario.status');
+    Route::put('/calendario/{activityKey}/toggle', [ActivityCalendarController::class, 'toggleEnabled'])->name('calendario.toggle');
 
     // Reports (Phase 4)
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

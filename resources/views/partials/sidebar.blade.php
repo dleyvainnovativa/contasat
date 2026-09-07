@@ -78,6 +78,10 @@
                     class="nav-sublink {{ request()->routeIs('invoices.view') && request()->route('view') === 'ingreso' ? 'active' : '' }}">
                     Provisión de ingreso
                 </a>
+                <a href="{{ route('provision-ingresos.index') }}"
+                    class="nav-sublink {{ request()->routeIs('provision-ingresos.*') ? 'active' : '' }}">
+                    Provisión de ingresos (detalle)
+                </a>
                 <a href="{{ route('invoices.view', 'gasto') }}"
                     class="nav-sublink {{ request()->routeIs('invoices.view') && request()->route('view') === 'gasto' ? 'active' : '' }}">
                     Provisión de gastos

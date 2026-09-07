@@ -28,6 +28,13 @@
         <input type="text" name="codigo_postal" class="form-control data" value="{{ old('codigo_postal', $client->codigo_postal) }}" maxlength="5">
     </div>
     <div class="col-md-4">
+        <label class="form-label">Inicio de operaciones</label>
+        <input type="month" name="inicio_operaciones" class="form-control data"
+            max="{{ now()->format('Y-m') }}"
+            value="{{ old('inicio_operaciones', $client->inicio_operaciones?->format('Y-m')) }}">
+        <div class="form-hint">Mes y año en que el cliente inició operaciones. No puede ser un periodo futuro.</div>
+    </div>
+    <div class="col-md-4">
         <label class="form-label">Email</label>
         <input type="email" name="email" class="form-control" value="{{ old('email', $client->email) }}">
     </div>
@@ -35,6 +42,8 @@
         <label class="form-label">Teléfono</label>
         <input type="text" name="telefono" class="form-control" value="{{ old('telefono', $client->telefono) }}">
     </div>
+
+    <div class="col-md-4"></div>
 
     <div class="col-12">
         <label class="form-label">Notas</label>

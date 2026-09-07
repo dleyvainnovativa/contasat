@@ -216,7 +216,10 @@ class SatDownloadService
         try {
             $summary = $this->ingest->ingestFile($staged, $request->client, $period);
 
-            return ['imported' => $summary['imported'], 'skipped' => $summary['skipped']];
+            return [
+                'imported' => $summary['imported'],
+                'skipped'  => $summary['skipped'] + ($summary['omitidas'] ?? 0),
+            ];
         } catch (Throwable) {
             return ['imported' => 0, 'skipped' => 0];
         } finally {

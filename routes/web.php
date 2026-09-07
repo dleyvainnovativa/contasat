@@ -126,4 +126,6 @@ Route::middleware('firebase')->group(function () {
 
     Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.store');
     Route::post('/catalogo-global/accounts', [GlobalCatalogController::class, 'store'])->name('catalog.store');
+    Route::get('/provision-ingresos', [\App\Http\Controllers\ProvisionIngresosController::class, 'index'])
+        ->name('provision-ingresos.index');
 });

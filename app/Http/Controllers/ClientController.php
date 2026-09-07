@@ -102,6 +102,12 @@ class ClientController extends Controller
     /** Shared validation for store + update. */
     private function validated(Request $request, ?Client $client = null): array
     {
+        // The form's <input type="month"> submits "YYYY-MM"; store it as the first
+        // day of that month so it validates and casts as a date.
+        if ($request->filled('inicio_operaciones') && preg_match('/^\d{4}-\d{2}$/', $request->input('inicio_operaciones'))) {
+            $request->merge(['inicio_operaciones' => $request->input('inicio_operaciones') . '-01']);
+        }
+
         return $request->validate([
             'rfc' => [
                 'required',
@@ -113,6 +119,10 @@ class ClientController extends Controller
             'nombre_comercial' => ['nullable', 'string', 'max:255'],
             'regimen_fiscal'   => ['required', Rule::in(['fisica', 'moral'])],
             'codigo_postal'    => ['nullable', 'string', 'size:5'],
+            // Inicio de operaciones: month/year the client began. Must be the
+            // current month or earlier — never a future period. The form submits
+            // the first day of the month; we validate it's not after today.
+            'inicio_operaciones' => ['nullable', 'date', 'before_or_equal:today'],
             'email'            => ['nullable', 'email', 'max:255'],
             'telefono'         => ['nullable', 'string', 'max:30'],
             'activo'           => ['sometimes', 'boolean'],

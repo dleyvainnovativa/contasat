@@ -79,6 +79,7 @@
         <table class="table-clean table-wide">
             <thead>
                 <tr>
+                    <th style="width:1%;">Acciones</th>
                     <th>Fecha</th>
                     <th>Folio</th>
                     <th>UUID</th>
@@ -111,6 +112,22 @@
                 $name = $isEmitida ? $inv->receptor_nombre : $inv->emisor_nombre;
                 @endphp
                 <tr>
+                    <td style="white-space:nowrap;">
+                        @unless($isPago || $isNomina)
+                        <div class="d-flex align-items-center gap-1">
+                            <button class="btn btn-soft" style="padding:.2rem .45rem; font-size:11px;"
+                                data-classify="{{ $inv->id }}" title="Clasificar / confirmar">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <a href="{{ route('invoices.show', $inv) }}" class="btn btn-soft"
+                                style="padding:.2rem .45rem; font-size:11px;" title="Ver factura">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </div>
+                        @else
+                        <span class="text-muted">—</span>
+                        @endunless
+                    </td>
                     <td class="data" style="white-space:nowrap;">{{ $inv->fecha_emision?->format('d/m/Y') }}</td>
                     <td class="data">{{ $inv->serie }}{{ $inv->folio }}</td>
                     <td class="data text-muted" style="font-size:11px;" title="{{ $inv->uuid }}">
@@ -152,16 +169,6 @@
                         @endphp
                         <div class="d-flex align-items-center gap-2">
                             <span class="badge-status {{ $cls[0] }}" style="font-size:11px;">{{ $cls[1] }}</span>
-                            @unless($isPago || $isNomina)
-                            <button class="btn btn-soft" style="padding:.2rem .45rem; font-size:11px;"
-                                data-classify="{{ $inv->id }}" title="Clasificar / confirmar">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                            <a href="{{ route('invoices.show', $inv) }}" class="btn btn-soft"
-                                style="padding:.2rem .45rem; font-size:11px;" title="Ver factura">
-                                <i class="fa-solid fa-eye"></i>
-                            </a>
-                            @endunless
                         </div>
                     </td>
                 </tr>

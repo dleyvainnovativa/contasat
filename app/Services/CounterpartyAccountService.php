@@ -92,11 +92,14 @@ class CounterpartyAccountService
                 );
             }
 
-            // $next = Account::clientOwned($client->id)
-            //     ->where('parent_id', $parent->id)
-            //     ->where('auto_generada', true)
-            //     ->count() + 1;
+            // Sequence per client: each client's auto-generated subaccounts start
+            // at .1 under this parent. The count MUST be scoped to the client —
+            // otherwise the numbering continues across clients (client 2's first
+            // supplier becomes .43 because client 1 already used .1–.42). The
+            // (client_id, numero_cuenta) unique key makes the same number safe to
+            // reuse across clients.
             $next = Account::where('parent_id', $parent->id)
+                ->where('client_id', $client->id)
                 ->where('auto_generada', true)
                 ->count() + 1;
 

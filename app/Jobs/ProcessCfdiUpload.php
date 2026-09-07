@@ -49,18 +49,31 @@ class ProcessCfdiUpload implements ShouldQueue
         try {
             $summary = $ingest->ingestFile($absolute, $upload->client, $upload->period);
 
+            // Invoices may now be routed across several periods by their own
+            // date. "Omitidas" (out-of-range) fold into the stored skipped count,
+            // with their reasons appended to the errors list so the UI can show
+            // why. by_period drives per-period follow-up below.
+            $errors = array_merge($summary['errors'], $summary['omitida_reasons']);
+
             $upload->update([
                 'status'       => 'done',
                 'imported'     => $summary['imported'],
-                'skipped'      => $summary['skipped'],
+                'skipped'      => $summary['skipped'] + $summary['omitidas'],
                 'failed'       => $summary['failed'],
-                'errors'       => $summary['errors'],
+                'errors'       => $errors,
                 'processed_at' => now(),
             ]);
 
-            $this->advancePeriod($upload);
-            if ($summary['imported'] > 0) {
-                ClassifyPeriodInvoices::dispatch($upload->period_id);
+            // Advance and classify every period that received invoices, not just
+            // the one that was active at upload time.
+            $periodIds = array_keys($summary['by_period']);
+            if (empty($periodIds) && $summary['imported'] > 0) {
+                $periodIds = [$upload->period_id];   // safety fallback
+            }
+
+            foreach ($periodIds as $periodId) {
+                $this->advancePeriodById($periodId);
+                ClassifyPeriodInvoices::dispatch($periodId);
             }
         } catch (Throwable $e) {
             $upload->update([
@@ -77,14 +90,14 @@ class ProcessCfdiUpload implements ShouldQueue
     }
 
     /**
-     * Move the period forward only if we actually have invoices and it hasn't
-     * already progressed past the "downloaded" stage.
+     * Move a period forward only if it actually has invoices and hasn't already
+     * progressed past the "downloaded" stage.
      */
-    private function advancePeriod(CfdiUpload $upload): void
+    private function advancePeriodById(int $periodId): void
     {
-        $period = $upload->period->fresh();
+        $period = \App\Models\Period::find($periodId);
 
-        if ($period->invoice_count > 0 && $period->status->step() < PeriodStatus::Downloaded->step()) {
+        if ($period && $period->invoice_count > 0 && $period->status->step() < PeriodStatus::Downloaded->step()) {
             $period->update(['status' => PeriodStatus::Downloaded]);
         }
     }

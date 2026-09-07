@@ -57,7 +57,9 @@ class InvoiceController extends Controller
                 };
             })
             ->orderByDesc('fecha_emision')
-            ->paginate(25)
+            // Per-page selectable up to 200 (default 25). Lets the accountant see
+            // a whole period's invoices on one screen when they want to.
+            ->paginate($this->perPage($request))
             ->withQueryString();
 
         // Totals strip: emitidas (income) vs recibidas (expense) for the period.
@@ -79,7 +81,17 @@ class InvoiceController extends Controller
             'recentUploads' => $recentUploads,
             'tipo'          => $request->string('tipo')->toString(),
             'q'             => $request->string('q')->toString(),
+            'perPage'       => $this->perPage($request),
         ]);
+    }
+
+    /** Rows per page for the invoice list: one of 25/50/100/200, default 25. */
+    private function perPage(Request $request): int
+    {
+        $allowed = [25, 50, 100, 200];
+        $requested = (int) $request->integer('per_page', 25);
+
+        return in_array($requested, $allowed, true) ? $requested : 25;
     }
 
     /**

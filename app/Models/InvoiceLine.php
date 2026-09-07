@@ -9,9 +9,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class InvoiceLine extends Model
 {
     protected $fillable = [
-        'invoice_id', 'clave_prod_serv', 'no_identificacion', 'descripcion',
-        'cantidad', 'clave_unidad', 'valor_unitario', 'importe', 'descuento',
-        'iva_trasladado', 'iva_retenido', 'isr_retenido',
+        'invoice_id',
+        'clave_prod_serv',
+        'no_identificacion',
+        'descripcion',
+        'cantidad',
+        'clave_unidad',
+        'valor_unitario',
+        'importe',
+        'descuento',
+        'iva_trasladado',
+        'iva_retenido',
+        'isr_retenido',
+        'iva_base_tipo',
+        'cuenta_abono_id',
     ];
 
     protected function casts(): array
@@ -30,5 +41,11 @@ class InvoiceLine extends Model
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);
+    }
+
+    /** Per-line abono account override; null = use the invoice-level account. */
+    public function cuentaAbono(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Account::class, 'cuenta_abono_id');
     }
 }

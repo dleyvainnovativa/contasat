@@ -25,13 +25,39 @@ class Client extends Model
         'telefono',
         'activo',
         'notas',
+        'inicio_operaciones',
     ];
 
     protected function casts(): array
     {
         return [
-            'activo' => 'boolean',
+            'activo'             => 'boolean',
+            'inicio_operaciones' => 'date',
         ];
+    }
+
+    /**
+     * Whether a given year+month is a valid period to work for this client:
+     * from inicio_operaciones (if set) through the current month, never future.
+     */
+    public function periodInRange(int $year, int $month): bool
+    {
+        $target = (int) sprintf('%04d%02d', $year, $month);
+
+        $now = now();
+        $ceiling = (int) sprintf('%04d%02d', $now->year, $now->month);
+        if ($target > $ceiling) {
+            return false; // never a future period
+        }
+
+        if ($this->inicio_operaciones) {
+            $floor = (int) $this->inicio_operaciones->format('Ym');
+            if ($target < $floor) {
+                return false; // before the client started operating
+            }
+        }
+
+        return true;
     }
 
     // Normalize RFC to uppercase on set — SAT RFCs are always uppercase.
@@ -89,8 +115,8 @@ class Client extends Model
 
         return $query->where(function (Builder $q) use ($term) {
             $q->where('razon_social', 'like', "%{$term}%")
-              ->orWhere('nombre_comercial', 'like', "%{$term}%")
-              ->orWhere('rfc', 'like', "%{$term}%");
+                ->orWhere('nombre_comercial', 'like', "%{$term}%")
+                ->orWhere('rfc', 'like', "%{$term}%");
         });
     }
 }

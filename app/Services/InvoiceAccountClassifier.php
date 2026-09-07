@@ -31,6 +31,14 @@ class InvoiceAccountClassifier
      */
     public function suggestAbono(Invoice $invoice): array
     {
+        // AI suggestion can be switched off (config/openai.php 'enabled', env
+        // OPENAI_ENABLED=false). When off, we make no suggestion and the invoice
+        // is left for manual classification — import and counterparty minting are
+        // unaffected, since those don't use the AI.
+        if (! config('openai.enabled', true)) {
+            return ['account_id' => null, 'confidence' => 'desactivada'];
+        }
+
         $candidates = $this->candidateAccounts($invoice);
 
         if ($candidates->isEmpty()) {

@@ -75,6 +75,22 @@ class Invoice extends Model
     {
         return $this->hasMany(InvoiceLine::class);
     }
+
+    /** Pólizas generated for this invoice (provisión / cobro), distinguished by tipo. */
+    public function polizas(): HasMany
+    {
+        return $this->hasMany(Poliza::class);
+    }
+
+    /**
+     * Payment-complement links (CEP) that settle this invoice, matched on UUID.
+     * A DoctoRelacionado carries iddocumento = this invoice's UUID.
+     */
+    public function paymentDocuments(): HasMany
+    {
+        return $this->hasMany(PaymentDocument::class, 'iddocumento', 'uuid');
+    }
+
     public function cuentaContable(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Account::class, 'cuenta_contable_id');
@@ -97,5 +113,67 @@ class Invoice extends Model
             ->filter()
             ->map(fn($d) => trim($d))
             ->implode(' | ');
+    }
+
+    /** ESTADO SAT column: Vigente / Cancelado. */
+    public function getEstadoSatAttribute(): string
+    {
+        return $this->cancelado ? 'Cancelado' : 'Vigente';
+    }
+
+    /**
+     * IVA-base breakdown for the 4 columns (16% / 0% / exento / no objeto).
+     * Sums each line's importe into its bucket using invoice_lines.iva_base_tipo.
+     * Until 4b populates that column, buckets are null (rendered as "—").
+     *
+     * @return array{16:?float, 0:?float, exento:?float, no_objeto:?float}
+     */
+    public function getIvaBaseBreakdownAttribute(): array
+    {
+        $buckets = ['16' => null, '0' => null, 'exento' => null, 'no_objeto' => null];
+
+        foreach ($this->lines as $line) {
+            $tipo = $line->iva_base_tipo ?? null;
+            if ($tipo === null || ! array_key_exists($tipo, $buckets)) {
+                continue; // unclassified line (pre-4b) — leave buckets untouched
+            }
+            $buckets[$tipo] = ($buckets[$tipo] ?? 0) + (float) $line->importe;
+        }
+
+        return $buckets;
+    }
+
+    /** The póliza de provisión reference (e.g. "Dr-1"), or null if not generated. */
+    public function getProvisionRefAttribute(): ?string
+    {
+        return $this->polizas->firstWhere('tipo', 'provision')?->num_iden;
+    }
+
+    /** The póliza de ingreso/cobro reference (e.g. "Ig-1"), or null. */
+    public function getIngresoRefAttribute(): ?string
+    {
+        return $this->polizas->firstWhere('tipo', 'cobro')?->num_iden;
+    }
+
+    /**
+     * Payment (CEP) block for the wide table. Aggregates the DoctoRelacionado
+     * links that settle this invoice. Null when no complement is linked (PUE
+     * invoices show blank — we don't synthesize a payment).
+     *
+     * @return array{recibo:bool, fecha:?string, importe:?float}
+     */
+    public function getPagoResumenAttribute(): array
+    {
+        $docs = $this->paymentDocuments;
+
+        if ($docs->isEmpty()) {
+            return ['recibo' => false, 'fecha' => null, 'importe' => null];
+        }
+
+        return [
+            'recibo'  => true,
+            'fecha'   => optional($docs->sortBy('fecha_pago')->last()->fecha_pago)->format('Y-m-d'),
+            'importe' => (float) $docs->sum('imp_pagado'),
+        ];
     }
 }

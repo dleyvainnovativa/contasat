@@ -26,6 +26,18 @@ class PeriodController extends Controller
             'month' => ['required', 'integer', 'min:1', 'max:12'],
         ]);
 
+        // Never open a future period, nor one before the client's inicio de
+        // operaciones. Keeps the workable set bounded and consistent with how
+        // uploaded CFDIs are routed by date.
+        if (! $client->periodInRange((int) $data['year'], (int) $data['month'])) {
+            return redirect()
+                ->route('clients.show', $client)
+                ->with('toast', [
+                    'type'    => 'warning',
+                    'message' => 'Ese periodo está fuera del rango de operaciones del cliente.',
+                ]);
+        }
+
         $period = Period::firstOrCreate(
             ['client_id' => $client->id, 'year' => $data['year'], 'month' => $data['month']],
         );

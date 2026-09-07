@@ -1,12 +1,12 @@
-{{-- Per-invoice classification modal. Opened from an edit button on each row in
-     the filtered views. Shows the RFC-derived counterparty account (read-only)
-     and the abono account as an editable dropdown, then confirms via the
-     InvoiceClassificationService::confirm() path.
+{{-- Per-invoice classification modal, opened from the edit button on each row.
 
-     For income invoices (emitida, tipo I) it also embeds the asiento shortcut:
-     generate the póliza de provisión and de cobro without leaving the list.
-     This mirrors invoices/_provision_cobro.blade.php, driven by the same
-     PolizaController endpoints. --}}
+     Flow: the counterparty account (RFC-derived) is shown read-only. A master
+     "cuenta de abono" applies to every line; each concepto line can override with
+     its own account. One Confirmar button at the bottom saves the classification
+     and — for income invoices — generates the póliza de provisión in the same
+     action (respecting per-line accounts). Gasto invoices classify only for now.
+
+     Backed by InvoiceClassificationController@edit / @update. --}}
 <div class="modal fade" id="classify-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content" style="border-radius:var(--radius-lg); border-color:var(--border); background:var(--surface);">
@@ -26,108 +26,28 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Cuenta de abono</label>
+                    <label class="form-label" id="cl-abono-label">Cuenta de abono (todas las líneas)</label>
                     <select id="cl-abono" class="form-select">
                         <option value="">— Selecciona —</option>
                     </select>
                     <div class="form-hint" style="font-size:11.5px;">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> La IA sugiere; tú confirmas.
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        Aplica a todas las líneas. Ajusta una línea abajo si necesita otra cuenta.
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-end gap-2 mt-4">
+                {{-- Per-line overrides. Each concepto inherits the master account
+                     unless given its own. Populated by the script. --}}
+                <div class="mb-2">
+                    <label class="form-label" style="font-size:12.5px;">Cuenta por línea</label>
+                    <div id="cl-lines" style="max-height:38vh; overflow:auto;"></div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4 pt-3" style="border-top:1px solid var(--border);">
                     <button class="btn btn-soft" data-bs-dismiss="modal">Cancelar</button>
                     <button class="btn btn-brand btn-icon" id="cl-submit">
-                        <i class="fa-solid fa-check"></i> Confirmar
+                        <i class="fa-solid fa-check"></i> <span id="cl-submit-label">Confirmar</span>
                     </button>
-                </div>
-
-                {{-- ASIENTOS (income invoices only). Hidden until edit() reports the
-                     invoice is eligible. Populated dynamically by the script below. --}}
-                <div id="cl-asiento" class="mt-4 pt-3" style="display:none; border-top:1px solid var(--border);">
-                    <h6 class="mb-1" style="font-weight:600;">Asientos contables</h6>
-                    <p class="text-muted mb-3" style="font-size:12px;">
-                        Genera la póliza de provisión y, cuando haya pago, la de cobro — sin salir de la lista.
-                    </p>
-
-                    <div class="row g-3">
-                        {{-- PROVISIÓN --}}
-                        <div class="col-lg-6">
-                            <div class="card-clean" style="height:100%;">
-                                <div class="card-clean__head">
-                                    <strong style="font-size:13px;">Provisión</strong>
-                                    <span id="cl-prov-badge" class="badge-status s-success" style="font-size:11px; display:none;">
-                                        <i class="fa-solid fa-check"></i> Generada
-                                    </span>
-                                </div>
-                                <div class="card-clean__body">
-                                    <div id="cl-prov-pending">
-                                        <p class="text-muted" style="font-size:12px;">Cuenta de ingreso por concepto:</p>
-                                        <div id="cl-concept-rows"></div>
-                                        <button class="btn btn-brand btn-icon w-100 justify-content-center mt-2"
-                                            id="cl-gen-provision" style="font-size:12.5px;">
-                                            <i class="fa-solid fa-file-circle-plus"></i> Generar provisión
-                                        </button>
-                                        <div class="form-hint" style="font-size:11px; margin-top:.4rem;">
-                                            Confirma la clasificación antes de generar.
-                                        </div>
-                                    </div>
-                                    <div id="cl-prov-done" class="text-muted" style="font-size:12px; display:none;">
-                                        <i class="fa-solid fa-check" style="color:var(--ok);"></i> Póliza de provisión ya generada.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- COBRO --}}
-                        <div class="col-lg-6">
-                            <div class="card-clean" style="height:100%;">
-                                <div class="card-clean__head">
-                                    <strong style="font-size:13px;">Cobro</strong>
-                                    <span id="cl-cobro-badge" class="badge-status s-success" style="font-size:11px; display:none;">
-                                        <i class="fa-solid fa-check"></i> Generada
-                                    </span>
-                                </div>
-                                <div class="card-clean__body">
-                                    {{-- Locked until provisión exists --}}
-                                    <div id="cl-cobro-locked" class="text-muted" style="font-size:12px; display:none;">
-                                        <i class="fa-solid fa-lock"></i> Genera primero la provisión.
-                                    </div>
-
-                                    {{-- Payment-source picker --}}
-                                    <div id="cl-cobro-pending" style="display:none;">
-                                        <div class="mb-2">
-                                            <label class="form-label" style="font-size:12px;">Opción 1 — Fecha</label>
-                                            <input type="date" id="cl-cobro-fecha" class="form-control" style="font-size:13px;">
-                                        </div>
-                                        <div class="mb-2" style="font-size:12px; color:var(--text-muted);">
-                                            <label class="d-flex align-items-center gap-2" id="cl-lbl-complemento">
-                                                <input type="radio" name="cl-cobro-origen" value="complemento">
-                                                Opción 2 — Complemento de pago (coincidencia)
-                                            </label>
-                                            <label class="d-flex align-items-center gap-2 mt-1" id="cl-lbl-estado">
-                                                <input type="radio" name="cl-cobro-origen" value="estado_cuenta">
-                                                Opción 3 — Estado de cuenta
-                                            </label>
-                                            <label class="d-flex align-items-center gap-2 mt-1">
-                                                <input type="radio" name="cl-cobro-origen" value="manual" checked>
-                                                Manual (fecha ingresada)
-                                            </label>
-                                        </div>
-                                        <div id="cl-cobro-coincidencia" style="font-size:12px; margin:.35rem 0;"></div>
-                                        <button class="btn btn-brand btn-icon w-100 justify-content-center mt-2"
-                                            id="cl-gen-cobro" style="font-size:12.5px;">
-                                            <i class="fa-solid fa-file-circle-plus"></i> Generar cobro
-                                        </button>
-                                    </div>
-
-                                    <div id="cl-cobro-done" class="text-muted" style="font-size:12px; display:none;">
-                                        <i class="fa-solid fa-check" style="color:var(--ok);"></i> Póliza de cobro ya generada.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -139,14 +59,17 @@
     (function() {
         const base = @json(url('invoices'));
         let currentId = null;
-        let abonoChoices = null;        // the live abono Choices instance
-        let conceptChoices = [];        // per-concepto Choices instances
+        let masterChoices = null; // master abono Choices instance
+        let lineChoices = []; // per-line Choices instances
+        let candidates = []; // account options for this invoice
 
-        // Tear down any Choices instances from a previous open.
         function destroyChoices() {
-            if (abonoChoices) { abonoChoices.destroy(); abonoChoices = null; }
-            conceptChoices.forEach(c => c.destroy());
-            conceptChoices = [];
+            if (masterChoices) {
+                masterChoices.destroy();
+                masterChoices = null;
+            }
+            lineChoices.forEach(c => c.destroy());
+            lineChoices = [];
         }
 
         function choicesOpts(placeholder) {
@@ -162,35 +85,74 @@
             };
         }
 
+        function optionsHtml(selectedId) {
+            let html = '<option value="">— Hereda de la cuenta principal —</option>';
+            candidates.forEach(c => {
+                const sel = (selectedId != null && String(c.id) === String(selectedId)) ? ' selected' : '';
+                html += `<option value="${c.id}"${sel}>${c.numero_cuenta} — ${c.nombre}</option>`;
+            });
+            return html;
+        }
+
         async function openModal(invoiceId) {
             currentId = invoiceId;
             destroyChoices();
             try {
                 const data = await App.http.get(`${base}/${invoiceId}/classify`);
+                candidates = data.candidates || [];
 
                 document.getElementById('cl-folio').textContent = data.invoice.folio || '—';
                 document.getElementById('cl-contraparte').textContent = data.invoice.contraparte || '';
                 document.getElementById('cl-contable').value = data.cuenta_contable || '(sin asignar)';
 
-                // --- Abono select ---
-                const sel = document.getElementById('cl-abono');
-                sel.innerHTML = '<option value="">— Selecciona —</option>';
-                data.candidates.forEach(c => {
-                    const opt = document.createElement('option');
-                    opt.value = c.id;
-                    opt.textContent = `${c.numero_cuenta} — ${c.nombre}`;
-                    if (data.cuenta_abono_id != null && String(c.id) === String(data.cuenta_abono_id)) {
-                        opt.selected = true;
-                    }
-                    sel.appendChild(opt);
-                });
-                abonoChoices = new Choices(sel, choicesOpts('Selecciona una cuenta'));
-                if (data.cuenta_abono_id != null) {
-                    abonoChoices.setChoiceByValue(String(data.cuenta_abono_id));
+                // Labels adapt to income vs expense.
+                const isIncome = data.invoice.is_income;
+                document.getElementById('cl-abono-label').textContent =
+                    isIncome ? 'Cuenta de ingreso (todas las líneas)' : 'Cuenta de gasto (todas las líneas)';
+
+                // Confirm label tells the user what will happen.
+                const submitLabel = document.getElementById('cl-submit-label');
+                if (isIncome) {
+                    submitLabel.textContent = data.has_provision ? 'Confirmar' : 'Confirmar y generar póliza';
+                } else {
+                    submitLabel.textContent = 'Confirmar';
                 }
 
-                // --- Asiento section ---
-                setupAsiento(data.asiento);
+                // --- Master select ---
+                const sel = document.getElementById('cl-abono');
+                sel.innerHTML = '<option value="">— Selecciona —</option>' +
+                    candidates.map(c => `<option value="${c.id}">${c.numero_cuenta} — ${c.nombre}</option>`).join('');
+                masterChoices = new Choices(sel, choicesOpts('Selecciona una cuenta'));
+                if (data.cuenta_abono_id != null) {
+                    masterChoices.setChoiceByValue(String(data.cuenta_abono_id));
+                }
+
+                // --- Per-line rows ---
+                const wrap = document.getElementById('cl-lines');
+                wrap.innerHTML = '';
+                (data.lines || []).forEach(line => {
+                    const row = document.createElement('div');
+                    row.className = 'd-flex align-items-center gap-2 mb-2';
+                    row.dataset.index = line.index;
+
+                    const label = document.createElement('div');
+                    label.style.cssText = 'flex:1; min-width:0; font-size:12px;';
+                    label.className = 'text-truncate text-muted';
+                    label.title = line.descripcion || '';
+                    label.textContent = `${(line.descripcion || '(sin descripción)')} · $${Number(line.importe).toLocaleString('es-MX',{minimumFractionDigits:2})}`;
+
+                    const s = document.createElement('select');
+                    s.className = 'form-select cl-line-account';
+                    s.style.cssText = 'flex:0 0 300px; max-width:300px; font-size:12.5px;';
+                    s.dataset.index = line.index;
+                    s.innerHTML = optionsHtml(line.cuenta_abono_id);
+
+                    row.appendChild(label);
+                    row.appendChild(s);
+                    wrap.appendChild(row);
+                });
+                document.querySelectorAll('.cl-line-account').forEach(s =>
+                    lineChoices.push(new Choices(s, choicesOpts('Hereda de la principal'))));
 
                 App.modal.show('classify-modal');
             } catch (e) {
@@ -198,178 +160,51 @@
             }
         }
 
-        // Builds the provisión/cobro shortcut UI from the edit() payload. When the
-        // invoice isn't income-eligible, the whole section stays hidden.
-        function setupAsiento(a) {
-            const wrap = document.getElementById('cl-asiento');
-            if (!a || !a.eligible) { wrap.style.display = 'none'; return; }
-            wrap.style.display = 'block';
-
-            // ---- Provisión ----
-            const provBadge   = document.getElementById('cl-prov-badge');
-            const provPending = document.getElementById('cl-prov-pending');
-            const provDone    = document.getElementById('cl-prov-done');
-
-            if (a.has_provision) {
-                provBadge.style.display = '';
-                provPending.style.display = 'none';
-                provDone.style.display = '';
-            } else {
-                provBadge.style.display = 'none';
-                provPending.style.display = '';
-                provDone.style.display = 'none';
-
-                // Per-concepto revenue pickers.
-                const rows = document.getElementById('cl-concept-rows');
-                rows.innerHTML = '';
-                a.lines.forEach(line => {
-                    const div = document.createElement('div');
-                    div.className = 'mb-2';
-                    const label = document.createElement('div');
-                    label.style.cssText = 'font-size:12px; margin-bottom:.25rem;';
-                    label.textContent = `${(line.descripcion || '').slice(0, 40)} · $${Number(line.importe).toLocaleString('es-MX',{minimumFractionDigits:2})}`;
-                    const s = document.createElement('select');
-                    s.className = 'form-select cl-concept-account';
-                    s.dataset.index = line.index;
-                    s.style.fontSize = '12.5px';
-                    const first = document.createElement('option');
-                    first.value = ''; first.textContent = 'Cuenta de ingreso…';
-                    s.appendChild(first);
-                    a.revenue_accounts.forEach(acc => {
-                        const o = document.createElement('option');
-                        o.value = acc.id; o.textContent = `${acc.numero_cuenta} — ${acc.nombre}`;
-                        s.appendChild(o);
-                    });
-                    div.appendChild(label); div.appendChild(s);
-                    rows.appendChild(div);
-                });
-                document.querySelectorAll('.cl-concept-account').forEach(s => {
-                    conceptChoices.push(new Choices(s, choicesOpts('Cuenta de ingreso…')));
-                });
-            }
-
-            // ---- Cobro ----
-            const cobroBadge   = document.getElementById('cl-cobro-badge');
-            const cobroLocked  = document.getElementById('cl-cobro-locked');
-            const cobroPending = document.getElementById('cl-cobro-pending');
-            const cobroDone    = document.getElementById('cl-cobro-done');
-
-            cobroBadge.style.display = a.has_cobro ? '' : 'none';
-
-            if (a.has_cobro) {
-                cobroLocked.style.display = 'none';
-                cobroPending.style.display = 'none';
-                cobroDone.style.display = '';
-            } else if (!a.has_provision) {
-                cobroLocked.style.display = '';
-                cobroPending.style.display = 'none';
-                cobroDone.style.display = 'none';
-            } else {
-                cobroLocked.style.display = 'none';
-                cobroPending.style.display = '';
-                cobroDone.style.display = 'none';
-
-                // Default date = today; enable/disable source options per availability.
-                document.getElementById('cl-cobro-fecha').value = new Date().toISOString().slice(0, 10);
-
-                const compRadio = document.querySelector('#cl-lbl-complemento input');
-                const compLabel = document.getElementById('cl-lbl-complemento');
-                compRadio.disabled = !a.has_uuid;
-                compLabel.style.opacity = a.has_uuid ? '' : '.5';
-
-                const estRadio = document.querySelector('#cl-lbl-estado input');
-                const estLabel = document.getElementById('cl-lbl-estado');
-                estRadio.disabled = !a.has_statement;
-                estLabel.style.opacity = a.has_statement ? '' : '.5';
-                document.getElementById('cl-cobro-coincidencia').innerHTML = '';
-                // Reset to manual each open.
-                document.querySelector('input[name="cl-cobro-origen"][value="manual"]').checked = true;
-            }
-        }
-
-        // ---- Classification confirm ----
-        function readAbono() {
-            return abonoChoices ? abonoChoices.getValue(true) : document.getElementById('cl-abono').value;
-        }
-
-        async function confirmClassification() {
-            const abonoId = readAbono();
-            if (!abonoId) { App.toast.warning('Selecciona una cuenta de abono.'); return false; }
-            try {
-                const res = await App.http.post(`${base}/${currentId}/classify`, { cuenta_abono_id: abonoId });
-                App.toast.success(res.message);
-                return true;
-            } catch (e) {
-                App.toast.error(e.message || 'No se pudo confirmar.');
-                return false;
-            }
-        }
-
-        const submit = document.getElementById('cl-submit');
-        submit?.addEventListener('click', async () => {
-            await App.loading.button(submit, async () => {
-                if (await confirmClassification()) {
-                    App.modal.hide('classify-modal');
-                    setTimeout(() => window.location.reload(), 900);
+        // When the master changes, fill every line that has NO explicit override
+        // so the "one account for all" case is one click. Lines already overridden
+        // keep their value.
+        document.getElementById('cl-abono')?.addEventListener('change', () => {
+            const master = masterChoices?.getValue(true);
+            if (!master) return;
+            document.querySelectorAll('.cl-line-account').forEach((s, i) => {
+                if (!s.value) {
+                    lineChoices[i]?.setChoiceByValue(String(master));
                 }
             });
         });
 
-        // ---- Provisión ----
-        document.getElementById('cl-gen-provision')?.addEventListener('click', async function () {
-            // Ensure the classification is saved first (provisión needs the abono).
-            if (!(await confirmClassification())) return;
+        function readMaster() {
+            return masterChoices ? masterChoices.getValue(true) : document.getElementById('cl-abono').value;
+        }
 
-            const accounts = {};
-            document.querySelectorAll('.cl-concept-account').forEach(s => {
-                if (s.value) accounts[s.dataset.index] = s.value;
+        function readLineAccounts() {
+            const map = {};
+            document.querySelectorAll('.cl-line-account').forEach(s => {
+                if (s.value) map[s.dataset.index] = s.value;
             });
-            await App.loading.button(this, async () => {
-                try {
-                    const res = await App.http.post(`${base}/${currentId}/provision`, { concept_accounts: accounts });
-                    App.toast.success(res.message);
-                    setTimeout(() => window.location.reload(), 900);
-                } catch (e) { App.toast.error(e.message); }
-            });
-        });
+            return map;
+        }
 
-        // ---- Cobro: coincidencia lookup on source change ----
-        document.querySelectorAll('input[name="cl-cobro-origen"]').forEach(radio => {
-            radio.addEventListener('change', async () => {
-                const origen = radio.value;
-                const box = document.getElementById('cl-cobro-coincidencia');
-                const fecha = document.getElementById('cl-cobro-fecha');
-                if (origen === 'manual') { box.innerHTML = ''; fecha.disabled = false; return; }
-                try {
-                    const res = await App.http.get(`${base}/${currentId}/cobro-candidates?origen=${origen}`);
-                    if (res.found) {
-                        const c = res.candidates[0];
-                        box.innerHTML = `<span style="color:var(--ok);"><i class="fa-solid fa-check"></i> Coincidencia: ${c.fecha} · $${Number(c.monto).toLocaleString('es-MX',{minimumFractionDigits:2})}</span>`;
-                        fecha.value = c.fecha;
-                        fecha.disabled = true;
-                    } else {
-                        box.innerHTML = `<span style="color:var(--warn);"><i class="fa-solid fa-triangle-exclamation"></i> Sin coincidencia para esta opción.</span>`;
-                        fecha.disabled = false;
-                    }
-                } catch (e) { box.innerHTML = ''; }
-            });
-        });
-
-        // ---- Cobro: generate ----
-        document.getElementById('cl-gen-cobro')?.addEventListener('click', async function () {
-            const origen = document.querySelector('input[name="cl-cobro-origen"]:checked')?.value || 'manual';
-            const body = { origen };
-            if (origen === 'manual') {
-                const fecha = document.getElementById('cl-cobro-fecha').value;
-                if (!fecha) { App.toast.warning('Ingresa la fecha de pago.'); return; }
-                body.fecha_pago = fecha;
+        const submit = document.getElementById('cl-submit');
+        submit?.addEventListener('click', async () => {
+            const master = readMaster();
+            if (!master) {
+                App.toast.warning('Selecciona la cuenta de abono.');
+                return;
             }
-            await App.loading.button(this, async () => {
+
+            await App.loading.button(submit, async () => {
                 try {
-                    const res = await App.http.post(`${base}/${currentId}/cobro`, body);
+                    const res = await App.http.post(`${base}/${currentId}/classify`, {
+                        cuenta_abono_id: master,
+                        line_accounts: readLineAccounts(),
+                    });
                     App.toast.success(res.message);
+                    App.modal.hide('classify-modal');
                     setTimeout(() => window.location.reload(), 900);
-                } catch (e) { App.toast.error(e.message); }
+                } catch (e) {
+                    App.toast.error(e.message || 'No se pudo confirmar.');
+                }
             });
         });
 

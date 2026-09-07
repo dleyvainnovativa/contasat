@@ -34,8 +34,8 @@ class CfdiParser
         $root = $this->load($xml);
 
         $cfdi = $root->children(self::NS_CFDI);
-        $attr = fn (SimpleXMLElement $n, string $a): ?string
-            => isset($n->attributes()[$a]) ? (string) $n->attributes()[$a] : null;
+        $attr = fn(SimpleXMLElement $n, string $a): ?string
+        => isset($n->attributes()[$a]) ? (string) $n->attributes()[$a] : null;
 
         // --- Parties -------------------------------------------------------
         $emisor   = $root->children(self::NS_CFDI)->Emisor;
@@ -59,7 +59,7 @@ class CfdiParser
         if ($tipo === null) {
             throw new RuntimeException(
                 "El CFDI no corresponde al RFC del cliente ({$clientRfc}). "
-                . "Emisor: {$emisorRfc}, Receptor: {$receptorRfc}."
+                    . "Emisor: {$emisorRfc}, Receptor: {$receptorRfc}."
             );
         }
 
@@ -102,6 +102,13 @@ class CfdiParser
             }
         }
 
+        // Header-level tax totals. The lines already carry correctly-parsed taxes,
+        // so summing them guarantees the invoice header equals the sum of its lines
+        // (and works even when the document-level Impuestos node is absent).
+        $header['iva_trasladado'] = round(array_sum(array_column($lines, 'iva_trasladado')), 2);
+        $header['iva_retenido']   = round(array_sum(array_column($lines, 'iva_retenido')), 2);
+        $header['isr_retenido']   = round(array_sum(array_column($lines, 'isr_retenido')), 2);
+
         return ['header' => $header, 'lines' => $lines];
     }
 
@@ -114,7 +121,7 @@ class CfdiParser
         $root = simplexml_load_string($xml);
 
         if ($root === false) {
-            $errors = array_map(fn ($e) => trim($e->message), libxml_get_errors());
+            $errors = array_map(fn($e) => trim($e->message), libxml_get_errors());
             libxml_clear_errors();
             libxml_use_internal_errors($previous);
             throw new RuntimeException('XML inválido: ' . ($errors[0] ?? 'no se pudo leer.'));
@@ -133,7 +140,7 @@ class CfdiParser
 
     private function parseConcepto(SimpleXMLElement $concepto, callable $attr): array
     {
-        [$ivaTraslado, $ivaRetenido, $isrRetenido] = $this->conceptoTaxes($concepto);
+        [$ivaTraslado, $ivaRetenido, $isrRetenido, $ivaBaseTipo] = $this->conceptoTaxes($concepto, $attr);
 
         return [
             'clave_prod_serv'   => $attr($concepto, 'ClaveProdServ'),
@@ -147,34 +154,71 @@ class CfdiParser
             'iva_trasladado'    => $ivaTraslado,
             'iva_retenido'      => $ivaRetenido,
             'isr_retenido'      => $isrRetenido,
+            'iva_base_tipo'     => $ivaBaseTipo,
         ];
     }
 
     /**
-     * Sum concepto-level taxes. IVA = 002, ISR = 001 (SAT tax codes).
-     * @return array{0: float,1: float, 2: float} [ivaTraslado, ivaRetenido, isrRetenido]
+     * Sum concepto-level taxes and classify the IVA base. IVA = 002, ISR = 001.
+     *
+     * The base tipo drives the Provisión de Ingresos breakdown columns and
+     * follows CFDI 4.0 semantics:
+     *   ObjetoImp "01"            -> no_objeto
+     *   ObjetoImp "02"/"03" + IVA Traslado:
+     *      TipoFactor "Exento"    -> exento
+     *      TasaOCuota == 0        -> 0
+     *      TasaOCuota  > 0        -> 16   (standard rate; column is "base 16%")
+     *   taxed but no IVA traslado -> exento (safe fallback)
+     *
+     * @return array{0: float, 1: float, 2: float, 3: ?string}
+     *   [ivaTraslado, ivaRetenido, isrRetenido, ivaBaseTipo]
      */
-    private function conceptoTaxes(SimpleXMLElement $concepto): array
+    private function conceptoTaxes(SimpleXMLElement $concepto, callable $attr): array
     {
         $ivaTraslado = 0.0;
         $ivaRetenido = 0.0;
         $isrRetenido = 0.0;
 
+        $objetoImp = $attr($concepto, 'ObjetoImp');
+
         $impuestos = $concepto->children(self::NS_CFDI)->Impuestos ?? null;
         if (! $impuestos) {
-            return [0.0, 0.0, 0.0];
+            // No Impuestos node: "01" means no objeto; otherwise treat as exento.
+            return [0.0, 0.0, 0.0, $objetoImp === '01' ? 'no_objeto' : 'exento'];
         }
 
-        $attrOf = fn (SimpleXMLElement $n, string $a): ?string
-            => isset($n->attributes()[$a]) ? (string) $n->attributes()[$a] : null;
+        $attrOf = fn(SimpleXMLElement $n, string $a): ?string
+        => isset($n->attributes()[$a]) ? (string) $n->attributes()[$a] : null;
+
+        $baseTipo = $objetoImp === '01' ? 'no_objeto' : null;
 
         // Traslados (charged taxes)
         if ($impuestos->children(self::NS_CFDI)->Traslados) {
             foreach ($impuestos->children(self::NS_CFDI)->Traslados->children(self::NS_CFDI)->Traslado as $t) {
-                if ($attrOf($t, 'Impuesto') === '002') {
-                    $ivaTraslado += (float) ($attrOf($t, 'Importe') ?? 0);
+                if ($attrOf($t, 'Impuesto') !== '002') {
+                    continue; // only IVA (002) informs the base tipo
+                }
+                $ivaTraslado += (float) ($attrOf($t, 'Importe') ?? 0);
+
+                // Classify from the first IVA traslado (concepto lines carry one).
+                if ($baseTipo === null) {
+                    $tipoFactor = $attrOf($t, 'TipoFactor');
+                    $tasa       = (float) ($attrOf($t, 'TasaOCuota') ?? 0);
+
+                    if ($tipoFactor === 'Exento') {
+                        $baseTipo = 'exento';
+                    } elseif ($tasa > 0) {
+                        $baseTipo = '16';
+                    } else {
+                        $baseTipo = '0';
+                    }
                 }
             }
+        }
+
+        // Objeto but no IVA traslado found → exento fallback.
+        if ($baseTipo === null) {
+            $baseTipo = 'exento';
         }
 
         // Retenciones (withheld taxes)
@@ -190,7 +234,7 @@ class CfdiParser
             }
         }
 
-        return [round($ivaTraslado, 2), round($ivaRetenido, 2), round($isrRetenido, 2)];
+        return [round($ivaTraslado, 2), round($ivaRetenido, 2), round($isrRetenido, 2), $baseTipo];
     }
 
     private function extractUuid(SimpleXMLElement $root): ?string

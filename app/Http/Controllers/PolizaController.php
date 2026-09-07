@@ -100,6 +100,7 @@ class PolizaController extends Controller
         return [
             'id'          => $poliza->id,
             'tipo'        => $poliza->tipo,
+            'num_iden'    => $poliza->num_iden,
             'concepto'    => $poliza->concepto,
             'fecha'       => $poliza->fecha->format('Y-m-d'),
             'cuadra'      => $poliza->cuadra,

@@ -53,6 +53,18 @@
                                 En proceso…
                             @endif
                         </div>
+                        @if($up->status === 'done' && !empty($up->errors))
+                            <details style="margin-top:.25rem;">
+                                <summary style="font-size:11.5px; color:var(--text-muted); cursor:pointer;">
+                                    Ver detalle de omitidas / errores ({{ count($up->errors) }})
+                                </summary>
+                                <ul style="margin:.35rem 0 0; padding-left:1.1rem; font-size:11.5px; color:var(--text-muted);">
+                                    @foreach($up->errors as $line)
+                                        <li class="text-truncate" title="{{ $line }}">{{ $line }}</li>
+                                    @endforeach
+                                </ul>
+                            </details>
+                        @endif
                     </div>
                     <span class="badge-status s-{{ $up->statusColor() }}" data-upload-badge>
                         <i class="fa-solid fa-circle" style="font-size:8px;"></i> {{ $up->statusLabel() }}
@@ -155,7 +167,23 @@
     @endif
 </div>
 
-<div class="mt-3">{{ $invoices->links() }}</div>
+<div class="d-flex align-items-center justify-content-between mt-3 flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-2">
+        <label class="text-muted" style="font-size:12.5px;">Mostrar</label>
+        <select class="form-select form-select-sm" style="width:auto;" onchange="
+            const u = new URL(window.location);
+            u.searchParams.set('per_page', this.value);
+            u.searchParams.delete('page');
+            window.location = u.toString();
+        ">
+            @foreach([25, 50, 100, 200] as $opt)
+                <option value="{{ $opt }}" @selected(($perPage ?? 25) === $opt)>{{ $opt }}</option>
+            @endforeach
+        </select>
+        <span class="text-muted" style="font-size:12.5px;">por página</span>
+    </div>
+    <div>{{ $invoices->links() }}</div>
+</div>
 
 @include('invoices._upload_modal')
 @endsection

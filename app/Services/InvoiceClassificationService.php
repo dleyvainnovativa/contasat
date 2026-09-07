@@ -52,7 +52,7 @@ class InvoiceClassificationService
 
         $invoice->update([
             'cuenta_contable_id' => $contable?->id,
-            'cuenta_abono_id'    => $abono['account_id'],
+            'cuenta_abono_id'    => $abono['account_id'] ?? null,
             'clasificacion'      => $abono['account_id'] ? 'sugerida' : 'sin_clasificar',
         ]);
 

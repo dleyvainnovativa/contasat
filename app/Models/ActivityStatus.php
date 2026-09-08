@@ -13,7 +13,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ActivityStatus extends Model
 {
     protected $fillable = [
-        'client_id', 'period_id', 'activity_key', 'manual_status', 'enabled', 'updated_by',
+        'client_id',
+        'period_id',
+        'activity_key',
+        'manual_status',
+        'enabled',
+        'updated_by',
     ];
 
     protected $casts = [
@@ -39,19 +44,21 @@ class ActivityStatus extends Model
      *
      * mode:  'auto'   → status derived from existing data (manual tag still overrides)
      *        'manual' → accountant tags it; no auto detection
+     *        'upload' → accountant uploads a PDF; RFC-validated (ActivityDocumentService)
+     *        'email'  → accountant sends an email to the client (ActivityEmailService)
      * group: label used to visually cluster rows (e.g. the two Estado de cuenta rows)
      * sat:   external SAT URL for link-out activities (32D, Constancia)
      */
     public const ACTIVITIES = [
         'op_32d' => [
             'label' => 'Opinión de Cumplimiento 32D',
-            'mode'  => 'manual',
+            'mode'  => 'upload',
             'group' => null,
             'sat'   => 'https://loginda.siat.sat.gob.mx/nidp/app/login?id=ciec&sid=0&option=credential&sid=0',
         ],
         'constancia' => [
             'label' => 'Constancia Fiscal (RFC)',
-            'mode'  => 'manual',
+            'mode'  => 'upload',
             'group' => null,
             'sat'   => 'https://login.siat.sat.gob.mx/nidp/idff/sso?id=mat-ptsc-totp_Aviso&sid=0&option=credential',
         ],
@@ -67,37 +74,37 @@ class ActivityStatus extends Model
         ],
         'edo_cuenta_solicitud' => [
             'label' => 'Solicitud',
-            'mode'  => 'manual',
-            'group' => 'Estado de cuenta',
+            'mode'  => 'email',
+            'group' => null,
         ],
         'conciliacion' => [
             'label' => 'Conciliación',
             'mode'  => 'auto',
-            'group' => 'Estado de cuenta',
+            'group' => null,
         ],
         'presentacion_dyp' => [
             'label' => 'Presentación de DYP',
-            'mode'  => 'manual',
+            'mode'  => 'upload',
             'group' => null,
         ],
         'pago_declaracion' => [
             'label' => 'Pago de la declaración',
-            'mode'  => 'manual',
+            'mode'  => 'upload',
             'group' => null,
         ],
         'diot' => [
             'label' => 'Presentación DIOT',
-            'mode'  => 'manual',
+            'mode'  => 'upload',
             'group' => null,
         ],
         'econtabilidad' => [
             'label' => 'Envío de e.contabilidad',
-            'mode'  => 'manual',
+            'mode'  => 'upload',
             'group' => null,
         ],
         'expediente_fiscal' => [
             'label' => 'Expediente Fiscal',
-            'mode'  => 'manual',
+            'mode'  => 'email',
             'group' => null,
         ],
     ];

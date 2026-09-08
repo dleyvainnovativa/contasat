@@ -176,4 +176,77 @@ class Invoice extends Model
             'importe' => (float) $docs->sum('imp_pagado'),
         ];
     }
+
+    // ---- Egreso (gasto) side: mirrors of the ingreso accessors ----
+
+    /**
+     * Expense base breakdown for the egreso table (16% / 0% / exento / no objeto),
+     * plus the summed non-deductible part. Same iva_base_tipo mechanism as income.
+     *
+     * @return array{16:?float, 0:?float, exento:?float, no_objeto:?float, no_deducible:float}
+     */
+    public function getEgresoBaseBreakdownAttribute(): array
+    {
+        $buckets = ['16' => null, '0' => null, 'exento' => null, 'no_objeto' => null];
+
+        foreach ($this->lines as $line) {
+            $tipo = $line->iva_base_tipo ?? null;
+            if ($tipo === null || ! array_key_exists($tipo, $buckets)) {
+                continue;
+            }
+            $buckets[$tipo] = ($buckets[$tipo] ?? 0) + (float) $line->importe;
+        }
+
+        $buckets['no_deducible'] = (float) $this->lines->sum('parte_no_deducible');
+
+        return $buckets;
+    }
+
+    /** Invoice-level non-deductible = sum of its lines (derived, never stored). */
+    public function getParteNoDeducibleAttribute(): float
+    {
+        return (float) $this->lines->sum('parte_no_deducible');
+    }
+
+    /**
+     * SUBTOTAL for the egreso table = 16% + 0% + exento + no_objeto + no deducible.
+     * Falls back to the invoice subtotal when lines aren't classified yet.
+     */
+    public function getSubtotalEgresoAttribute(): float
+    {
+        $b = $this->egreso_base_breakdown;
+        $sum = (float) ($b['16'] ?? 0) + (float) ($b['0'] ?? 0)
+            + (float) ($b['exento'] ?? 0) + (float) ($b['no_objeto'] ?? 0)
+            + (float) $b['no_deducible'];
+
+        return $sum > 0 ? round($sum, 2) : (float) $this->subtotal;
+    }
+
+    /**
+     * OTROS IMPUESTOS (display-only) =
+     *   TOTAL − SUBTOTAL − IVA + IVA por retener + ISR por retener.
+     */
+    public function getOtrosImpuestosAttribute(): float
+    {
+        return round(
+            (float) $this->total
+                - $this->subtotal_egreso
+                - (float) $this->iva_trasladado
+                + (float) $this->iva_retenido
+                + (float) $this->isr_retenido,
+            2
+        );
+    }
+
+    /** Póliza de provisión de gasto reference, or null. */
+    public function getProvisionGastoRefAttribute(): ?string
+    {
+        return $this->polizas->firstWhere('tipo', 'provision_gasto')?->num_iden;
+    }
+
+    /** Póliza de pago de gasto reference, or null. */
+    public function getPagoGastoRefAttribute(): ?string
+    {
+        return $this->polizas->firstWhere('tipo', 'pago_gasto')?->num_iden;
+    }
 }

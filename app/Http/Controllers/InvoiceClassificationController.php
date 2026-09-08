@@ -27,7 +27,7 @@ class InvoiceClassificationController extends Controller
     /** Data for the modal: the invoice's current accounts + the candidate list. */
     public function edit(Invoice $invoice): JsonResponse
     {
-        $invoice->load(['cuentaContable', 'cuentaAbono', 'lines:id,invoice_id,descripcion,importe,descuento,cuenta_abono_id']);
+        $invoice->load(['cuentaContable', 'cuentaAbono', 'lines:id,invoice_id,descripcion,importe,descuento,cuenta_abono_id,parte_no_deducible']);
 
         $isIncome = $invoice->tipo === 'emitida';
 
@@ -48,18 +48,20 @@ class InvoiceClassificationController extends Controller
             ->orderBy('numero_cuenta')
             ->get(['id', 'numero_cuenta', 'nombre']);
 
-        // Whether a provisión already exists (income only — gasto provisión is a
-        // later round). Drives the confirm button's "already generated" state.
-        $hasProvision = $isIncome
-            && \App\Models\Poliza::where('invoice_id', $invoice->id)->where('tipo', 'provision')->exists();
+        // Whether a provisión already exists (income or gasto). Drives the confirm
+        // button's "already generated" state.
+        $provTipo = $isIncome ? 'provision' : 'provision_gasto';
+        $hasProvision = \App\Models\Poliza::where('invoice_id', $invoice->id)
+            ->where('tipo', $provTipo)->exists();
 
-        // Per-line data with each line's current account override (if any), so the
-        // modal can pre-fill overrides and fall back to the master otherwise.
+        // Per-line data with each line's current account override and non-deductible
+        // part, so the modal can pre-fill both.
         $lines = $invoice->lines->map(fn($l, $i) => [
-            'index'          => $i,
-            'descripcion'    => $l->descripcion,
-            'importe'        => (float) $l->importe,
-            'cuenta_abono_id' => $l->cuenta_abono_id,
+            'index'              => $i,
+            'descripcion'        => $l->descripcion,
+            'importe'            => (float) $l->importe,
+            'cuenta_abono_id'    => $l->cuenta_abono_id,
+            'parte_no_deducible' => (float) $l->parte_no_deducible,
         ])->values();
 
         return response()->json([
@@ -103,6 +105,8 @@ class InvoiceClassificationController extends Controller
             'cuenta_abono_id' => ['required', 'integer', 'exists:accounts,id'],
             'line_accounts'   => ['nullable', 'array'],
             'line_accounts.*' => ['nullable', 'integer', 'exists:accounts,id'],
+            'line_no_deducible'   => ['nullable', 'array'],
+            'line_no_deducible.*' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         // Every account referenced (master + overrides) must belong to this client.
@@ -119,38 +123,47 @@ class InvoiceClassificationController extends Controller
 
         // Persist per-line overrides. A line maps to its override when present,
         // otherwise clears to null so it falls back to the invoice-level account.
+        // Non-deductible part is per line too (default 0), used by the gasto cuadre.
         $overrides = $data['line_accounts'] ?? [];
+        $noDeducible = $data['line_no_deducible'] ?? [];
         foreach ($invoice->lines->values() as $i => $line) {
             $lineAccount = $overrides[$i] ?? $overrides[(string) $i] ?? null;
-            $line->update(['cuenta_abono_id' => $lineAccount ?: null]);
+            $nd = $noDeducible[$i] ?? $noDeducible[(string) $i] ?? null;
+            $line->update([
+                'cuenta_abono_id'    => $lineAccount ?: null,
+                'parte_no_deducible' => $nd !== null ? (float) $nd : (float) $line->parte_no_deducible,
+            ]);
         }
 
         // Confirm classification with the master as the invoice-level abono.
         $this->classification->confirm($invoice, null, (int) $data['cuenta_abono_id']);
 
-        // Income invoices: generate the provisión now (unless one already exists),
-        // respecting per-line accounts. Build the concept_accounts map the service
-        // expects: line index => resolved account (override or master).
+        // Confirm generates the provisión now (unless one already exists),
+        // respecting per-line accounts. Ingreso → provisión de ingreso;
+        // gasto (recibida) → provisión de gasto (with per-line non-deducible).
         $polizaRef = null;
-        if ($invoice->tipo === 'emitida') {
-            $already = \App\Models\Poliza::where('invoice_id', $invoice->id)->where('tipo', 'provision')->exists();
-            if (! $already) {
-                $conceptAccounts = [];
-                foreach ($invoice->lines->values() as $i => $line) {
-                    $conceptAccounts[$i] = $overrides[$i] ?? $overrides[(string) $i] ?? $data['cuenta_abono_id'];
+        $svc = app(\App\Services\ProvisionCobroService::class);
+        $conceptAccounts = [];
+        foreach ($invoice->lines->values() as $i => $line) {
+            $conceptAccounts[$i] = $overrides[$i] ?? $overrides[(string) $i] ?? $data['cuenta_abono_id'];
+        }
+
+        try {
+            if ($invoice->tipo === 'emitida') {
+                if (! $svc->existing($invoice, 'provision')) {
+                    $polizaRef = $svc->generateProvision($invoice, $conceptAccounts)->num_iden;
                 }
-                try {
-                    $poliza = app(\App\Services\ProvisionCobroService::class)
-                        ->generateProvision($invoice, $conceptAccounts);
-                    $polizaRef = $poliza->num_iden;
-                } catch (\Throwable $e) {
-                    // Classification already saved; surface the póliza issue without losing it.
-                    return response()->json([
-                        'ok'      => true,
-                        'message' => 'Clasificación confirmada, pero no se pudo generar la póliza: ' . $e->getMessage(),
-                    ]);
+            } elseif ($invoice->tipo === 'recibida') {
+                if (! $svc->existing($invoice, 'provision_gasto')) {
+                    $polizaRef = $svc->generateProvisionGasto($invoice, $conceptAccounts)->num_iden;
                 }
             }
+        } catch (\Throwable $e) {
+            // Classification already saved; surface the póliza issue without losing it.
+            return response()->json([
+                'ok'      => true,
+                'message' => 'Clasificación confirmada, pero no se pudo generar la póliza: ' . $e->getMessage(),
+            ]);
         }
 
         return response()->json([

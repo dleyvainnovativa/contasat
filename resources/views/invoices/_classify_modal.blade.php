@@ -130,6 +130,7 @@
                 // --- Per-line rows ---
                 const wrap = document.getElementById('cl-lines');
                 wrap.innerHTML = '';
+                const showNoDed = !isIncome; // non-deductible applies to gasto
                 (data.lines || []).forEach(line => {
                     const row = document.createElement('div');
                     row.className = 'd-flex align-items-center gap-2 mb-2';
@@ -143,12 +144,27 @@
 
                     const s = document.createElement('select');
                     s.className = 'form-select cl-line-account';
-                    s.style.cssText = 'flex:0 0 300px; max-width:300px; font-size:12.5px;';
+                    s.style.cssText = 'flex:0 0 260px; max-width:260px; font-size:12.5px;';
                     s.dataset.index = line.index;
                     s.innerHTML = optionsHtml(line.cuenta_abono_id);
 
                     row.appendChild(label);
                     row.appendChild(s);
+
+                    if (showNoDed) {
+                        const nd = document.createElement('input');
+                        nd.type = 'number';
+                        nd.step = '0.01';
+                        nd.min = '0';
+                        nd.className = 'form-control cl-line-noded';
+                        nd.style.cssText = 'flex:0 0 110px; max-width:110px; font-size:12px;';
+                        nd.placeholder = 'No ded.';
+                        nd.title = 'Parte no deducible';
+                        nd.dataset.index = line.index;
+                        nd.value = line.parte_no_deducible ? line.parte_no_deducible : '';
+                        row.appendChild(nd);
+                    }
+
                     wrap.appendChild(row);
                 });
                 document.querySelectorAll('.cl-line-account').forEach(s =>
@@ -185,6 +201,14 @@
             return map;
         }
 
+        function readLineNoDeducible() {
+            const map = {};
+            document.querySelectorAll('.cl-line-noded').forEach(inp => {
+                if (inp.value !== '') map[inp.dataset.index] = inp.value;
+            });
+            return map;
+        }
+
         const submit = document.getElementById('cl-submit');
         submit?.addEventListener('click', async () => {
             const master = readMaster();
@@ -198,6 +222,7 @@
                     const res = await App.http.post(`${base}/${currentId}/classify`, {
                         cuenta_abono_id: master,
                         line_accounts: readLineAccounts(),
+                        line_no_deducible: readLineNoDeducible(),
                     });
                     App.toast.success(res.message);
                     App.modal.hide('classify-modal');

@@ -61,6 +61,10 @@
             class="nav-link-item {{ request()->routeIs('calendario.*') ? 'active' : '' }}">
             <i class="fa-solid fa-calendar-check"></i> Calendario de actividades
         </a>
+        <a href="{{ route('asientos.index') }}"
+            class="nav-link-item {{ request()->routeIs('asientos.*') ? 'active' : '' }}">
+            <i class="fa-solid fa-book"></i> Asientos contables
+        </a>
         <a href="{{ route('sat.index') }}"
             class="d-none nav-link-item {{ request()->routeIs('sat.*') ? 'active' : '' }}">
             <i class="fa-solid fa-cloud-arrow-down"></i> Descarga SAT
@@ -77,10 +81,6 @@
                 <a href="{{ route('invoices.view', 'ingreso') }}"
                     class="nav-sublink {{ request()->routeIs('invoices.view') && request()->route('view') === 'ingreso' ? 'active' : '' }}">
                     Provisión de ingreso
-                </a>
-                <a href="{{ route('provision-ingresos.index') }}"
-                    class="nav-sublink {{ request()->routeIs('provision-ingresos.*') ? 'active' : '' }}">
-                    Provisión de ingresos (detalle)
                 </a>
                 <a href="{{ route('invoices.view', 'gasto') }}"
                     class="nav-sublink {{ request()->routeIs('invoices.view') && request()->route('view') === 'gasto' ? 'active' : '' }}">

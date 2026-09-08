@@ -41,17 +41,35 @@ class ActivityCalendarService
             ->get()
             ->keyBy('activity_key');
 
+        // Uploaded documents for upload-type activities, keyed by activity_key.
+        $docs = \App\Models\ActivityDocument::where('client_id', $client->id)
+            ->where('period_id', $period->id)
+            ->get()
+            ->keyBy('activity_key');
+
         $auto = $this->autoStatuses($period);
 
-        return collect(ActivityStatus::ACTIVITIES)->map(function ($meta, $key) use ($stored, $auto) {
+        return collect(ActivityStatus::ACTIVITIES)->map(function ($meta, $key) use ($stored, $auto, $docs) {
             /** @var ActivityStatus|null $row */
             $row = $stored->get($key);
             $enabled = $row?->enabled ?? true;
+            $doc = $docs->get($key);
 
             if (! $enabled) {
                 $status = ActivityStatus::STATUS_NO_APLICA;
             } elseif ($row && $row->manual_status) {
+                // Manual tag always wins, even for upload activities (override).
                 $status = $row->manual_status;
+            } elseif ($meta['mode'] === 'upload') {
+                // Upload activities: realizada once a validated document exists.
+                $status = $doc && $doc->rfc_ok
+                    ? ActivityStatus::STATUS_REALIZADA
+                    : ActivityStatus::STATUS_PENDIENTE;
+            } elseif ($meta['mode'] === 'email') {
+                // Email activities: realizada once the email has been sent.
+                $status = $doc && $doc->sent_at
+                    ? ActivityStatus::STATUS_REALIZADA
+                    : ActivityStatus::STATUS_PENDIENTE;
             } elseif (isset($auto[$key])) {
                 $status = $auto[$key];
             } else {
@@ -69,6 +87,14 @@ class ActivityCalendarService
                     ? $this->deepLink($key)
                     : null,
                 'sat_url'   => $meta['sat'] ?? null,
+                'document'  => $doc ? [
+                    'name'    => $doc->original_name,
+                    'sentido' => $doc->sentido,
+                    'detalle' => $doc->detalle,
+                    'sent_at' => $doc->sent_at?->format('Y-m-d H:i'),
+                    'sent_to' => $doc->sent_to,
+                    'at'      => $doc->updated_at?->format('Y-m-d H:i'),
+                ] : null,
             ];
         })->values();
     }

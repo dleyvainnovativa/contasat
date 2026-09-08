@@ -50,7 +50,7 @@ class ProvisionIngresosController extends Controller
             //  - polizas: existing provisión / cobro refs (Dr / Ig)
             //  - paymentDocuments: the CEP payment block
             ->with([
-                'lines:id,invoice_id,descripcion,importe,iva_trasladado',
+                'lines:id,invoice_id,descripcion,importe,iva_trasladado,iva_base_tipo',
                 'polizas:id,invoice_id,tipo,num_iden',
                 'paymentDocuments:id,iddocumento,fecha_pago,imp_pagado,forma_pago,num_operacion',
             ])

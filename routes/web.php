@@ -128,4 +128,12 @@ Route::middleware('firebase')->group(function () {
     Route::post('/catalogo-global/accounts', [GlobalCatalogController::class, 'store'])->name('catalog.store');
     Route::get('/provision-ingresos', [\App\Http\Controllers\ProvisionIngresosController::class, 'index'])
         ->name('provision-ingresos.index');
+
+    Route::get('/calendario/solicitud/form', [\App\Http\Controllers\ActivityCalendarController::class, 'solicitudForm'])->name('calendario.solicitud.form');
+    Route::post('/calendario/solicitud/send', [\App\Http\Controllers\ActivityCalendarController::class, 'sendSolicitud'])->name('calendario.solicitud.send');
+    Route::get('/calendario/expediente/preview', [\App\Http\Controllers\ActivityCalendarController::class, 'expedientePreview'])->name('calendario.expediente.preview');
+    Route::post('/calendario/expediente/send', [\App\Http\Controllers\ActivityCalendarController::class, 'sendExpediente'])->name('calendario.expediente.send');
+
+    Route::get('/asientos', [\App\Http\Controllers\PolizaSummaryController::class, 'index'])->name('asientos.index');
+    Route::get('/asientos/{poliza}', [\App\Http\Controllers\PolizaSummaryController::class, 'show'])->name('asientos.show');
 });

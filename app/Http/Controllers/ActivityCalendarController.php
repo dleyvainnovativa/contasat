@@ -21,6 +21,8 @@ class ActivityCalendarController extends Controller
     public function __construct(
         private readonly WorkContext $context,
         private readonly ActivityCalendarService $service,
+        private readonly \App\Services\ActivityDocumentService $documents,
+        private readonly \App\Services\ActivityEmailService $emails,
     ) {}
 
     public function index(): View|RedirectResponse
@@ -88,6 +90,96 @@ class ActivityCalendarController extends Controller
         return response()->json([
             'message' => $data['enabled'] ? 'Actividad habilitada.' : 'Actividad marcada como No aplica.',
         ]);
+    }
+
+    /** Upload + RFC-validate a PDF for an upload-type activity. */
+    public function upload(Request $request, string $activityKey): JsonResponse
+    {
+        $this->assertContext();
+
+        if (! ActivityStatus::isValidKey($activityKey) || ! $this->documents->isUploadActivity($activityKey)) {
+            return response()->json(['message' => 'Esta actividad no admite carga de archivos.'], 422);
+        }
+
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:pdf', 'max:20480'], // 20 MB
+        ]);
+
+        try {
+            $doc = $this->documents->handleUpload(
+                $this->context->client(),
+                $this->context->period(),
+                $activityKey,
+                $request->file('file'),
+            );
+        } catch (\Throwable $e) {
+            // Rejected (RFC mismatch, unreadable PDF, etc.) — surface the reason.
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json([
+            'ok'      => true,
+            'message' => $doc->detalle ?: 'Documento validado.',
+            'sentido' => $doc->sentido,
+        ]);
+    }
+
+    /** Prefilled, editable body for the Solicitud email (shown in the confirm modal). */
+    public function solicitudForm(): JsonResponse
+    {
+        $this->assertContext();
+        $client = $this->context->client();
+
+        return response()->json([
+            'to'    => $client->email,
+            'body'  => $this->emails->defaultSolicitudBody($client, $this->context->period()),
+            'has_email' => (bool) trim((string) $client->email),
+        ]);
+    }
+
+    /** Send the Solicitud email with the (possibly edited) body. */
+    public function sendSolicitud(Request $request): JsonResponse
+    {
+        $this->assertContext();
+
+        $data = $request->validate([
+            'body' => ['required', 'string', 'max:5000'],
+        ]);
+
+        try {
+            $this->emails->sendSolicitud($this->context->client(), $this->context->period(), $data['body']);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json(['ok' => true, 'message' => 'Solicitud enviada al cliente.']);
+    }
+
+    /** Download the Expediente PDF for preview (before sending). */
+    public function expedientePreview()
+    {
+        $this->assertContext();
+
+        [$bytes, $name] = $this->emails->buildExpedientePdf($this->context->client(), $this->context->period());
+
+        return response($bytes, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $name . '"',
+        ]);
+    }
+
+    /** Generate + email the Expediente Fiscal to the client. */
+    public function sendExpediente(): JsonResponse
+    {
+        $this->assertContext();
+
+        try {
+            $this->emails->sendExpediente($this->context->client(), $this->context->period());
+        } catch (\Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json(['ok' => true, 'message' => 'Expediente generado y enviado al cliente.']);
     }
 
     /** Find or create the row for the active client/period + given activity. */

@@ -68,9 +68,18 @@ class InvoiceViewController extends Controller
             // Concepts column shows only on ingreso/gasto (I-type, non-nómina).
             // Eager-load line descriptions there to build conceptos_resumen without N+1.
             ->when($tipoComprobante === 'I', fn($q) => $q->with('lines:id,invoice_id,descripcion'))
+            // Ingreso renders the wide detail table: it also needs the IVA-base
+            // buckets, existing pólizas (Dr/Ig refs), and the CEP payment block.
+            ->when($view === 'ingreso', fn($q) => $q->with([
+                'lines:id,invoice_id,descripcion,importe,iva_trasladado,iva_base_tipo',
+                'polizas:id,invoice_id,tipo,num_iden',
+                'paymentDocuments:id,iddocumento,fecha_pago,imp_pagado',
+            ]))
             ->orderByDesc('fecha_emision');
 
-        $invoices = $query->paginate(25)->withQueryString();
+        // Ingreso uses a selectable page size (wide table); others stay at 25.
+        $perPage = $view === 'ingreso' ? $this->perPage($request) : 25;
+        $invoices = $query->paginate($perPage)->withQueryString();
 
         // Totals for the filtered set (whole period, not just the page).
         $totalsQuery = Invoice::where('period_id', $period->id)
@@ -94,7 +103,17 @@ class InvoiceViewController extends Controller
             'period'    => $period,
             'q'         => $request->string('q')->toString(),
             'navItems'  => $this->navSummary($period->id),
+            'perPage'   => $perPage,
         ]);
+    }
+
+    /** Rows per page for the wide ingreso table: 25/50/100/200, default 50. */
+    private function perPage(Request $request): int
+    {
+        $allowed = [25, 50, 100, 200];
+        $requested = (int) $request->integer('per_page', 50);
+
+        return in_array($requested, $allowed, true) ? $requested : 50;
     }
 
     /**

@@ -68,6 +68,9 @@
         </form>
     </div>
 
+    @if($view === 'ingreso')
+    @include('invoices._ingreso_wide')
+    @else
     @if($invoices->isEmpty())
     <div class="empty-state">
         <i class="fa-solid fa-file-invoice"></i>
@@ -177,15 +180,18 @@
         </table>
     </div>
     @endif
+    @endif
 </div>
 
+@unless($view === 'ingreso')
 <div class="mt-3">{{ $invoices->links() }}</div>
+@endunless
 
 @if($isPago)
 @include('invoices._pago_detail')
 @endif
 
-@unless($isPago || $isNomina)
+@unless($isPago || $isNomina || $view === 'ingreso')
 @include('invoices._classify_modal')
 @endunless
 

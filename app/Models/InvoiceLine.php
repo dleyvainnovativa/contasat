@@ -23,18 +23,20 @@ class InvoiceLine extends Model
         'isr_retenido',
         'iva_base_tipo',
         'cuenta_abono_id',
+        'parte_no_deducible',
     ];
 
     protected function casts(): array
     {
         return [
-            'cantidad'       => 'decimal:6',
-            'valor_unitario' => 'decimal:6',
-            'importe'        => 'decimal:2',
-            'descuento'      => 'decimal:2',
-            'iva_trasladado' => 'decimal:2',
-            'iva_retenido'   => 'decimal:2',
-            'isr_retenido'   => 'decimal:2',
+            'cantidad'           => 'decimal:6',
+            'valor_unitario'     => 'decimal:6',
+            'importe'            => 'decimal:2',
+            'descuento'          => 'decimal:2',
+            'iva_trasladado'     => 'decimal:2',
+            'iva_retenido'       => 'decimal:2',
+            'isr_retenido'       => 'decimal:2',
+            'parte_no_deducible' => 'decimal:2',
         ];
     }
 

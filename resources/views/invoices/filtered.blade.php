@@ -70,6 +70,8 @@
 
     @if($view === 'ingreso')
     @include('invoices._ingreso_wide')
+    @elseif($view === 'gasto')
+    @include('invoices._gasto_wide')
     @else
     @if($invoices->isEmpty())
     <div class="empty-state">
@@ -183,7 +185,7 @@
     @endif
 </div>
 
-@unless($view === 'ingreso')
+@unless(in_array($view, ['ingreso', 'gasto']))
 <div class="mt-3">{{ $invoices->links() }}</div>
 @endunless
 
@@ -191,7 +193,7 @@
 @include('invoices._pago_detail')
 @endif
 
-@unless($isPago || $isNomina || $view === 'ingreso')
+@unless($isPago || $isNomina || in_array($view, ['ingreso', 'gasto']))
 @include('invoices._classify_modal')
 @endunless
 

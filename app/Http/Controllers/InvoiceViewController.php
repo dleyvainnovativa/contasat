@@ -75,10 +75,17 @@ class InvoiceViewController extends Controller
                 'polizas:id,invoice_id,tipo,num_iden',
                 'paymentDocuments:id,iddocumento,fecha_pago,imp_pagado',
             ]))
+            // Gasto renders the wide egreso table: base buckets + non-deducible,
+            // gasto pólizas (provisión/pago refs), and the CEP payment block.
+            ->when($view === 'gasto', fn($q) => $q->with([
+                'lines:id,invoice_id,descripcion,importe,iva_trasladado,iva_base_tipo,parte_no_deducible',
+                'polizas:id,invoice_id,tipo,num_iden',
+                'paymentDocuments:id,iddocumento,fecha_pago,imp_pagado',
+            ]))
             ->orderByDesc('fecha_emision');
 
-        // Ingreso uses a selectable page size (wide table); others stay at 25.
-        $perPage = $view === 'ingreso' ? $this->perPage($request) : 25;
+        // Ingreso and gasto use a selectable page size (wide tables); others 25.
+        $perPage = in_array($view, ['ingreso', 'gasto'], true) ? $this->perPage($request) : 25;
         $invoices = $query->paginate($perPage)->withQueryString();
 
         // Totals for the filtered set (whole period, not just the page).

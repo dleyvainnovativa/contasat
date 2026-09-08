@@ -4,63 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Invoice;
 use App\Services\ProvisionCobroService;
-use App\Services\WorkContext;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 
 /**
- * Provisión de Egresos — the wide working table over the client's expense
- * invoices (recibidas, tipo I) for the active period. Mirror of
- * ProvisionIngresosController: expense IVA-base breakdown, non-deductible part,
- * payment block, and inline actions to generate the póliza de provisión de gasto
- * and de pago de gasto.
+ * Gasto (egreso) póliza actions, invoked from the wide table now embedded in the
+ * /invoices/gasto tab (see resources/views/invoices/_gasto_wide.blade.php).
+ *
+ * The standalone Provisión de Egresos page was retired when the wide table moved
+ * into the Facturas submenu; only these two action endpoints remain.
  */
 class ProvisionEgresosController extends Controller
 {
     public function __construct(
-        private readonly WorkContext $context,
         private readonly ProvisionCobroService $provisiones,
     ) {}
-
-    public function index(Request $request): View|RedirectResponse
-    {
-        if (! $this->context->hasPeriod()) {
-            return redirect()->route('dashboard')
-                ->with('toast', ['type' => 'warning', 'message' => 'Selecciona un cliente y periodo primero.']);
-        }
-
-        $period = $this->context->period();
-
-        $invoices = Invoice::where('period_id', $period->id)
-            ->where('tipo_comprobante', 'I')
-            ->where('tipo', 'recibida')
-            ->when($request->filled('q'), function ($q) use ($request) {
-                $term = $request->string('q')->toString();
-                $q->where(function ($sub) use ($term) {
-                    $sub->where('emisor_nombre', 'like', "%{$term}%")
-                        ->orWhere('emisor_rfc', 'like', "%{$term}%")
-                        ->orWhere('uuid', 'like', "%{$term}%")
-                        ->orWhere('folio', 'like', "%{$term}%");
-                });
-            })
-            ->with([
-                'lines:id,invoice_id,descripcion,importe,iva_trasladado,iva_base_tipo,parte_no_deducible',
-                'polizas:id,invoice_id,tipo,num_iden',
-                'paymentDocuments:id,iddocumento,fecha_pago,imp_pagado',
-            ])
-            ->orderByDesc('fecha_emision')
-            ->paginate($this->perPage($request))
-            ->withQueryString();
-
-        return view('invoices.provision_egresos', [
-            'period'   => $period,
-            'invoices' => $invoices,
-            'q'        => $request->string('q')->toString(),
-            'perPage'  => $this->perPage($request),
-        ]);
-    }
 
     /** Generate the póliza de provisión de gasto for one invoice. */
     public function provision(Invoice $invoice): JsonResponse
@@ -86,13 +44,5 @@ class ProvisionEgresosController extends Controller
         } catch (\Throwable $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
-    }
-
-    private function perPage(Request $request): int
-    {
-        $allowed = [25, 50, 100, 200];
-        $requested = (int) $request->integer('per_page', 50);
-
-        return in_array($requested, $allowed, true) ? $requested : 50;
     }
 }

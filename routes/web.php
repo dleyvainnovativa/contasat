@@ -18,6 +18,7 @@ use App\Http\Controllers\GlobalCatalogController;
 use App\Http\Controllers\PolizaController;
 use App\Http\Controllers\PreferenceController;
 use App\Http\Controllers\ContextController;
+use App\Http\Controllers\ProvisionEgresosController;
 use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
@@ -133,7 +134,12 @@ Route::middleware('firebase')->group(function () {
     Route::post('/calendario/solicitud/send', [\App\Http\Controllers\ActivityCalendarController::class, 'sendSolicitud'])->name('calendario.solicitud.send');
     Route::get('/calendario/expediente/preview', [\App\Http\Controllers\ActivityCalendarController::class, 'expedientePreview'])->name('calendario.expediente.preview');
     Route::post('/calendario/expediente/send', [\App\Http\Controllers\ActivityCalendarController::class, 'sendExpediente'])->name('calendario.expediente.send');
-
+    Route::post('/calendario/{activityKey}/upload', [\App\Http\Controllers\ActivityCalendarController::class, 'upload'])->name('calendario.upload');
     Route::get('/asientos', [\App\Http\Controllers\PolizaSummaryController::class, 'index'])->name('asientos.index');
     Route::get('/asientos/{poliza}', [\App\Http\Controllers\PolizaSummaryController::class, 'show'])->name('asientos.show');
+
+
+    // KEEP (the wide table's Provisión/Pago buttons hit these):
+    Route::post('/provision-egresos/{invoice}/provision', [ProvisionEgresosController::class, 'provision'])->name('provision-egresos.provision');
+    Route::post('/provision-egresos/{invoice}/pago', [ProvisionEgresosController::class, 'pago'])->name('provision-egresos.pago');
 });

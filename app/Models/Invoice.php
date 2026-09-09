@@ -123,8 +123,12 @@ class Invoice extends Model
 
     /**
      * IVA-base breakdown for the 4 columns (16% / 0% / exento / no objeto).
-     * Sums each line's importe into its bucket using invoice_lines.iva_base_tipo.
-     * Until 4b populates that column, buckets are null (rendered as "—").
+     *
+     * The 16% base is derived from the tax actually charged (iva_trasladado / 0.16)
+     * per the client's rule: this bakes in line discounts automatically, since IVA
+     * is charged on the post-discount amount — summing line importe would overstate
+     * the base on discounted invoices. The other three buckets carry no IVA, so
+     * they're summed from their lines' (importe − descuento).
      *
      * @return array{16:?float, 0:?float, exento:?float, no_objeto:?float}
      */
@@ -132,12 +136,20 @@ class Invoice extends Model
     {
         $buckets = ['16' => null, '0' => null, 'exento' => null, 'no_objeto' => null];
 
+        // 16% base from the IVA charged (discount-safe).
+        $iva = (float) $this->iva_trasladado;
+        if ($iva > 0) {
+            $buckets['16'] = round($iva / 0.16, 2);
+        }
+
+        // 0% / exento / no objeto: sum the net line amounts tagged with each tipo.
         foreach ($this->lines as $line) {
             $tipo = $line->iva_base_tipo ?? null;
-            if ($tipo === null || ! array_key_exists($tipo, $buckets)) {
-                continue; // unclassified line (pre-4b) — leave buckets untouched
+            if ($tipo === null || $tipo === '16' || ! array_key_exists($tipo, $buckets)) {
+                continue;
             }
-            $buckets[$tipo] = ($buckets[$tipo] ?? 0) + (float) $line->importe;
+            $net = (float) $line->importe - (float) ($line->descuento ?? 0);
+            $buckets[$tipo] = ($buckets[$tipo] ?? 0) + $net;
         }
 
         return $buckets;
@@ -181,7 +193,9 @@ class Invoice extends Model
 
     /**
      * Expense base breakdown for the egreso table (16% / 0% / exento / no objeto),
-     * plus the summed non-deductible part. Same iva_base_tipo mechanism as income.
+     * plus the summed non-deductible part. Same rule as income: 16% base derived
+     * from iva_trasladado / 0.16 (discount-safe); other buckets summed net from
+     * their lines.
      *
      * @return array{16:?float, 0:?float, exento:?float, no_objeto:?float, no_deducible:float}
      */
@@ -189,12 +203,18 @@ class Invoice extends Model
     {
         $buckets = ['16' => null, '0' => null, 'exento' => null, 'no_objeto' => null];
 
+        $iva = (float) $this->iva_trasladado;
+        if ($iva > 0) {
+            $buckets['16'] = round($iva / 0.16, 2);
+        }
+
         foreach ($this->lines as $line) {
             $tipo = $line->iva_base_tipo ?? null;
-            if ($tipo === null || ! array_key_exists($tipo, $buckets)) {
+            if ($tipo === null || $tipo === '16' || ! array_key_exists($tipo, $buckets)) {
                 continue;
             }
-            $buckets[$tipo] = ($buckets[$tipo] ?? 0) + (float) $line->importe;
+            $net = (float) $line->importe - (float) ($line->descuento ?? 0);
+            $buckets[$tipo] = ($buckets[$tipo] ?? 0) + $net;
         }
 
         $buckets['no_deducible'] = (float) $this->lines->sum('parte_no_deducible');
@@ -209,17 +229,16 @@ class Invoice extends Model
     }
 
     /**
-     * SUBTOTAL for the egreso table = 16% + 0% + exento + no_objeto + no deducible.
-     * Falls back to the invoice subtotal when lines aren't classified yet.
+     * SUBTOTAL for the egreso table = the invoice's real subtotal.
+     *
+     * We use the stored subtotal (discounts already applied) rather than summing
+     * the base buckets — the buckets are an informational breakdown and, with the
+     * 16% base derived from IVA, won't necessarily foot to the subtotal on
+     * discounted invoices. Using the real subtotal keeps OTROS IMPUESTOS correct.
      */
     public function getSubtotalEgresoAttribute(): float
     {
-        $b = $this->egreso_base_breakdown;
-        $sum = (float) ($b['16'] ?? 0) + (float) ($b['0'] ?? 0)
-            + (float) ($b['exento'] ?? 0) + (float) ($b['no_objeto'] ?? 0)
-            + (float) $b['no_deducible'];
-
-        return $sum > 0 ? round($sum, 2) : (float) $this->subtotal;
+        return (float) $this->subtotal;
     }
 
     /**

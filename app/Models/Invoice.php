@@ -27,6 +27,7 @@ class Invoice extends Model
         'metodo_pago',
         'forma_pago',
         'uso_cfdi',
+        'tipo_relacion',
         'subtotal',
         'descuento',
         'total',
@@ -119,6 +120,41 @@ class Invoice extends Model
     public function getEstadoSatAttribute(): string
     {
         return $this->cancelado ? 'Cancelado' : 'Vigente';
+    }
+
+    /**
+     * "Documento" column label. A plain invoice reads "Factura"; when the CFDI
+     * carries a Tipo de relación (CfdiRelacionados), it's labeled by that
+     * relation instead (Nota de crédito, Devolución, Sustitución CFDI, …).
+     */
+    public function getDocumentoLabelAttribute(): string
+    {
+        return \App\Support\CfdiCatalogs::tipoRelacion($this->tipo_relacion) ?? 'Factura';
+    }
+
+    /** "G03 — Gastos en general" for the Uso CFDI column, or null when unset. */
+    public function getUsoCfdiLabelAttribute(): ?string
+    {
+        return \App\Support\CfdiCatalogs::usoCfdi($this->uso_cfdi);
+    }
+
+    /**
+     * True when the CFDI is in a currency other than MXN, so amount columns
+     * should show the MXN conversion as primary and the original as subtle.
+     */
+    public function getEsMonedaExtranjeraAttribute(): bool
+    {
+        return strtoupper((string) $this->moneda) !== 'MXN';
+    }
+
+    /** Convert an amount in the invoice's currency to MXN using its tipo de cambio. */
+    public function aMxn(float|int|null $amount): ?float
+    {
+        if ($amount === null) {
+            return null;
+        }
+
+        return round((float) $amount * (float) $this->tipo_cambio, 2);
     }
 
     /**
@@ -229,16 +265,26 @@ class Invoice extends Model
     }
 
     /**
-     * SUBTOTAL for the egreso table = the invoice's real subtotal.
+     * SUBTOTAL net of the CFDI Descuento (subtotal − descuento).
      *
-     * We use the stored subtotal (discounts already applied) rather than summing
-     * the base buckets — the buckets are an informational breakdown and, with the
-     * 16% base derived from IVA, won't necessarily foot to the subtotal on
-     * discounted invoices. Using the real subtotal keeps OTROS IMPUESTOS correct.
+     * The CFDI SubTotal is the pre-discount amount (Total = SubTotal − Descuento
+     * + impuestos), so the displayed subtotal must subtract the discount to be
+     * the real taxable base. This also keeps the derived OTROS IMPUESTOS honest:
+     * without it, a discounted invoice shows a phantom negative equal to −descuento.
+     */
+    public function getSubtotalNetoAttribute(): float
+    {
+        return round((float) $this->subtotal - (float) $this->descuento, 2);
+    }
+
+    /**
+     * SUBTOTAL for the egreso table. Net of discount (see subtotal_neto): the
+     * CFDI SubTotal is pre-discount, so we subtract Descuento so OTROS IMPUESTOS
+     * reflects only genuine other taxes, not the discount.
      */
     public function getSubtotalEgresoAttribute(): float
     {
-        return (float) $this->subtotal;
+        return $this->subtotal_neto;
     }
 
     /**

@@ -83,6 +83,7 @@ class CfdiParser
             'metodo_pago'      => $attr($root, 'MetodoPago'),
             'forma_pago'       => $attr($root, 'FormaPago'),
             'uso_cfdi'         => $attr($receptor, 'UsoCFDI'),
+            'tipo_relacion'    => $this->extractTipoRelacion($root),
             'subtotal'         => $this->money($attr($root, 'SubTotal')),
             'descuento'        => $this->money($attr($root, 'Descuento')),
             'total'            => $this->money($attr($root, 'Total')),
@@ -250,6 +251,31 @@ class CfdiParser
         }
 
         return (string) $tfd->attributes()['UUID'];
+    }
+
+    /**
+     * The CFDI "Tipo de relación" (01–07) from cfdi:CfdiRelacionados/@TipoRelacion.
+     *
+     * A comprobante can have several CfdiRelacionados nodes; we return the first
+     * TipoRelacion found, which is what the document label needs. Returns null on
+     * a plain invoice with no related documents.
+     */
+    private function extractTipoRelacion(SimpleXMLElement $root): ?string
+    {
+        $relacionados = $root->children(self::NS_CFDI)->CfdiRelacionados ?? null;
+        if (! $relacionados || count($relacionados) === 0) {
+            return null;
+        }
+
+        // count() > 0 means it's iterable; take the first node's TipoRelacion.
+        foreach ($relacionados as $rel) {
+            $tipo = $rel->attributes()['TipoRelacion'] ?? null;
+            if ($tipo !== null && (string) $tipo !== '') {
+                return (string) $tipo;
+            }
+        }
+
+        return null;
     }
 
     private function extractTimbradoDate(SimpleXMLElement $root): ?string

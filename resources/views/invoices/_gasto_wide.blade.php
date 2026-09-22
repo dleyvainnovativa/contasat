@@ -21,6 +21,8 @@
     .pe-btn-xs { font-size:11px; padding:.2rem .5rem; }
     .pe-ref { font-weight:600; color:var(--ok); }
     .pe-col-uuid { max-width:150px; overflow:hidden; text-overflow:ellipsis; }
+    /* Foreign-currency cells: MXN conversion primary, original subtle underneath. */
+    .pe-fx { font-size:10px; color:var(--text-muted); line-height:1.1; margin-top:1px; font-variant-numeric:tabular-nums; }
 </style>
 
 @if($invoices->isEmpty())
@@ -53,6 +55,7 @@
                 <th class="pe-num">IVA por Retener</th>
                 <th class="pe-num">ISR por Retener</th>
                 <th class="pe-num">Total</th>
+                <th>Uso CFDI</th>
                 <th>Concepto XML</th>
                 <th>Recibo Pago</th>
                 <th>Forma Pago</th>
@@ -67,8 +70,25 @@
                 @php
                     $base = $inv->egreso_base_breakdown;
                     $pago = $inv->pago_resumen;
-                    $fmt = fn($v) => $v === null ? '—' : '$' . number_format($v, 2);
                     $pendiente = ! $pago['recibo'];
+
+                    // Money cell renderer. Values arrive in the invoice's currency.
+                    // For non-MXN invoices the MXN conversion is shown as primary
+                    // (value × tipo de cambio) with the original amount + code as a
+                    // subtle line beneath. Returns HTML (numeric-only, safe to echo).
+                    $money = function ($v, bool $muted = false) use ($inv) {
+                        if ($v === null || $v === '') {
+                            return '<span class="pe-muted">—</span>';
+                        }
+                        $foreign = $inv->es_moneda_extranjera;
+                        $primaryVal = $foreign ? $inv->aMxn($v) : (float) $v;
+                        $mutedCls = $muted ? ' pe-muted' : '';
+                        $html = '<span class="' . trim('pe-mxn' . $mutedCls) . '">$' . number_format($primaryVal, 2) . '</span>';
+                        if ($foreign) {
+                            $html .= '<div class="pe-fx">' . e(strtoupper($inv->moneda)) . ' ' . number_format((float) $v, 2) . '</div>';
+                        }
+                        return $html;
+                    };
                 @endphp
                 <tr data-invoice="{{ $inv->id }}">
                     <td style="white-space:nowrap;">
@@ -108,17 +128,18 @@
                     <td class="data pe-col-uuid" title="{{ $inv->uuid }}">{{ $inv->uuid }}</td>
                     <td class="data">{{ $inv->emisor_rfc }}</td>
                     <td class="pe-trunc" title="{{ $inv->emisor_nombre }}">{{ $inv->emisor_nombre }}</td>
-                    <td class="pe-num pe-group-16">{{ $fmt($base['16']) }}</td>
-                    <td class="pe-num">{{ $fmt($base['0']) }}</td>
-                    <td class="pe-num">{{ $fmt($base['exento']) }}</td>
-                    <td class="pe-num">{{ $fmt($base['no_objeto']) }}</td>
-                    <td class="pe-num">{{ $base['no_deducible'] > 0 ? '$' . number_format($base['no_deducible'], 2) : '—' }}</td>
-                    <td class="pe-num">${{ number_format($inv->subtotal_egreso, 2) }}</td>
-                    <td class="pe-num">${{ number_format($inv->iva_trasladado, 2) }}</td>
-                    <td class="pe-num pe-muted">{{ abs($inv->otros_impuestos) > 0.005 ? '$' . number_format($inv->otros_impuestos, 2) : '—' }}</td>
-                    <td class="pe-num">{{ $inv->iva_retenido > 0 ? '$' . number_format($inv->iva_retenido, 2) : '—' }}</td>
-                    <td class="pe-num">{{ $inv->isr_retenido > 0 ? '$' . number_format($inv->isr_retenido, 2) : '—' }}</td>
-                    <td class="pe-num">${{ number_format($inv->total, 2) }}</td>
+                    <td class="pe-num pe-group-16">{!! $money($base['16']) !!}</td>
+                    <td class="pe-num">{!! $money($base['0']) !!}</td>
+                    <td class="pe-num">{!! $money($base['exento']) !!}</td>
+                    <td class="pe-num">{!! $money($base['no_objeto']) !!}</td>
+                    <td class="pe-num">{!! $base['no_deducible'] > 0 ? $money($base['no_deducible']) : '—' !!}</td>
+                    <td class="pe-num">{!! $money($inv->subtotal_egreso) !!}</td>
+                    <td class="pe-num">{!! $money($inv->iva_trasladado) !!}</td>
+                    <td class="pe-num pe-muted">{!! abs($inv->otros_impuestos) > 0.005 ? $money($inv->otros_impuestos, true) : '—' !!}</td>
+                    <td class="pe-num">{!! $inv->iva_retenido > 0 ? $money($inv->iva_retenido) : '—' !!}</td>
+                    <td class="pe-num">{!! $inv->isr_retenido > 0 ? $money($inv->isr_retenido) : '—' !!}</td>
+                    <td class="pe-num">{!! $money($inv->total) !!}</td>
+                    <td class="pe-trunc" title="{{ $inv->uso_cfdi_label }}">{{ $inv->uso_cfdi_label ?: '—' }}</td>
                     <td class="pe-trunc" title="{{ $inv->conceptos_resumen }}">{{ \Illuminate\Support\Str::limit($inv->conceptos_resumen, 40) ?: '—' }}</td>
                     <td>
                         @if($pago['recibo'])
@@ -130,7 +151,7 @@
                     <td class="data">{{ $inv->forma_pago ?: '—' }}</td>
                     <td class="data">{{ $inv->metodo_pago ?: '—' }}</td>
                     <td class="data">{{ $pago['fecha'] ?? '—' }}</td>
-                    <td class="pe-num">{{ $pago['importe'] !== null ? '$' . number_format($pago['importe'], 2) : '—' }}</td>
+                    <td class="pe-num">{!! $money($pago['importe']) !!}</td>
                     <td>
                         @if($pendiente)
                             <span class="badge-status s-warning" style="font-size:10.5px;">No pagado</span>

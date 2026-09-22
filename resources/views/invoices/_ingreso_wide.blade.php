@@ -20,6 +20,10 @@
     .pi-btn-xs { font-size:11px; padding:.2rem .5rem; }
     .pi-ref { font-weight:600; color:var(--ok); }
     .pi-col-uuid { max-width:150px; overflow:hidden; text-overflow:ellipsis; }
+    /* Foreign-currency cells: MXN conversion primary, original subtle underneath. */
+    .pi-fx { font-size:10px; color:var(--text-muted); line-height:1.1; margin-top:1px; font-variant-numeric:tabular-nums; }
+    .pi-doc-rel { color:var(--brand-600); font-weight:600; }
+    [data-theme="dark"] .pi-doc-rel { color:var(--brand-300, var(--brand)); }
 </style>
 
 @if($invoices->isEmpty())
@@ -51,6 +55,7 @@
                 <th class="pi-num">IVA Ret.</th>
                 <th class="pi-num">ISR Ret.</th>
                 <th class="pi-num">Total</th>
+                <th>Uso CFDI</th>
                 <th>Concepto XML</th>
                 <th>Forma Pago</th>
                 <th>Método Pago</th>
@@ -65,7 +70,24 @@
                 @php
                     $base = $inv->iva_base_breakdown;
                     $pago = $inv->pago_resumen;
-                    $fmt = fn($v) => $v === null ? '—' : '$' . number_format($v, 2);
+
+                    // Money cell renderer. Values arrive in the invoice's currency.
+                    // For non-MXN invoices the MXN conversion is shown as primary
+                    // (value × tipo de cambio) with the original amount + code as a
+                    // subtle line beneath. Returns HTML (numeric-only, safe to echo).
+                    $money = function ($v, bool $muted = false) use ($inv) {
+                        if ($v === null || $v === '') {
+                            return '<span class="pi-muted">—</span>';
+                        }
+                        $foreign = $inv->es_moneda_extranjera;
+                        $primaryVal = $foreign ? $inv->aMxn($v) : (float) $v;
+                        $mutedCls = $muted ? ' pi-muted' : '';
+                        $html = '<span class="' . trim('pi-mxn' . $mutedCls) . '">$' . number_format($primaryVal, 2) . '</span>';
+                        if ($foreign) {
+                            $html .= '<div class="pi-fx">' . e(strtoupper($inv->moneda)) . ' ' . number_format((float) $v, 2) . '</div>';
+                        }
+                        return $html;
+                    };
                 @endphp
                 <tr data-invoice="{{ $inv->id }}">
                     <td style="white-space:nowrap;">
@@ -95,7 +117,13 @@
                             @endif
                         </div>
                     </td>
-                    <td>Factura</td>
+                    <td>
+                        @if($inv->tipo_relacion)
+                            <span class="pi-doc-rel" title="Tipo de relación {{ $inv->tipo_relacion }}">{{ $inv->documento_label }}</span>
+                        @else
+                            {{ $inv->documento_label }}
+                        @endif
+                    </td>
                     <td>
                         <span class="badge-status {{ $inv->cancelado ? 's-danger' : 's-success' }}" style="font-size:10.5px;">
                             {{ $inv->estado_sat }}
@@ -106,16 +134,17 @@
                     <td class="data pi-col-uuid" title="{{ $inv->uuid }}">{{ $inv->uuid }}</td>
                     <td class="data">{{ $inv->receptor_rfc }}</td>
                     <td class="pi-trunc" title="{{ $inv->receptor_nombre }}">{{ $inv->receptor_nombre }}</td>
-                    <td class="pi-num pi-group-16">{{ $fmt($base['16']) }}</td>
-                    <td class="pi-num">{{ $fmt($base['0']) }}</td>
-                    <td class="pi-num">{{ $fmt($base['exento']) }}</td>
-                    <td class="pi-num">{{ $fmt($base['no_objeto']) }}</td>
-                    <td class="pi-num">${{ number_format($inv->subtotal, 2) }}</td>
-                    <td class="pi-num">${{ number_format($inv->iva_trasladado, 2) }}</td>
-                    <td class="pi-num pi-muted">{{ abs($inv->otros_impuestos) > 0.005 ? '$' . number_format($inv->otros_impuestos, 2) : '—' }}</td>
-                    <td class="pi-num">${{ number_format($inv->iva_retenido, 2) }}</td>
-                    <td class="pi-num">${{ number_format($inv->isr_retenido, 2) }}</td>
-                    <td class="pi-num">${{ number_format($inv->total, 2) }}</td>
+                    <td class="pi-num pi-group-16">{!! $money($base['16']) !!}</td>
+                    <td class="pi-num">{!! $money($base['0']) !!}</td>
+                    <td class="pi-num">{!! $money($base['exento']) !!}</td>
+                    <td class="pi-num">{!! $money($base['no_objeto']) !!}</td>
+                    <td class="pi-num">{!! $money($inv->subtotal_neto) !!}</td>
+                    <td class="pi-num">{!! $money($inv->iva_trasladado) !!}</td>
+                    <td class="pi-num pi-muted">{!! abs($inv->otros_impuestos) > 0.005 ? $money($inv->otros_impuestos, true) : '—' !!}</td>
+                    <td class="pi-num">{!! $money($inv->iva_retenido) !!}</td>
+                    <td class="pi-num">{!! $money($inv->isr_retenido) !!}</td>
+                    <td class="pi-num">{!! $money($inv->total) !!}</td>
+                    <td class="pi-trunc" title="{{ $inv->uso_cfdi_label }}">{{ $inv->uso_cfdi_label ?: '—' }}</td>
                     <td class="pi-trunc" title="{{ $inv->conceptos_resumen }}">{{ \Illuminate\Support\Str::limit($inv->conceptos_resumen, 40) ?: '—' }}</td>
                     <td class="data">{{ $inv->forma_pago ?: '—' }}</td>
                     <td class="data">{{ $inv->metodo_pago ?: '—' }}</td>
@@ -127,7 +156,7 @@
                         @endif
                     </td>
                     <td class="data">{{ $pago['fecha'] ?? '—' }}</td>
-                    <td class="pi-num">{{ $pago['importe'] !== null ? '$' . number_format($pago['importe'], 2) : '—' }}</td>
+                    <td class="pi-num">{!! $money($pago['importe']) !!}</td>
                     <td class="data pi-muted">{{ $pago['recibo'] ? '102.01' : '—' }}</td>
                 </tr>
             @endforeach

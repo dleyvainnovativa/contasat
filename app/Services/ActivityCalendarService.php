@@ -55,26 +55,7 @@ class ActivityCalendarService
             $enabled = $row?->enabled ?? true;
             $doc = $docs->get($key);
 
-            if (! $enabled) {
-                $status = ActivityStatus::STATUS_NO_APLICA;
-            } elseif ($row && $row->manual_status) {
-                // Manual tag always wins, even for upload activities (override).
-                $status = $row->manual_status;
-            } elseif ($meta['mode'] === 'upload') {
-                // Upload activities: realizada once a validated document exists.
-                $status = $doc && $doc->rfc_ok
-                    ? ActivityStatus::STATUS_REALIZADA
-                    : ActivityStatus::STATUS_PENDIENTE;
-            } elseif ($meta['mode'] === 'email') {
-                // Email activities: realizada once the email has been sent.
-                $status = $doc && $doc->sent_at
-                    ? ActivityStatus::STATUS_REALIZADA
-                    : ActivityStatus::STATUS_PENDIENTE;
-            } elseif (isset($auto[$key])) {
-                $status = $auto[$key];
-            } else {
-                $status = ActivityStatus::STATUS_PENDIENTE;
-            }
+            $status = self::resolveStatus($meta, $row, $doc, $auto[$key] ?? null);
 
             return [
                 'key'       => $key,
@@ -100,70 +81,93 @@ class ActivityCalendarService
     }
 
     /**
+     * Resolve one activity's status from its stored row, document, and (for auto
+     * activities) precomputed auto status. Single source of truth for the
+     * resolution ladder — used by resolve() and by the dashboard's batch matrix
+     * (DashboardService), so the two can never drift.
+     *
+     * Ladder: disabled → no_aplica; manual tag wins; upload → doc RFC-ok;
+     * email → doc sent; auto → its computed status; otherwise pendiente.
+     */
+    public static function resolveStatus(array $meta, ?ActivityStatus $row, ?\App\Models\ActivityDocument $doc, ?string $autoStatus): string
+    {
+        $enabled = $row?->enabled ?? true;
+
+        if (! $enabled) {
+            return ActivityStatus::STATUS_NO_APLICA;
+        }
+        if ($row && $row->manual_status) {
+            return $row->manual_status;
+        }
+        if ($meta['mode'] === 'upload') {
+            return $doc && $doc->rfc_ok ? ActivityStatus::STATUS_REALIZADA : ActivityStatus::STATUS_PENDIENTE;
+        }
+        if ($meta['mode'] === 'email') {
+            return $doc && $doc->sent_at ? ActivityStatus::STATUS_REALIZADA : ActivityStatus::STATUS_PENDIENTE;
+        }
+        if ($autoStatus !== null) {
+            return $autoStatus;
+        }
+
+        return ActivityStatus::STATUS_PENDIENTE;
+    }
+
+    /**
      * Compute the three auto-detectable statuses from existing data.
      *
      * @return array<string,string> activity_key => status
      */
     private function autoStatuses(Period $period): array
     {
+        $uploads  = CfdiUpload::where('period_id', $period->id);
+        $imported = (clone $uploads)->where('imported', '>', 0)->count();
+
+        $total        = Invoice::where('period_id', $period->id)->count();
+        $sinClasificar = $total === 0 ? 0 : Invoice::where('period_id', $period->id)
+            ->where('clasificacion', 'sin_clasificar')->count();
+
         return [
-            'descarga_xml'      => $this->descargaXmlStatus($period),
-            'clasificacion_xml' => $this->clasificacionStatus($period),
-            'conciliacion'      => $this->conciliacionStatus($period),
+            'descarga_xml'      => self::descargaStatusFrom((clone $uploads)->count(), $imported),
+            'clasificacion_xml' => self::clasificacionStatusFrom($total, $sinClasificar),
+            'conciliacion'      => self::conciliacionStatusFrom((int) $period->movement_count, (int) $period->unmatched_count),
         ];
     }
 
-    /** Realizada if any CFDI upload actually imported rows; en_proceso if uploaded but nothing imported yet. */
-    private function descargaXmlStatus(Period $period): string
+    /** Realizada if any CFDI upload imported rows; en_proceso if uploaded but nothing imported; else pendiente. */
+    public static function descargaStatusFrom(int $uploadCount, int $importedUploadCount): string
     {
-        $uploads = CfdiUpload::where('period_id', $period->id);
-
-        if ((clone $uploads)->where('imported', '>', 0)->exists()) {
+        if ($importedUploadCount > 0) {
             return ActivityStatus::STATUS_REALIZADA;
         }
-        if ((clone $uploads)->exists()) {
+        if ($uploadCount > 0) {
             return ActivityStatus::STATUS_EN_PROCESO;
         }
 
         return ActivityStatus::STATUS_PENDIENTE;
     }
 
-    /** Realizada when every invoice in the period is classified; en_proceso while some remain. */
-    private function clasificacionStatus(Period $period): string
+    /** Realizada when every invoice is classified; en_proceso while some remain; pendiente with no invoices. */
+    public static function clasificacionStatusFrom(int $total, int $sinClasificar): string
     {
-        $total = Invoice::where('period_id', $period->id)->count();
         if ($total === 0) {
             return ActivityStatus::STATUS_PENDIENTE;
         }
 
-        $sinClasificar = Invoice::where('period_id', $period->id)
-            ->where('clasificacion', 'sin_clasificar')
-            ->count();
-
-        if ($sinClasificar === 0) {
-            return ActivityStatus::STATUS_REALIZADA;
-        }
-
-        // Some (or all) invoices remain unclassified → in progress, matching the
-        // spec's "dirige al usuario al apartado donde está el pendiente".
-        return ActivityStatus::STATUS_EN_PROCESO;
+        return $sinClasificar === 0
+            ? ActivityStatus::STATUS_REALIZADA
+            : ActivityStatus::STATUS_EN_PROCESO;
     }
 
-    /** Uses the period's cached reconciliation counters. */
-    private function conciliacionStatus(Period $period): string
+    /** Realizada when no movements remain unmatched; en_proceso while some do; pendiente with no movements. */
+    public static function conciliacionStatusFrom(int $movements, int $unmatched): string
     {
-        $movements = (int) $period->movement_count;
-        $unmatched = (int) $period->unmatched_count;
-
         if ($movements === 0) {
             return ActivityStatus::STATUS_PENDIENTE;
         }
-        if ($unmatched === 0) {
-            return ActivityStatus::STATUS_REALIZADA;
-        }
 
-        // Movements exist with some still unmatched → in progress.
-        return ActivityStatus::STATUS_EN_PROCESO;
+        return $unmatched === 0
+            ? ActivityStatus::STATUS_REALIZADA
+            : ActivityStatus::STATUS_EN_PROCESO;
     }
 
     /** Where an "en proceso" auto activity sends the accountant. Unfiltered landing pages. */

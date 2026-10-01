@@ -24,7 +24,7 @@ class DashboardController extends Controller
         $month = max(1, min(12, $month));
 
         $overview = $this->dashboard->overview($year, $month);
-        $totals   = $this->dashboard->statusTotals($year, $month);
+        $totals   = $this->dashboard->statusTotals($overview);
 
         return view('dashboard.index', [
             'overview'    => $overview,

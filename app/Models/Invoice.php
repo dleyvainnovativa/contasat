@@ -147,6 +147,22 @@ class Invoice extends Model
         return strtoupper((string) $this->moneda) !== 'MXN';
     }
 
+    /**
+     * A nota de crédito / egreso (TipoDeComprobante "E"). These reduce the
+     * related income or expense, so they display with negative amounts and are
+     * subtracted from totals rather than added.
+     */
+    public function getEsNotaCreditoAttribute(): bool
+    {
+        return $this->tipo_comprobante === 'E';
+    }
+
+    /** Sign applied to this invoice's amounts: −1 for a nota de crédito, +1 otherwise. */
+    public function getSignoAttribute(): int
+    {
+        return $this->es_nota_credito ? -1 : 1;
+    }
+
     /** Convert an amount in the invoice's currency to MXN using its tipo de cambio. */
     public function aMxn(float|int|null $amount): ?float
     {

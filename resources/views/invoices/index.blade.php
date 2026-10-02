@@ -109,7 +109,16 @@
         </form>
     </div>
 
-    @if($invoices->isEmpty())
+    @php $wide = in_array($filtro ?? '', ['', 'ingreso', 'gasto'], true); @endphp
+    @if($wide)
+        {{-- Todas / ingreso / gasto: reuse the full provisión wide table (Descuento,
+             currency subtle, Uso CFDI, notas de crédito as negatives). Gastos uses
+             the egreso layout; Todas and Ingreso use the ingreso layout. The partial
+             brings its own scroll wrapper, pagination and modals. --}}
+        <div class="p-2">
+            @include($filtro === 'gasto' ? 'invoices._gasto_wide' : 'invoices._ingreso_wide')
+        </div>
+    @elseif($invoices->isEmpty())
         <div class="empty-state">
             <i class="fa-solid fa-file-circle-plus"></i>
             <h3>Sin facturas</h3>
@@ -167,6 +176,7 @@
     @endif
 </div>
 
+@unless($wide ?? false)
 <div class="d-flex align-items-center justify-content-between mt-3 flex-wrap gap-2">
     <div class="d-flex align-items-center gap-2">
         <label class="text-muted" style="font-size:12.5px;">Mostrar</label>
@@ -184,6 +194,7 @@
     </div>
     <div>{{ $invoices->links() }}</div>
 </div>
+@endunless
 
 @include('invoices._upload_modal')
 @endsection

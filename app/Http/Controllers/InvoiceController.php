@@ -32,6 +32,12 @@ class InvoiceController extends Controller
         }
 
         $period = $this->context->period();
+        $filtro = $request->string('filtro')->toString();
+
+        // Todas / ingreso / gasto render the wide provisión tables, which read
+        // extra relations — eager-load them for those filters to avoid N+1.
+        // ('' is the Todas tab.) Nómina and pagos keep the simple table.
+        $wideFiltro = in_array($filtro, ['', 'ingreso', 'gasto'], true);
 
         $invoices = Invoice::where('period_id', $period->id)
             ->when($request->filled('q'), function ($q) use ($request) {
@@ -46,26 +52,40 @@ class InvoiceController extends Controller
                         ->orWhereRaw("CONCAT(COALESCE(serie,''), COALESCE(folio,'')) LIKE ?", ["%{$term}%"]);
                 });
             })
-            ->when($request->filled('filtro'), function ($q) use ($request) {
-                match ($request->string('filtro')->toString()) {
-                    'ingreso'       => $q->where('tipo_comprobante', 'I')->where('tipo', 'emitida'),
-                    'gasto'         => $q->where('tipo_comprobante', 'I')->where('tipo', 'recibida'),
+            ->when($request->filled('filtro'), function ($q) use ($filtro) {
+                match ($filtro) {
+                    // Ingreso/gasto span facturas (I) and notas de crédito (E).
+                    'ingreso'       => $q->whereIn('tipo_comprobante', ['I', 'E'])->where('tipo', 'emitida'),
+                    'gasto'         => $q->whereIn('tipo_comprobante', ['I', 'E'])->where('tipo', 'recibida'),
                     'nomina'        => $q->where('tipo_comprobante', 'N'),
                     'pago_emitido'  => $q->where('tipo_comprobante', 'P')->where('tipo', 'emitida'),
                     'pago_recibido' => $q->where('tipo_comprobante', 'P')->where('tipo', 'recibida'),
                     default         => $q,
                 };
             })
+            ->when($wideFiltro, fn ($q) => $q->with([
+                'cuentaContable', 'cuentaAbono',
+                'lines:id,invoice_id,descripcion,importe,iva_trasladado,iva_base_tipo,parte_no_deducible',
+                'polizas:id,invoice_id,tipo,num_iden',
+                'paymentDocuments:id,iddocumento,fecha_pago,imp_pagado',
+            ]))
             ->orderByDesc('fecha_emision')
             // Per-page selectable up to 200 (default 25). Lets the accountant see
             // a whole period's invoices on one screen when they want to.
             ->paginate($this->perPage($request))
             ->withQueryString();
 
-        // Totals strip: emitidas (income) vs recibidas (expense) for the period.
+        // Totals strip (#4): income = facturas emitidas (I) minus notas de crédito
+        // emitidas (E); expense = facturas recibidas (I) minus notas recibidas (E).
+        // Pagos (P) and nómina (N) are excluded — they aren't income/expense here.
+        $signedByDirection = fn (string $direction) => (float) Invoice::where('period_id', $period->id)
+            ->where('tipo', $direction)
+            ->selectRaw("sum(case when tipo_comprobante = 'I' then total when tipo_comprobante = 'E' then -total else 0 end) as v")
+            ->value('v');
+
         $totals = [
-            'emitidas'  => Invoice::where('period_id', $period->id)->where('tipo', 'emitida')->sum('total'),
-            'recibidas' => Invoice::where('period_id', $period->id)->where('tipo', 'recibida')->sum('total'),
+            'emitidas'  => $signedByDirection('emitida'),
+            'recibidas' => $signedByDirection('recibida'),
             'count'     => Invoice::where('period_id', $period->id)->count(),
         ];
 
@@ -80,6 +100,7 @@ class InvoiceController extends Controller
             'totals'        => $totals,
             'recentUploads' => $recentUploads,
             'tipo'          => $request->string('tipo')->toString(),
+            'filtro'        => $filtro,
             'q'             => $request->string('q')->toString(),
             'perPage'       => $this->perPage($request),
         ]);

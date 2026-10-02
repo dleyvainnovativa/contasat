@@ -25,13 +25,19 @@ use Illuminate\Http\RedirectResponse;
  */
 class InvoiceViewController extends Controller
 {
-    /** view key => [label, tipo_comprobante, direction|null] */
+    /**
+     * view key => [label, tipo_comprobante[], direction|null]
+     *
+     * Ingreso and gasto span tipo I (facturas) and tipo E (notas de crédito):
+     * a credit note belongs with the income/expense it reduces, shown as a
+     * negative row and subtracted from the totals.
+     */
     private const VIEWS = [
-        'ingreso'       => ['Provisión facturas de ingreso', 'I', 'emitida'],
-        'gasto'         => ['Provisión facturas de gastos',  'I', 'recibida'],
-        'nomina'        => ['Provisión facturas de nómina',  'N', null],
-        'pago_emitido'  => ['Complementos de pago emitidos', 'P', 'emitida'],
-        'pago_recibido' => ['Complementos de pago recibidos', 'P', 'recibida'],
+        'ingreso'       => ['Provisión facturas de ingreso', ['I', 'E'], 'emitida'],
+        'gasto'         => ['Provisión facturas de gastos',  ['I', 'E'], 'recibida'],
+        'nomina'        => ['Provisión facturas de nómina',  ['N'], null],
+        'pago_emitido'  => ['Complementos de pago emitidos', ['P'], 'emitida'],
+        'pago_recibido' => ['Complementos de pago recibidos', ['P'], 'recibida'],
     ];
 
     public function __construct(
@@ -49,11 +55,12 @@ class InvoiceViewController extends Controller
                 ->with('toast', ['type' => 'warning', 'message' => 'Selecciona un cliente y periodo primero.']);
         }
 
-        [$label, $tipoComprobante, $direction] = self::VIEWS[$view];
+        [$label, $tipos, $direction] = self::VIEWS[$view];
+        $tipoComprobante = $tipos[0];
         $period = $this->context->period();
 
         $query = Invoice::where('period_id', $period->id)
-            ->where('tipo_comprobante', $tipoComprobante)
+            ->whereIn('tipo_comprobante', $tipos)
             ->when($direction, fn($q) => $q->where('tipo', $direction))
             ->when($request->filled('q'), function ($q) use ($request) {
                 $term = $request->string('q')->toString();
@@ -88,16 +95,23 @@ class InvoiceViewController extends Controller
         $perPage = in_array($view, ['ingreso', 'gasto'], true) ? $this->perPage($request) : 25;
         $invoices = $query->paginate($perPage)->withQueryString();
 
-        // Totals for the filtered set (whole period, not just the page).
-        $totalsQuery = Invoice::where('period_id', $period->id)
-            ->where('tipo_comprobante', $tipoComprobante)
-            ->when($direction, fn($q) => $q->where('tipo', $direction));
+        // Totals for the filtered set (whole period, not just the page). Notas de
+        // crédito (tipo E) subtract; subtotal uses the net amount (subtotal −
+        // descuento) to match the displayed Subtotal column.
+        $row = Invoice::where('period_id', $period->id)
+            ->whereIn('tipo_comprobante', $tipos)
+            ->when($direction, fn($q) => $q->where('tipo', $direction))
+            ->selectRaw("count(*) as cnt,
+                sum(case when tipo_comprobante = 'E' then -(subtotal - descuento) else (subtotal - descuento) end) as subtotal,
+                sum(case when tipo_comprobante = 'E' then -iva_trasladado else iva_trasladado end) as iva,
+                sum(case when tipo_comprobante = 'E' then -total else total end) as total")
+            ->first();
 
         $totals = [
-            'count'    => (clone $totalsQuery)->count(),
-            'subtotal' => (clone $totalsQuery)->sum('subtotal'),
-            'iva'      => (clone $totalsQuery)->sum('iva_trasladado'),
-            'total'    => (clone $totalsQuery)->sum('total'),
+            'count'    => (int) ($row->cnt ?? 0),
+            'subtotal' => (float) ($row->subtotal ?? 0),
+            'iva'      => (float) ($row->iva ?? 0),
+            'total'    => (float) ($row->total ?? 0),
         ];
 
         return view('invoices.filtered', [
@@ -137,9 +151,9 @@ class InvoiceViewController extends Controller
             ->get();
 
         $counts = [];
-        foreach (self::VIEWS as $key => [$label, $tc, $dir]) {
+        foreach (self::VIEWS as $key => [$label, $tipos, $dir]) {
             $counts[$key] = $rows
-                ->where('tipo_comprobante', $tc)
+                ->whereIn('tipo_comprobante', $tipos)
                 ->when($dir, fn($c) => $c->where('tipo', $dir))
                 ->sum('n');
         }

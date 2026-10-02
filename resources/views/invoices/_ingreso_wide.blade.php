@@ -54,6 +54,7 @@
                 <th class="pi-num">Otros Imp.</th>
                 <th class="pi-num">IVA Ret.</th>
                 <th class="pi-num">ISR Ret.</th>
+                <th class="pi-num">Descuento</th>
                 <th class="pi-num">Total</th>
                 <th>Uso CFDI</th>
                 <th>Concepto XML</th>
@@ -71,20 +72,24 @@
                     $base = $inv->iva_base_breakdown;
                     $pago = $inv->pago_resumen;
 
+                    // Row sign: notas de crédito (tipo E) display negative and subtract.
+                    $signo = $inv->signo;
+
                     // Money cell renderer. Values arrive in the invoice's currency.
                     // For non-MXN invoices the MXN conversion is shown as primary
                     // (value × tipo de cambio) with the original amount + code as a
-                    // subtle line beneath. Returns HTML (numeric-only, safe to echo).
-                    $money = function ($v, bool $muted = false) use ($inv) {
+                    // subtle line beneath. Nota de crédito amounts are negated.
+                    // Returns HTML (numeric-only, safe to echo).
+                    $money = function ($v, bool $muted = false) use ($inv, $signo) {
                         if ($v === null || $v === '') {
                             return '<span class="pi-muted">—</span>';
                         }
                         $foreign = $inv->es_moneda_extranjera;
-                        $primaryVal = $foreign ? $inv->aMxn($v) : (float) $v;
+                        $primaryVal = ($foreign ? $inv->aMxn($v) : (float) $v) * $signo;
                         $mutedCls = $muted ? ' pi-muted' : '';
                         $html = '<span class="' . trim('pi-mxn' . $mutedCls) . '">$' . number_format($primaryVal, 2) . '</span>';
                         if ($foreign) {
-                            $html .= '<div class="pi-fx">' . e(strtoupper($inv->moneda)) . ' ' . number_format((float) $v, 2) . '</div>';
+                            $html .= '<div class="pi-fx">' . e(strtoupper($inv->moneda)) . ' ' . number_format((float) $v * $signo, 2) . '</div>';
                         }
                         return $html;
                     };
@@ -96,6 +101,10 @@
                             <a href="{{ route('invoices.show', $inv) }}" class="btn btn-soft pi-btn-xs" title="Ver factura">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
+                            @if($inv->es_nota_credito)
+                                {{-- Notas de crédito reduce the related ingreso; they don't get their own póliza. --}}
+                                <span class="badge-status s-warning" style="font-size:10px;" title="Nota de crédito — resta, no genera póliza">NC</span>
+                            @else
                             {{-- Provisión: ref if generated, else opens classify modal --}}
                             @if($inv->provision_ref)
                                 <span class="pi-ref" title="Provisión generada">{{ $inv->provision_ref }}</span>
@@ -114,6 +123,7 @@
                                     {{ $inv->provision_ref ? '' : 'disabled title=Genera-primero-la-provisión' }}>
                                     <i class="fa-solid fa-money-bill-wave"></i>
                                 </button>
+                            @endif
                             @endif
                         </div>
                     </td>
@@ -143,6 +153,7 @@
                     <td class="pi-num pi-muted">{!! abs($inv->otros_impuestos) > 0.005 ? $money($inv->otros_impuestos, true) : '—' !!}</td>
                     <td class="pi-num">{!! $money($inv->iva_retenido) !!}</td>
                     <td class="pi-num">{!! $money($inv->isr_retenido) !!}</td>
+                    <td class="pi-num pi-muted">{!! (float) $inv->descuento > 0.005 ? $money($inv->descuento, true) : '—' !!}</td>
                     <td class="pi-num">{!! $money($inv->total) !!}</td>
                     <td class="pi-trunc" title="{{ $inv->uso_cfdi_label }}">{{ $inv->uso_cfdi_label ?: '—' }}</td>
                     <td class="pi-trunc" title="{{ $inv->conceptos_resumen }}">{{ \Illuminate\Support\Str::limit($inv->conceptos_resumen, 40) ?: '—' }}</td>

@@ -54,6 +54,7 @@
                 <th class="pe-num">Otros Imp.</th>
                 <th class="pe-num">IVA por Retener</th>
                 <th class="pe-num">ISR por Retener</th>
+                <th class="pe-num">Descuento</th>
                 <th class="pe-num">Total</th>
                 <th>Uso CFDI</th>
                 <th>Concepto XML</th>
@@ -72,20 +73,24 @@
                     $pago = $inv->pago_resumen;
                     $pendiente = ! $pago['recibo'];
 
+                    // Row sign: notas de crédito (tipo E) display negative and subtract.
+                    $signo = $inv->signo;
+
                     // Money cell renderer. Values arrive in the invoice's currency.
                     // For non-MXN invoices the MXN conversion is shown as primary
                     // (value × tipo de cambio) with the original amount + code as a
-                    // subtle line beneath. Returns HTML (numeric-only, safe to echo).
-                    $money = function ($v, bool $muted = false) use ($inv) {
+                    // subtle line beneath. Nota de crédito amounts are negated.
+                    // Returns HTML (numeric-only, safe to echo).
+                    $money = function ($v, bool $muted = false) use ($inv, $signo) {
                         if ($v === null || $v === '') {
                             return '<span class="pe-muted">—</span>';
                         }
                         $foreign = $inv->es_moneda_extranjera;
-                        $primaryVal = $foreign ? $inv->aMxn($v) : (float) $v;
+                        $primaryVal = ($foreign ? $inv->aMxn($v) : (float) $v) * $signo;
                         $mutedCls = $muted ? ' pe-muted' : '';
                         $html = '<span class="' . trim('pe-mxn' . $mutedCls) . '">$' . number_format($primaryVal, 2) . '</span>';
                         if ($foreign) {
-                            $html .= '<div class="pe-fx">' . e(strtoupper($inv->moneda)) . ' ' . number_format((float) $v, 2) . '</div>';
+                            $html .= '<div class="pe-fx">' . e(strtoupper($inv->moneda)) . ' ' . number_format((float) $v * $signo, 2) . '</div>';
                         }
                         return $html;
                     };
@@ -96,6 +101,10 @@
                             <a href="{{ route('invoices.show', $inv) }}" class="btn btn-soft pe-btn-xs" title="Ver factura">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
+                            @if($inv->es_nota_credito)
+                                {{-- Notas de crédito reduce the related gasto; they don't get their own póliza. --}}
+                                <span class="badge-status s-warning" style="font-size:10px;" title="Nota de crédito — resta, no genera póliza">NC</span>
+                            @else
                             {{-- Provisión de gasto: ref if generated, else classify modal --}}
                             @if($inv->provision_gasto_ref)
                                 <span class="pe-ref" title="Provisión de gasto generada">{{ $inv->provision_gasto_ref }}</span>
@@ -114,6 +123,7 @@
                                     {{ $inv->provision_gasto_ref ? '' : 'disabled title=Genera-primero-la-provisión' }}>
                                     <i class="fa-solid fa-money-bill-wave"></i>
                                 </button>
+                            @endif
                             @endif
                         </div>
                     </td>
@@ -138,6 +148,7 @@
                     <td class="pe-num pe-muted">{!! abs($inv->otros_impuestos) > 0.005 ? $money($inv->otros_impuestos, true) : '—' !!}</td>
                     <td class="pe-num">{!! $inv->iva_retenido > 0 ? $money($inv->iva_retenido) : '—' !!}</td>
                     <td class="pe-num">{!! $inv->isr_retenido > 0 ? $money($inv->isr_retenido) : '—' !!}</td>
+                    <td class="pe-num pe-muted">{!! (float) $inv->descuento > 0.005 ? $money($inv->descuento, true) : '—' !!}</td>
                     <td class="pe-num">{!! $money($inv->total) !!}</td>
                     <td class="pe-trunc" title="{{ $inv->uso_cfdi_label }}">{{ $inv->uso_cfdi_label ?: '—' }}</td>
                     <td class="pe-trunc" title="{{ $inv->conceptos_resumen }}">{{ \Illuminate\Support\Str::limit($inv->conceptos_resumen, 40) ?: '—' }}</td>

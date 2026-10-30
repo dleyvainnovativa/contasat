@@ -165,11 +165,19 @@
                 <td class="pe-num">${{ number_format($inv->total, 2) }}</td>
                 <td class="pe-trunc" title="{{ $inv->conceptos_resumen }}">{{ \Illuminate\Support\Str::limit($inv->conceptos_resumen, 40) ?: '—' }}</td>
                 <td>
-                    @if($pago['recibo'])
-                    <span class="pe-ref"><i class="fa-solid fa-check"></i> CEP</span>
-                    @else
-                    <span class="pe-muted">—</span>
-                    @endif
+                    <div style="display:flex; flex-direction:column; gap:3px; align-items:flex-start;">
+                    @forelse($inv->pago_comp_refs as $c)
+                        @if($c['id'])
+                        <a href="{{ route('invoices.show', $c['id']) }}" class="pe-ref" title="Ver complemento de pago" style="text-decoration:none;">
+                            {{ $c['folio'] ?? 'CEP' }} — {{ $c['fecha'] ?? '—' }} <i class="fa-solid fa-up-right-from-square" style="font-size:9px;"></i>
+                        </a>
+                        @else
+                        <span class="pe-ref">{{ $c['folio'] ?? 'CEP' }} — {{ $c['fecha'] ?? '—' }}</span>
+                        @endif
+                    @empty
+                        <span class="pe-muted">—</span>
+                    @endforelse
+                    </div>
                 </td>
                 <td class="data">{{ $inv->forma_pago ?: '—' }}</td>
                 <td class="data">{{ $inv->metodo_pago ?: '—' }}</td>
@@ -221,7 +229,7 @@
     <div class="d-flex align-items-center gap-2">
         <label class="pe-muted" style="font-size:12.5px;">Mostrar</label>
         <select class="form-select form-select-sm" style="width:auto;" onchange="
-            const u = new URL(window.location);
+            const u = new window.URL(window.location.href);
             u.searchParams.set('per_page', this.value);
             u.searchParams.delete('page');
             window.location = u.toString();

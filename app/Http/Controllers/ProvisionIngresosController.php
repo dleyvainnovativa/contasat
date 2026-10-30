@@ -36,6 +36,9 @@ class ProvisionIngresosController extends Controller
         $invoices = Invoice::where('period_id', $period->id)
             ->where('tipo_comprobante', 'I')
             ->where('tipo', 'emitida')
+            // Only invoices that already have a póliza de provisión generated —
+            // this page is the post-provisión / cobro workspace.
+            ->whereHas('polizas', fn ($q) => $q->where('tipo', 'provision'))
             ->when($request->filled('q'), function ($q) use ($request) {
                 $term = $request->string('q')->toString();
                 $q->where(function ($sub) use ($term) {
@@ -52,7 +55,8 @@ class ProvisionIngresosController extends Controller
             ->with([
                 'lines:id,invoice_id,descripcion,importe,iva_trasladado,iva_base_tipo',
                 'polizas:id,invoice_id,tipo,num_iden',
-                'paymentDocuments:id,iddocumento,fecha_pago,imp_pagado,forma_pago,num_operacion',
+                'paymentDocuments:id,iddocumento,payment_invoice_id,fecha_pago,imp_pagado,forma_pago,num_operacion',
+                'paymentDocuments.paymentInvoice:id,serie,folio',
             ])
             ->orderByDesc('fecha_emision')
             ->paginate($this->perPage($request))

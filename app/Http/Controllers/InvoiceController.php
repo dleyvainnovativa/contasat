@@ -34,10 +34,11 @@ class InvoiceController extends Controller
         $period = $this->context->period();
         $filtro = $request->string('filtro')->toString();
 
-        // Todas / ingreso / gasto render the wide provisión tables, which read
-        // extra relations — eager-load them for those filters to avoid N+1.
-        // ('' is the Todas tab.) Nómina and pagos keep the simple table.
-        $wideFiltro = in_array($filtro, ['', 'ingreso', 'gasto'], true);
+        // Every tab now renders a wide table. Ingreso/gasto/nómina/Todas read the
+        // invoice-level relations; pagos read their issued DoctoRelacionado links.
+        // ('' is the Todas tab.)
+        $wideFiltro = in_array($filtro, ['', 'ingreso', 'gasto', 'nomina'], true);
+        $pagoFiltro = in_array($filtro, ['pago_emitido', 'pago_recibido'], true);
 
         $invoices = Invoice::where('period_id', $period->id)
             ->when($request->filled('q'), function ($q) use ($request) {
@@ -67,7 +68,11 @@ class InvoiceController extends Controller
                 'cuentaContable', 'cuentaAbono',
                 'lines:id,invoice_id,descripcion,importe,iva_trasladado,iva_base_tipo,parte_no_deducible',
                 'polizas:id,invoice_id,tipo,num_iden',
-                'paymentDocuments:id,iddocumento,fecha_pago,imp_pagado',
+                'paymentDocuments:id,iddocumento,payment_invoice_id,fecha_pago,imp_pagado',
+                'paymentDocuments.paymentInvoice:id,serie,folio',
+            ]))
+            ->when($pagoFiltro, fn ($q) => $q->with([
+                'issuedPayments:id,payment_invoice_id,fecha_pago,forma_pago,moneda,monto_pago,num_operacion,imp_pagado,paid_invoice_id',
             ]))
             ->orderByDesc('fecha_emision')
             // Per-page selectable up to 200 (default 25). Lets the accountant see

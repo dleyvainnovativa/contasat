@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Account;
 use App\Models\Invoice;
 
 /**
@@ -26,6 +27,10 @@ class InvoiceClassificationService
     // Supplier side.
     private const SUPPLIER_NATIONAL = '201.01';
     private const SUPPLIER_FOREIGN  = '201.02';
+    // Nómina: fixed contraparte account (Sueldos y salarios). Nómina CFDIs are
+    // issued by the client to employees but are NOT income — they must never mint
+    // an employee counterparty subaccount under 105.xx, and they carry no AI abono.
+    private const NOMINA_CONTABLE = '601.01';
 
     public function __construct(
         private readonly CounterpartyAccountService $counterparty,
@@ -40,6 +45,12 @@ class InvoiceClassificationService
     {
         if ($invoice->clasificacion === 'clasificada') {
             return $invoice; // human decision is final; re-run won't clobber it
+        }
+
+        // Nómina (CFDI tipo N) is handled deterministically: contraparte = 601.01,
+        // no counterparty minting, no AI abono.
+        if ($invoice->tipo_comprobante === 'N') {
+            return $this->classifyNomina($invoice);
         }
 
         $invoice->loadMissing('lines');
@@ -69,6 +80,35 @@ class InvoiceClassificationService
         ]);
 
         return $invoice->fresh();
+    }
+
+    /**
+     * Nómina classification: set the contraparte to 601.01 (Sueldos y salarios),
+     * clear any abono, and mark the invoice resolved so re-runs don't re-mint an
+     * employee account. If 601.01 isn't in the catalog yet, leave it unclassified
+     * so a later run (after the catalog is imported) can finish the job.
+     */
+    private function classifyNomina(Invoice $invoice): Invoice
+    {
+        $cuenta = $this->nominaAccount($invoice->client_id);
+
+        $invoice->update([
+            'cuenta_contable_id' => $cuenta?->id,
+            'cuenta_abono_id'    => null,
+            'clasificacion'      => $cuenta ? 'clasificada' : 'sin_clasificar',
+        ]);
+
+        return $invoice->fresh();
+    }
+
+    /** The 601.01 account for a client (client-owned if present, else the global catalog row). */
+    private function nominaAccount(int $clientId): ?Account
+    {
+        return Account::forClient($clientId)
+            ->where('numero_cuenta', self::NOMINA_CONTABLE)
+            ->where('activo', true)
+            ->orderByRaw('client_id is null')   // prefer a client-owned row over the global one
+            ->first();
     }
 
     private function resolveCounterparty(Invoice $invoice)

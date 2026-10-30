@@ -109,16 +109,21 @@
         </form>
     </div>
 
-    @php $wide = in_array($filtro ?? '', ['', 'ingreso', 'gasto'], true); @endphp
-    @if($wide)
-        {{-- Todas / ingreso / gasto: reuse the full provisión wide table (Descuento,
-             currency subtle, Uso CFDI, notas de crédito as negatives). Gastos uses
-             the egreso layout; Todas and Ingreso use the ingreso layout. The partial
-             brings its own scroll wrapper, pagination and modals. --}}
-        <div class="p-2">
-            @include($filtro === 'gasto' ? 'invoices._gasto_wide' : 'invoices._ingreso_wide')
-        </div>
-    @elseif($invoices->isEmpty())
+    {{-- Every filtro renders a purpose-built wide table; each partial brings its
+         own scroll wrapper, pagination and (where relevant) modals. Todas and
+         Ingreso use the ingreso layout; the rest their own. --}}
+    @php
+        $wideMap = [
+            ''              => 'invoices._ingreso_wide',
+            'ingreso'       => 'invoices._ingreso_wide',
+            'gasto'         => 'invoices._gasto_wide',
+            'nomina'        => 'invoices._nomina_wide',
+            'pago_emitido'  => 'invoices._pago_wide',
+            'pago_recibido' => 'invoices._pago_wide',
+        ];
+        $widePartial = $wideMap[$filtro ?? ''] ?? 'invoices._ingreso_wide';
+    @endphp
+    @if($invoices->isEmpty() && ($filtro ?? '') === '')
         <div class="empty-state">
             <i class="fa-solid fa-file-circle-plus"></i>
             <h3>Sin facturas</h3>
@@ -128,73 +133,15 @@
             </button>
         </div>
     @else
-        <div class="table-responsive">
-            <table class="table-clean">
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Tipo</th>
-                        <th>Contraparte</th>
-                        <th>Folio</th>
-                        <th class="text-end">Subtotal</th>
-                        <th class="text-end">Total</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($invoices as $invoice)
-                        <tr>
-                            <td class="data" style="font-size:13px;">{{ $invoice->fecha_emision?->format('d/m/Y') }}</td>
-                            <td>
-                                @if($invoice->tipo === 'emitida')
-                                    <span class="badge-status s-success"><i class="fa-solid fa-arrow-up"></i> Emitida</span>
-                                @else
-                                    <span class="badge-status s-warning"><i class="fa-solid fa-arrow-down"></i> Recibida</span>
-                                @endif
-                            </td>
-                            <td>
-                                <div style="font-size:13.5px; font-weight:500;" class="text-truncate" style="max-width:260px;">
-                                    {{ $invoice->tipo === 'emitida' ? ($invoice->receptor_nombre ?: $invoice->receptor_rfc) : ($invoice->emisor_nombre ?: $invoice->emisor_rfc) }}
-                                </div>
-                                <div class="data text-muted" style="font-size:11.5px;">
-                                    {{ $invoice->tipo === 'emitida' ? $invoice->receptor_rfc : $invoice->emisor_rfc }}
-                                </div>
-                            </td>
-                            <td class="data text-muted" style="font-size:12.5px;">{{ $invoice->serie }}{{ $invoice->folio }}</td>
-                            <td class="text-end data">${{ number_format($invoice->subtotal, 2) }}</td>
-                            <td class="text-end data" style="font-weight:550;">${{ number_format($invoice->total, 2) }}</td>
-                            <td class="text-end">
-                                <a href="{{ route('invoices.show', $invoice) }}" class="btn btn-soft" style="padding:.35rem .6rem; font-size:12.5px;">
-                                    <i class="fa-solid fa-eye"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        <div class="p-2">
+            @include($widePartial)
         </div>
     @endif
 </div>
 
-@unless($wide ?? false)
-<div class="d-flex align-items-center justify-content-between mt-3 flex-wrap gap-2">
-    <div class="d-flex align-items-center gap-2">
-        <label class="text-muted" style="font-size:12.5px;">Mostrar</label>
-        <select class="form-select form-select-sm" style="width:auto;" onchange="
-            const u = new URL(window.location);
-            u.searchParams.set('per_page', this.value);
-            u.searchParams.delete('page');
-            window.location = u.toString();
-        ">
-            @foreach([25, 50, 100, 200] as $opt)
-                <option value="{{ $opt }}" @selected(($perPage ?? 25) === $opt)>{{ $opt }}</option>
-            @endforeach
-        </select>
-        <span class="text-muted" style="font-size:12.5px;">por página</span>
-    </div>
-    <div>{{ $invoices->links() }}</div>
-</div>
-@endunless
+@if(in_array($filtro ?? '', ['pago_emitido', 'pago_recibido'], true))
+    @include('invoices._pago_detail')
+@endif
 
 @include('invoices._upload_modal')
 @endsection

@@ -80,19 +80,30 @@ class InvoiceViewController extends Controller
             ->when($view === 'ingreso', fn($q) => $q->with([
                 'lines:id,invoice_id,descripcion,importe,iva_trasladado,iva_base_tipo',
                 'polizas:id,invoice_id,tipo,num_iden',
-                'paymentDocuments:id,iddocumento,fecha_pago,imp_pagado',
+                'paymentDocuments:id,iddocumento,payment_invoice_id,fecha_pago,imp_pagado',
+                'paymentDocuments.paymentInvoice:id,serie,folio',
             ]))
             // Gasto renders the wide egreso table: base buckets + non-deducible,
             // gasto pólizas (provisión/pago refs), and the CEP payment block.
             ->when($view === 'gasto', fn($q) => $q->with([
                 'lines:id,invoice_id,descripcion,importe,iva_trasladado,iva_base_tipo,parte_no_deducible',
                 'polizas:id,invoice_id,tipo,num_iden',
-                'paymentDocuments:id,iddocumento,fecha_pago,imp_pagado',
+                'paymentDocuments:id,iddocumento,payment_invoice_id,fecha_pago,imp_pagado',
+                'paymentDocuments.paymentInvoice:id,serie,folio',
+            ]))
+            // Nómina wide table: contable account (601.01) + CEP refs.
+            ->when($view === 'nomina', fn($q) => $q->with([
+                'paymentDocuments:id,iddocumento,payment_invoice_id,fecha_pago,imp_pagado',
+                'paymentDocuments.paymentInvoice:id,serie,folio',
+            ]))
+            // Pago wide table: the issued DoctoRelacionado links it settles.
+            ->when(in_array($view, ['pago_emitido', 'pago_recibido'], true), fn($q) => $q->with([
+                'issuedPayments:id,payment_invoice_id,fecha_pago,forma_pago,moneda,monto_pago,num_operacion,imp_pagado,paid_invoice_id',
             ]))
             ->orderByDesc('fecha_emision');
 
-        // Ingreso and gasto use a selectable page size (wide tables); others 25.
-        $perPage = in_array($view, ['ingreso', 'gasto'], true) ? $this->perPage($request) : 25;
+        // Every view is now a wide table with a selectable page size.
+        $perPage = $this->perPage($request);
         $invoices = $query->paginate($perPage)->withQueryString();
 
         // Totals for the filtered set (whole period, not just the page). Notas de

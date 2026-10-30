@@ -33,6 +33,8 @@
     <p>No hay comprobantes de ingreso en el periodo.</p>
 </div>
 @else
+<div class="p-2">
+
 <div class="pi-wrap">
     <table class="pi-table">
         <thead>
@@ -160,11 +162,19 @@
                     <td class="data">{{ $inv->forma_pago ?: '—' }}</td>
                     <td class="data">{{ $inv->metodo_pago ?: '—' }}</td>
                     <td>
-                        @if($pago['recibo'])
-                            <span class="pi-ref"><i class="fa-solid fa-check"></i> CEP</span>
-                        @else
+                        <div style="display:flex; flex-direction:column; gap:3px; align-items:flex-start;">
+                        @forelse($inv->pago_comp_refs as $c)
+                            @if($c['id'])
+                            <a href="{{ route('invoices.show', $c['id']) }}" class="pi-ref" title="Ver complemento de pago" style="text-decoration:none;">
+                                {{ $c['folio'] ?? 'CEP' }} — {{ $c['fecha'] ?? '—' }} <i class="fa-solid fa-up-right-from-square" style="font-size:9px;"></i>
+                            </a>
+                            @else
+                            <span class="pi-ref">{{ $c['folio'] ?? 'CEP' }} — {{ $c['fecha'] ?? '—' }}</span>
+                            @endif
+                        @empty
                             <span class="pi-muted">—</span>
-                        @endif
+                        @endforelse
+                        </div>
                     </td>
                     <td class="data">{{ $pago['fecha'] ?? '—' }}</td>
                     <td class="pi-num">{!! $money($pago['importe']) !!}</td>
@@ -179,7 +189,7 @@
     <div class="d-flex align-items-center gap-2">
         <label class="pi-muted" style="font-size:12.5px;">Mostrar</label>
         <select class="form-select form-select-sm" style="width:auto;" onchange="
-            const u = new URL(window.location);
+            const u = new window.URL(window.location.href);
             u.searchParams.set('per_page', this.value);
             u.searchParams.delete('page');
             window.location = u.toString();
@@ -191,6 +201,7 @@
         <span class="pi-muted" style="font-size:12.5px;">por página</span>
     </div>
     <div>{{ $invoices->links() }}</div>
+</div>
 </div>
 @endif
 

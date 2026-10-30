@@ -92,6 +92,16 @@ class Invoice extends Model
         return $this->hasMany(PaymentDocument::class, 'iddocumento', 'uuid');
     }
 
+    /**
+     * DoctoRelacionado links THIS invoice carries as a CFDI de Pago (tipo P) —
+     * i.e. the invoices this payment complement settles. Mirror of
+     * paymentDocuments (which is the links that settle this invoice).
+     */
+    public function issuedPayments(): HasMany
+    {
+        return $this->hasMany(PaymentDocument::class, 'payment_invoice_id');
+    }
+
     public function cuentaContable(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Account::class, 'cuenta_contable_id');
@@ -238,6 +248,66 @@ class Invoice extends Model
             'recibo'  => true,
             'fecha'   => optional($docs->sortBy('fecha_pago')->last()->fecha_pago)->format('Y-m-d'),
             'importe' => (float) $docs->sum('imp_pagado'),
+        ];
+    }
+
+    /**
+     * Payment-complement references for the "Recibo Pago" column: one entry per
+     * linked CFDI de Pago, each as "folio — fecha" plus the complement's invoice
+     * id so the UI can link to its detail view.
+     *
+     * The folio is the complement's OWN folio (serie+folio of the tipo-P invoice
+     * that carries the link), not the DoctoRelacionado's folio (which echoes the
+     * paid invoice). The fecha is fecha_pago from the complement. Partial payments
+     * yield several entries. Eager-load paymentDocuments.paymentInvoice to avoid N+1.
+     *
+     * @return array<int, array{id:?int, folio:?string, fecha:?string}>
+     */
+    public function getPagoCompRefsAttribute(): array
+    {
+        return $this->paymentDocuments
+            ->map(function (PaymentDocument $d) {
+                $pi = $d->paymentInvoice;
+                $folio = $pi ? trim(($pi->serie ?? '') . ($pi->folio ?? '')) : '';
+
+                return [
+                    'id'    => $pi?->id,
+                    'folio' => $folio !== '' ? $folio : null,
+                    'fecha' => optional($d->fecha_pago)->format('Y-m-d'),
+                ];
+            })
+            ->filter(fn ($r) => $r['folio'] !== null || $r['fecha'] !== null)
+            ->unique(fn ($r) => ($r['id'] ?? '') . '|' . ($r['folio'] ?? '') . '|' . ($r['fecha'] ?? ''))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Summary of a CFDI de Pago (tipo P) for the pago wide table: one row per
+     * complemento. Aggregates its DoctoRelacionado links (issuedPayments) into
+     * the payment date, forma/moneda, total applied, operation number, and the
+     * count of settled documents. Eager-load issuedPayments to avoid N+1.
+     *
+     * @return array{fecha:?string, forma:?string, moneda:?string, monto:float, num_operacion:?string, docs:int, resueltos:int}
+     */
+    public function getPagoEmitidoResumenAttribute(): array
+    {
+        $links = $this->issuedPayments;
+
+        if ($links->isEmpty()) {
+            return ['fecha' => null, 'forma' => null, 'moneda' => null, 'monto' => 0.0, 'num_operacion' => null, 'docs' => 0, 'resueltos' => 0];
+        }
+
+        $first = $links->sortByDesc('fecha_pago')->first();
+
+        return [
+            'fecha'         => optional($first->fecha_pago)->format('Y-m-d'),
+            'forma'         => $first->forma_pago,
+            'moneda'        => $first->moneda,
+            'monto'         => (float) $links->sum('imp_pagado'),
+            'num_operacion' => $first->num_operacion,
+            'docs'          => $links->count(),
+            'resueltos'     => $links->whereNotNull('paid_invoice_id')->count(),
         ];
     }
 

@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Enums\PeriodStatus;
 use App\Models\CfdiUpload;
 use App\Services\CfdiIngestService;
+use App\Services\PagoComplementService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -34,7 +35,7 @@ class ProcessCfdiUpload implements ShouldQueue
         public int $uploadId,
     ) {}
 
-    public function handle(CfdiIngestService $ingest): void
+    public function handle(CfdiIngestService $ingest, PagoComplementService $pagos): void
     {
         $upload = CfdiUpload::with(['client', 'period'])->find($this->uploadId);
 
@@ -75,6 +76,11 @@ class ProcessCfdiUpload implements ShouldQueue
                 $this->advancePeriodById($periodId);
                 ClassifyPeriodInvoices::dispatch($periodId);
             }
+
+            // Invoices just ingested may be the ones that earlier complementos de
+            // pago referenced before they existed (a payment in a later period, or
+            // simply uploaded first). Re-resolve those links now (#1).
+            $pagos->relinkUnresolved($upload->client_id);
         } catch (Throwable $e) {
             $upload->update([
                 'status'       => 'failed',

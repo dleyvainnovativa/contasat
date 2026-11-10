@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invoice;
+use App\Services\InvoiceTableTotals;
 use App\Services\WorkContext;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -59,18 +60,20 @@ class InvoiceViewController extends Controller
         $tipoComprobante = $tipos[0];
         $period = $this->context->period();
 
+        $search = function ($q) use ($request) {
+            $term = $request->string('q')->toString();
+            $q->where(fn($s) => $s->where('folio', 'like', "%{$term}%")
+                ->orWhere('uuid', 'like', "%{$term}%")
+                ->orWhere('receptor_nombre', 'like', "%{$term}%")
+                ->orWhere('emisor_nombre', 'like', "%{$term}%")
+                ->orWhere('receptor_rfc', 'like', "%{$term}%")
+                ->orWhere('emisor_rfc', 'like', "%{$term}%"));
+        };
+
         $query = Invoice::where('period_id', $period->id)
             ->whereIn('tipo_comprobante', $tipos)
             ->when($direction, fn($q) => $q->where('tipo', $direction))
-            ->when($request->filled('q'), function ($q) use ($request) {
-                $term = $request->string('q')->toString();
-                $q->where(fn($s) => $s->where('folio', 'like', "%{$term}%")
-                    ->orWhere('uuid', 'like', "%{$term}%")
-                    ->orWhere('receptor_nombre', 'like', "%{$term}%")
-                    ->orWhere('emisor_nombre', 'like', "%{$term}%")
-                    ->orWhere('receptor_rfc', 'like', "%{$term}%")
-                    ->orWhere('emisor_rfc', 'like', "%{$term}%"));
-            })
+            ->when($request->filled('q'), $search)
             ->with(['cuentaContable', 'cuentaAbono'])
             // Concepts column shows only on ingreso/gasto (I-type, non-nómina).
             // Eager-load line descriptions there to build conceptos_resumen without N+1.
@@ -125,6 +128,16 @@ class InvoiceViewController extends Controller
             'total'    => (float) ($row->total ?? 0),
         ];
 
+        // Footer column totals over the whole filtered set (#6), matching the
+        // visible columns of whichever wide table this view renders.
+        $footerTotals = InvoiceTableTotals::compute(
+            Invoice::where('period_id', $period->id)
+                ->whereIn('tipo_comprobante', $tipos)
+                ->when($direction, fn($q) => $q->where('tipo', $direction))
+                ->when($request->filled('q'), $search),
+            $view
+        );
+
         return view('invoices.filtered', [
             'view'      => $view,
             'label'     => $label,
@@ -136,16 +149,17 @@ class InvoiceViewController extends Controller
             'q'         => $request->string('q')->toString(),
             'navItems'  => $this->navSummary($period->id),
             'perPage'   => $perPage,
+            'footerTotals' => $footerTotals,
         ]);
     }
 
     /** Rows per page for the wide ingreso table: 25/50/100/200, default 50. */
     private function perPage(Request $request): int
     {
-        $allowed = [25, 50, 100, 200];
-        $requested = (int) $request->integer('per_page', 50);
+        $allowed = [25, 100, 200, 500];
+        $requested = (int) $request->integer('per_page', 25);
 
-        return in_array($requested, $allowed, true) ? $requested : 50;
+        return in_array($requested, $allowed, true) ? $requested : 25;
     }
 
     /**

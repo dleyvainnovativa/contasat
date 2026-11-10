@@ -12,7 +12,7 @@
 
 <div class="card-clean" data-reveal style="max-width:820px;">
     <div class="card-clean__body">
-        <form method="POST" action="{{ route('clients.update', $client) }}">
+        <form method="POST" action="{{ route('clients.update', $client) }}" enctype="multipart/form-data">
             @method('PUT')
             @include('clients._form')
             <div class="d-flex justify-content-between mt-4">

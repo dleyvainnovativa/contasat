@@ -234,8 +234,8 @@
             u.searchParams.delete('page');
             window.location = u.toString();
         ">
-            @foreach([25, 50, 100, 200] as $opt)
-            <option value="{{ $opt }}" @selected(($perPage ?? 50)===$opt)>{{ $opt }}</option>
+            @foreach([25, 100, 200, 500] as $opt)
+            <option value="{{ $opt }}" @selected(($perPage ?? 25)===$opt)>{{ $opt }}</option>
             @endforeach
         </select>
         <span class="pe-muted" style="font-size:12.5px;">por página</span>

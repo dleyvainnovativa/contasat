@@ -6,6 +6,7 @@ use App\Jobs\ProcessCfdiUpload;
 use App\Models\CfdiUpload;
 use App\Models\Invoice;
 use App\Models\Period;
+use App\Services\InvoiceTableTotals;
 use App\Services\WorkContext;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -40,7 +41,9 @@ class InvoiceController extends Controller
         $wideFiltro = in_array($filtro, ['', 'ingreso', 'gasto', 'nomina'], true);
         $pagoFiltro = in_array($filtro, ['pago_emitido', 'pago_recibido'], true);
 
-        $invoices = Invoice::where('period_id', $period->id)
+        // Base filtered query (period + search + active tab), shared by the
+        // paginated list and the footer totals so both see the same set.
+        $base = Invoice::where('period_id', $period->id)
             ->when($request->filled('q'), function ($q) use ($request) {
                 $term = $request->string('q')->toString();
                 $q->where(function ($sub) use ($term) {
@@ -63,7 +66,9 @@ class InvoiceController extends Controller
                     'pago_recibido' => $q->where('tipo_comprobante', 'P')->where('tipo', 'recibida'),
                     default         => $q,
                 };
-            })
+            });
+
+        $invoices = (clone $base)
             ->when($wideFiltro, fn ($q) => $q->with([
                 'cuentaContable', 'cuentaAbono',
                 'lines:id,invoice_id,descripcion,importe,iva_trasladado,iva_base_tipo,parte_no_deducible',
@@ -79,6 +84,9 @@ class InvoiceController extends Controller
             // a whole period's invoices on one screen when they want to.
             ->paginate($this->perPage($request))
             ->withQueryString();
+
+        // Footer totals over the WHOLE filtered set (#6), not just this page.
+        $footerTotals = InvoiceTableTotals::compute(clone $base, $filtro === '' ? 'ingreso' : $filtro);
 
         // Totals strip (#4): income = facturas emitidas (I) minus notas de crédito
         // emitidas (E); expense = facturas recibidas (I) minus notas recibidas (E).
@@ -108,13 +116,43 @@ class InvoiceController extends Controller
             'filtro'        => $filtro,
             'q'             => $request->string('q')->toString(),
             'perPage'       => $this->perPage($request),
+            'footerTotals'  => $footerTotals,
+            'navCounts'     => $this->tabCounts($period->id),
         ]);
     }
 
-    /** Rows per page for the invoice list: one of 25/50/100/200, default 25. */
+    /**
+     * Per-type invoice counts for the tab badges (#5), for the whole period
+     * regardless of the active tab or search. One grouped query.
+     *
+     * @return array<string, int>
+     */
+    private function tabCounts(int $periodId): array
+    {
+        $rows = Invoice::where('period_id', $periodId)
+            ->selectRaw('tipo_comprobante, tipo, count(*) as n')
+            ->groupBy('tipo_comprobante', 'tipo')
+            ->get();
+
+        $sum = fn (array $types, ?string $dir = null) => (int) $rows
+            ->whereIn('tipo_comprobante', $types)
+            ->when($dir, fn ($c) => $c->where('tipo', $dir))
+            ->sum('n');
+
+        return [
+            ''              => (int) $rows->sum('n'),
+            'ingreso'       => $sum(['I', 'E'], 'emitida'),
+            'gasto'         => $sum(['I', 'E'], 'recibida'),
+            'nomina'        => $sum(['N']),
+            'pago_emitido'  => $sum(['P'], 'emitida'),
+            'pago_recibido' => $sum(['P'], 'recibida'),
+        ];
+    }
+
+    /** Rows per page for the invoice list: one of 25/100/200/500, default 25. */
     private function perPage(Request $request): int
     {
-        $allowed = [25, 50, 100, 200];
+        $allowed = [25, 100, 200, 500];
         $requested = (int) $request->integer('per_page', 25);
 
         return in_array($requested, $allowed, true) ? $requested : 25;

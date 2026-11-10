@@ -43,7 +43,31 @@
         <input type="text" name="telefono" class="form-control" value="{{ old('telefono', $client->telefono) }}">
     </div>
 
-    <div class="col-md-4"></div>
+    <div class="col-12"><hr style="border-color:var(--border); margin:.25rem 0;"></div>
+
+    {{-- Certificados SAT: sube el .cer (se calcula el vencimiento) o captura la fecha. --}}
+    <div class="col-md-6">
+        <label class="form-label">Firma electrónica (e.firma) — vencimiento</label>
+        <input type="date" name="efirma_expira" class="form-control data"
+            value="{{ old('efirma_expira', $client->efirma_expira?->format('Y-m-d')) }}">
+        <input type="file" name="efirma_cer" accept=".cer" class="form-control mt-2">
+        <div class="form-hint">
+            Sube el .cer para calcular la fecha automáticamente, o captúrala a mano.
+            @if($client->efirma_serial)<br>Serie: <span class="data">{{ $client->efirma_serial }}</span>@endif
+        </div>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Sello digital (CSD) — vencimiento</label>
+        <input type="date" name="csd_expira" class="form-control data"
+            value="{{ old('csd_expira', $client->csd_expira?->format('Y-m-d')) }}">
+        <input type="file" name="csd_cer" accept=".cer" class="form-control mt-2">
+        <div class="form-hint">
+            Sube el .cer para calcular la fecha automáticamente, o captúrala a mano.
+            @if($client->csd_serial)<br>Serie: <span class="data">{{ $client->csd_serial }}</span>@endif
+        </div>
+    </div>
+
+    <div class="col-12"><hr style="border-color:var(--border); margin:.25rem 0;"></div>
 
     <div class="col-12">
         <label class="form-label">Notas</label>

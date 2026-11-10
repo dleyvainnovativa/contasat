@@ -8,6 +8,7 @@
         <div class="subtitle data">{{ $client->rfc }} · {{ $client->regimen_fiscal === 'moral' ? 'Persona moral' : 'Persona física' }}</div>
     </div>
     <div class="d-flex gap-2">
+        <a href="{{ route('clients.index', ['all' => 1]) }}" class="btn btn-soft btn-icon"><i class="fa-solid fa-list"></i> Ver todos</a>
         <form method="POST" action="{{ route('clients.activate', $client) }}">
             @csrf
             <button class="btn btn-soft btn-icon"><i class="fa-solid fa-arrow-pointer"></i> Activar</button>

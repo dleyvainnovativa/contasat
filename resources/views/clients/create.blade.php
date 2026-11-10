@@ -12,7 +12,7 @@
 
 <div class="card-clean" data-reveal style="max-width:820px;">
     <div class="card-clean__body">
-        <form method="POST" action="{{ route('clients.store') }}">
+        <form method="POST" action="{{ route('clients.store') }}" enctype="multipart/form-data">
             @include('clients._form')
             <div class="d-flex justify-content-end gap-2 mt-4">
                 <a href="{{ route('clients.index') }}" class="btn btn-soft">Cancelar</a>

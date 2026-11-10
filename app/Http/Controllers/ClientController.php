@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Services\CertificateParser;
 use App\Services\WorkContext;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -14,10 +15,17 @@ class ClientController extends Controller
 {
     public function __construct(
         private readonly WorkContext $context,
+        private readonly CertificateParser $certs,
     ) {}
 
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
+        // When a client is active, the clients page jumps straight to that
+        // client's detail (#3). `?all=1` escapes to the full list.
+        if ($this->context->hasClient() && ! $request->boolean('all')) {
+            return redirect()->route('clients.show', $this->context->client());
+        }
+
         $clients = Client::query()
             ->search($request->string('q')->toString() ?: null)
             ->when($request->filled('estado'), function ($q) use ($request) {
@@ -108,7 +116,7 @@ class ClientController extends Controller
             $request->merge(['inicio_operaciones' => $request->input('inicio_operaciones') . '-01']);
         }
 
-        return $request->validate([
+        $data = $request->validate([
             'rfc' => [
                 'required',
                 'string',
@@ -127,6 +135,31 @@ class ClientController extends Controller
             'telefono'         => ['nullable', 'string', 'max:30'],
             'activo'           => ['sometimes', 'boolean'],
             'notas'            => ['nullable', 'string'],
+            // Certificate expiry: a manual date, and/or a .cer whose date wins.
+            'efirma_expira'    => ['nullable', 'date'],
+            'csd_expira'       => ['nullable', 'date'],
+            'efirma_cer'       => ['nullable', 'file', 'max:20'],   // KB; SAT .cer is ~1–2 KB
+            'csd_cer'          => ['nullable', 'file', 'max:20'],
         ]);
+
+        // Parse any uploaded .cer and let its expiry/serial override the manual
+        // date. Unparseable files are ignored so a bad upload never blocks a save.
+        foreach ([
+            ['efirma_cer', 'efirma_expira', 'efirma_serial'],
+            ['csd_cer', 'csd_expira', 'csd_serial'],
+        ] as [$fileKey, $dateKey, $serialKey]) {
+            if ($request->hasFile($fileKey)) {
+                $parsed = $this->certs->parse($request->file($fileKey)->getRealPath());
+                if ($parsed['expira']) {
+                    $data[$dateKey]   = $parsed['expira']->toDateString();
+                    $data[$serialKey] = $parsed['serial'];
+                }
+            }
+        }
+
+        // The file inputs aren't columns.
+        unset($data['efirma_cer'], $data['csd_cer']);
+
+        return $data;
     }
 }

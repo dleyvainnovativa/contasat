@@ -26,6 +26,10 @@ class Client extends Model
         'activo',
         'notas',
         'inicio_operaciones',
+        'efirma_expira',
+        'efirma_serial',
+        'csd_expira',
+        'csd_serial',
     ];
 
     protected function casts(): array
@@ -33,7 +37,36 @@ class Client extends Model
         return [
             'activo'             => 'boolean',
             'inicio_operaciones' => 'date',
+            'efirma_expira'      => 'date',
+            'csd_expira'         => 'date',
         ];
+    }
+
+    /**
+     * Semáforo status for a certificate expiry date: green ≥91 days out, yellow
+     * 30–90, red under 30 (expired included), gray when no date is set.
+     *
+     * @return array{status: string, days: ?int}
+     */
+    public static function certStatus($date): array
+    {
+        if (! $date) {
+            return ['status' => 'none', 'days' => null];
+        }
+
+        // Signed whole days until expiry, computed sign-agnostically (Carbon 2 and
+        // 3 disagree on the direction of a signed diff): absolute diff, then sign
+        // it by comparison. Negative = already expired.
+        $today  = now()->startOfDay();
+        $target = $date->copy()->startOfDay();
+        $days   = (int) $today->diffInDays($target, true);    // absolute → always ≥ 0
+        if ($target->lt($today)) {
+            $days = -$days;
+        }
+
+        $status = $days >= 91 ? 'ok' : ($days >= 30 ? 'warn' : 'danger');
+
+        return ['status' => $status, 'days' => $days];
     }
 
     /**

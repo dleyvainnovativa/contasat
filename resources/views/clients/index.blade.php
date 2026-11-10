@@ -15,6 +15,8 @@
 <div class="card-clean" data-reveal>
     <div class="card-clean__head">
         <form method="GET" action="{{ route('clients.index') }}" class="d-flex align-items-center gap-2 w-100">
+            {{-- Keep showing the full list after a search, instead of bouncing to the active client (#3). --}}
+            <input type="hidden" name="all" value="1">
             <div class="position-relative flex-grow-1" style="max-width:360px;">
                 <i class="fa-solid fa-magnifying-glass position-absolute text-muted" style="left:.75rem; top:50%; transform:translateY(-50%); font-size:13px;"></i>
                 <input type="search" name="q" value="{{ $q }}" class="form-control" placeholder="Buscar por nombre o RFC" style="padding-left:2.25rem;">

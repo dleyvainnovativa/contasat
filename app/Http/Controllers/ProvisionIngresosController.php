@@ -70,12 +70,12 @@ class ProvisionIngresosController extends Controller
         ]);
     }
 
-    /** Rows per page: one of 25/50/100/200, default 50 (wide table, fewer clicks). */
+    /** Rows per page: one of 25/100/200/500, default 25. */
     private function perPage(Request $request): int
     {
-        $allowed = [25, 50, 100, 200];
-        $requested = (int) $request->integer('per_page', 50);
+        $allowed = [25, 100, 200, 500];
+        $requested = (int) $request->integer('per_page', 25);
 
-        return in_array($requested, $allowed, true) ? $requested : 50;
+        return in_array($requested, $allowed, true) ? $requested : 25;
     }
 }

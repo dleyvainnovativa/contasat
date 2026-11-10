@@ -12,7 +12,8 @@
     </button>
 </div>
 
-{{-- Totals strip: emitidas (income) vs recibidas (expense) --}}
+{{-- Totals strip: emitidas (income) vs recibidas (expense). Hidden via config. --}}
+@if(config('contasat.show_header_cards'))
 <div class="row g-3 mb-4">
     <div class="col-sm-4" data-reveal>
         <div class="stat-card">
@@ -33,6 +34,7 @@
         </div>
     </div>
 </div>
+@endif
 
 {{-- Recent uploads (shows async progress) --}}
 @if($recentUploads->isNotEmpty())
@@ -90,6 +92,9 @@
         <a href="{{ route('invoices.index', array_filter(['filtro' => $key])) }}"
            class="fac-tab {{ $activo === $key ? 'active' : '' }}">
             {{ $label }}
+            @if(($navCounts[$key] ?? 0) > 0)
+            <span class="fac-tab__count">{{ $navCounts[$key] }}</span>
+            @endif
         </a>
     @endforeach
 </div>

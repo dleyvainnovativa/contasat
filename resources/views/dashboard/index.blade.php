@@ -49,7 +49,25 @@
     .dash-prog small { color:var(--text-muted); font-size:11px; white-space:nowrap; font-variant-numeric:tabular-nums; }
     .dash-legend { display:flex; gap:1rem; flex-wrap:wrap; font-size:12px; color:var(--text-muted); }
     .dash-legend span { display:inline-flex; align-items:center; gap:.35rem; }
+    .cert-pill { display:inline-block; padding:.1rem .4rem; border-radius:6px; font-size:11px; font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap; }
+    .cert-ok     { background:color-mix(in srgb, var(--ok) 16%, transparent);     color:var(--ok); }
+    .cert-warn   { background:color-mix(in srgb, var(--warn) 20%, transparent);   color:var(--warn); }
+    .cert-danger { background:color-mix(in srgb, var(--danger) 20%, transparent); color:var(--danger); }
+    .cert-none   { background:var(--border); color:var(--text-muted); }
+    .dash-sem th.cert, .dash-sem td.cert { text-align:center; white-space:nowrap; }
 </style>
+@php
+    // Compact expiry pill for a cert date (semáforo: green ≥91d, yellow 30–90, red <30, gray none).
+    $certPill = function ($date) {
+        $s = \App\Models\Client::certStatus($date);
+        if ($s['status'] === 'none') {
+            return '<span class="cert-pill cert-none">—</span>';
+        }
+        $title = 'Vence ' . $date->format('d/m/Y') . ' · ' . $s['days'] . ' días';
+        return '<span class="cert-pill cert-' . $s['status'] . '" title="' . e($title) . '">'
+            . $date->format('d/m/y') . '</span>';
+    };
+@endphp
 
 <div class="page-head" data-reveal>
     <div>
@@ -72,7 +90,8 @@
     </form>
 </div>
 
-{{-- Status summary cards --}}
+{{-- Status summary cards (hidden via config('contasat.show_header_cards')) --}}
+@if(config('contasat.show_header_cards'))
 <div class="row g-3 mb-4">
     @foreach($statuses as $status)
         <div class="col-6 col-md-4 col-xl-2" data-reveal data-reveal-delay="{{ $loop->index * 40 }}">
@@ -86,6 +105,7 @@
         </div>
     @endforeach
 </div>
+@endif
 
 {{-- Client activity board --}}
 <div class="card-clean" data-reveal>
@@ -116,6 +136,8 @@
                     <tr>
                         <th>Cliente</th>
                         <th>RFC</th>
+                        <th class="cert" title="Firma electrónica (e.firma)">e.firma</th>
+                        <th class="cert" title="Sello digital (CSD)">Sello</th>
                         @foreach($activityOrder as $act)
                             <th class="act"><span>{{ $shortLabels[$act['key']] ?? $act['label'] }}</span></th>
                         @endforeach
@@ -132,6 +154,8 @@
                                 </a>
                             </td>
                             <td><span class="data text-muted">{{ $row['client']->rfc }}</span></td>
+                            <td class="cert">{!! $certPill($row['client']->efirma_expira) !!}</td>
+                            <td class="cert">{!! $certPill($row['client']->csd_expira) !!}</td>
                             @foreach($row['activities'] as $act)
                                 <td class="act">
                                     <span class="cal-dot cal-dot--{{ $act['status'] }}"

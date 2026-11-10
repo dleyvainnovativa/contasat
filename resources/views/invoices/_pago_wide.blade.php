@@ -15,6 +15,7 @@
     }
     .pi-table tbody tr:hover { background:var(--surface-2); }
     .pi-num { text-align:right; font-variant-numeric:tabular-nums; }
+    .pi-table tfoot td { position:sticky; bottom:0; z-index:2; background:var(--surface-2); border-top:2px solid var(--border); font-weight:650; }
     .pi-muted { color:var(--text-muted); }
     .pi-trunc { max-width:190px; overflow:hidden; text-overflow:ellipsis; }
     .pi-btn-xs { font-size:11px; padding:.2rem .5rem; }
@@ -88,6 +89,18 @@
                 </tr>
             @endforeach
         </tbody>
+        @isset($footerTotals)
+        <tfoot>
+            <tr>
+                <td colspan="7" style="text-align:right;">Totales · {{ (int) $footerTotals['count'] }} complementos</td>
+                <td></td>
+                <td></td>
+                <td class="pi-num">${{ number_format($footerTotals['monto'], 2) }}</td>
+                <td></td>
+                <td class="pi-num">{{ (int) $footerTotals['docs'] }}</td>
+            </tr>
+        </tfoot>
+        @endisset
     </table>
 </div>
 
@@ -100,8 +113,8 @@
             u.searchParams.delete('page');
             window.location = u.toString();
         ">
-            @foreach([25, 50, 100, 200] as $opt)
-                <option value="{{ $opt }}" @selected(($perPage ?? 50) === $opt)>{{ $opt }}</option>
+            @foreach([25, 100, 200, 500] as $opt)
+                <option value="{{ $opt }}" @selected(($perPage ?? 25) === $opt)>{{ $opt }}</option>
             @endforeach
         </select>
         <span class="pi-muted" style="font-size:12.5px;">por página</span>

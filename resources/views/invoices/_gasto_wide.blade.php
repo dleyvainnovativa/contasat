@@ -14,6 +14,7 @@
     }
     .pe-table tbody tr:hover { background:var(--surface-2); }
     .pe-num { text-align:right; font-variant-numeric:tabular-nums; }
+    .pe-table tfoot td, table.pe-table tfoot td { position:sticky; bottom:0; z-index:2; background:var(--surface-2); border-top:2px solid var(--border); font-weight:650; }
     .pe-muted { color:var(--text-muted); }
     .pe-trunc { max-width:190px; overflow:hidden; text-overflow:ellipsis; }
     .pe-group-16 { background:color-mix(in srgb, var(--brand-050) 40%, transparent); }
@@ -32,7 +33,6 @@
     <p>No hay comprobantes de egreso en el periodo.</p>
 </div>
 @else
-<div class="p-2">
 <div class="pe-wrap">
     <table class="pe-table">
         <thead>
@@ -182,6 +182,28 @@
                 </tr>
             @endforeach
         </tbody>
+        @isset($footerTotals)
+        <tfoot>
+            <tr>
+                <td colspan="8" style="text-align:right;">Totales · {{ $footerTotals['count'] }} facturas</td>
+                <td class="pe-num">${{ number_format($footerTotals['egr16'], 2) }}</td>
+                <td class="pe-num">${{ number_format($footerTotals['egr0'], 2) }}</td>
+                <td class="pe-num">${{ number_format($footerTotals['exento'], 2) }}</td>
+                <td class="pe-num">${{ number_format($footerTotals['no_objeto'], 2) }}</td>
+                <td class="pe-num">${{ number_format($footerTotals['no_deducible'], 2) }}</td>
+                <td class="pe-num">${{ number_format($footerTotals['subtotal'], 2) }}</td>
+                <td class="pe-num">${{ number_format($footerTotals['iva'], 2) }}</td>
+                <td class="pe-num">${{ number_format($footerTotals['otros'], 2) }}</td>
+                <td class="pe-num">${{ number_format($footerTotals['iva_ret'], 2) }}</td>
+                <td class="pe-num">${{ number_format($footerTotals['isr_ret'], 2) }}</td>
+                <td class="pe-num">${{ number_format($footerTotals['descuento'], 2) }}</td>
+                <td class="pe-num">${{ number_format($footerTotals['total'], 2) }}</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td>
+                <td class="pe-num">${{ number_format($footerTotals['importe_pago'], 2) }}</td>
+                <td></td>
+            </tr>
+        </tfoot>
+        @endisset
     </table>
 </div>
 
@@ -194,14 +216,13 @@
             u.searchParams.delete('page');
             window.location = u.toString();
         ">
-            @foreach([25, 50, 100, 200] as $opt)
-                <option value="{{ $opt }}" @selected(($perPage ?? 50) === $opt)>{{ $opt }}</option>
+            @foreach([25, 100, 200, 500] as $opt)
+                <option value="{{ $opt }}" @selected(($perPage ?? 25) === $opt)>{{ $opt }}</option>
             @endforeach
         </select>
         <span class="pe-muted" style="font-size:12.5px;">por página</span>
     </div>
     <div>{{ $invoices->links() }}</div>
-</div>
 </div>
 @endif
 

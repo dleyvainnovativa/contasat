@@ -32,7 +32,8 @@
     @endforeach
 </div>
 
-{{-- Totals strip --}}
+{{-- Totals strip (hidden via config('contasat.show_header_cards')) --}}
+@if(config('contasat.show_header_cards'))
 <div class="row g-3 mb-4" data-reveal>
     <div class="col-6 col-lg-3">
         <div class="stat-card">
@@ -59,6 +60,7 @@
         </div>
     </div>
 </div>
+@endif
 
 <div class="card-clean" data-reveal>
     <div class="card-clean__head">

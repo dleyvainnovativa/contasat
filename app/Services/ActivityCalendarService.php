@@ -119,24 +119,33 @@ class ActivityCalendarService
      */
     private function autoStatuses(Period $period): array
     {
-        $uploads  = CfdiUpload::where('period_id', $period->id);
-        $imported = (clone $uploads)->where('imported', '>', 0)->count();
+        $uploads     = CfdiUpload::where('period_id', $period->id);
+        $doneUploads = (clone $uploads)->where('status', 'done')->count();
 
         $total        = Invoice::where('period_id', $period->id)->count();
         $sinClasificar = $total === 0 ? 0 : Invoice::where('period_id', $period->id)
             ->where('clasificacion', 'sin_clasificar')->count();
 
         return [
-            'descarga_xml'      => self::descargaStatusFrom((clone $uploads)->count(), $imported),
+            'descarga_xml'      => self::descargaStatusFrom((clone $uploads)->count(), $doneUploads),
             'clasificacion_xml' => self::clasificacionStatusFrom($total, $sinClasificar),
             'conciliacion'      => self::conciliacionStatusFrom((int) $period->movement_count, (int) $period->unmatched_count),
         ];
     }
 
-    /** Realizada if any CFDI upload imported rows; en_proceso if uploaded but nothing imported; else pendiente. */
-    public static function descargaStatusFrom(int $uploadCount, int $importedUploadCount): string
+    /**
+     * Descarga XML status for a period, driven by the upload ACTION on that
+     * period — not by where the invoices ended up. A mixed ZIP uploaded into the
+     * selected period whose invoices route to other months still marks THIS
+     * period "realizada", because the descarga was performed here; the other
+     * periods stay pendiente unless something was uploaded into them too.
+     *
+     * Realizada once any upload here finished processing; en_proceso while one is
+     * still in flight; pendiente with none.
+     */
+    public static function descargaStatusFrom(int $uploadCount, int $doneUploadCount): string
     {
-        if ($importedUploadCount > 0) {
+        if ($doneUploadCount > 0) {
             return ActivityStatus::STATUS_REALIZADA;
         }
         if ($uploadCount > 0) {

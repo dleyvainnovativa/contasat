@@ -47,7 +47,7 @@ class DashboardService
 
         // Auto-status inputs as per-period aggregates (one query each). Boolean
         // sums (expr > 0 / = value) yield 1/0 in both SQLite and MySQL.
-        $uploadAgg = CfdiUpload::selectRaw('period_id, count(*) as total, sum(imported > 0) as imported_uploads')
+        $uploadAgg = CfdiUpload::selectRaw("period_id, count(*) as total, sum(status = 'done') as done_uploads")
             ->whereIn('period_id', $periodIds)->groupBy('period_id')->get()->keyBy('period_id');
 
         $invoiceAgg = Invoice::selectRaw("period_id, count(*) as total, sum(clasificacion = 'sin_clasificar') as sin_clasificar")
@@ -72,7 +72,7 @@ class DashboardService
                 $ia     = $invoiceAgg->get($period->id);
 
                 $auto = [
-                    'descarga_xml'      => ActivityCalendarService::descargaStatusFrom((int) ($ua->total ?? 0), (int) ($ua->imported_uploads ?? 0)),
+                    'descarga_xml'      => ActivityCalendarService::descargaStatusFrom((int) ($ua->total ?? 0), (int) ($ua->done_uploads ?? 0)),
                     'clasificacion_xml' => ActivityCalendarService::clasificacionStatusFrom((int) ($ia->total ?? 0), (int) ($ia->sin_clasificar ?? 0)),
                     'conciliacion'      => ActivityCalendarService::conciliacionStatusFrom((int) $period->movement_count, (int) $period->unmatched_count),
                 ];

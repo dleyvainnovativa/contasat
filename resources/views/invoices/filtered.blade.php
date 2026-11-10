@@ -70,20 +70,23 @@
         </form>
     </div>
 
-    {{-- Every invoice module now renders a purpose-built wide table. --}}
-    @switch($view)
-        @case('ingreso')
-            @include('invoices._ingreso_wide')
-            @break
-        @case('gasto')
-            @include('invoices._gasto_wide')
-            @break
-        @case('nomina')
-            @include('invoices._nomina_wide')
-            @break
-        @default
-            @include('invoices._pago_wide')
-    @endswitch
+    {{-- Every invoice module now renders a purpose-built wide table. The p-2
+         wrapper matches the padding of the main (/invoices) table. --}}
+    <div class="p-2">
+        @switch($view)
+            @case('ingreso')
+                @include('invoices._ingreso_wide')
+                @break
+            @case('gasto')
+                @include('invoices._gasto_wide')
+                @break
+            @case('nomina')
+                @include('invoices._nomina_wide')
+                @break
+            @default
+                @include('invoices._pago_wide')
+        @endswitch
+    </div>
 </div>
 
 {{-- Per-document breakdown of what each pago settles. --}}

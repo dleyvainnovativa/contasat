@@ -37,10 +37,16 @@ class BankStatementExtractor
     {
         $text = $this->extractText($pdfAbsolutePath);
 
+        // No usable text layer (scanned/image PDF, or a statement whose stream the
+        // pure-PHP parser can't read): fall back to reading the PDF with the
+        // multimodal model, if enabled. Otherwise there's nothing to work with.
         if (mb_strlen(trim($text)) < 50) {
+            if (config('openai.pdf_fallback', true)) {
+                return $this->extractViaVision($pdfAbsolutePath);
+            }
+
             throw new RuntimeException(
-                'No se pudo leer texto del PDF. ¿Es un estado de cuenta escaneado (imagen)? '
-                    . 'Esos requieren OCR y no están soportados en esta fase.'
+                'No se pudo leer texto del PDF (parece escaneado) y la lectura por visión está desactivada.'
             );
         }
 
@@ -84,19 +90,35 @@ class BankStatementExtractor
             throw new RuntimeException('Archivo PDF no encontrado.');
         }
 
+        // Pure-PHP text extraction (no pdftotext binary — Hostinger doesn't have
+        // it). Returns '' on failure (e.g. image-heavy statements whose stream the
+        // parser can't read) so extract() falls back to reading the PDF by vision.
         try {
-            return \Spatie\PdfToText\Pdf::getText(
-                $path,
-                config('services.pdftotext.path'),  // explicit path; null would search PATH
-                ['layout'],
-            );
+            return (new \Smalot\PdfParser\Parser())->parseFile($path)->getText();
         } catch (\Throwable $e) {
-            throw new RuntimeException(
-                'No se pudo leer el PDF. Verifica que sea un estado de cuenta en PDF con texto '
-                    . '(no una imagen escaneada).',
-                previous: $e,
-            );
+            return '';
         }
+    }
+
+    /** Read the PDF itself with the multimodal model when there's no text layer. */
+    private function extractViaVision(string $path): array
+    {
+        $data = $this->ai->extractJsonFromPdf(
+            $this->systemPrompt(null),
+            'El PDF adjunto es un estado de cuenta bancario (posiblemente escaneado). '
+                . 'Extrae sus datos y devuelve ÚNICAMENTE el objeto JSON especificado.',
+            $path,
+        );
+
+        $header    = $this->normalizeHeader($data);
+        $movements = $this->normalizeMovements($data['movimientos'] ?? []);
+
+        return [
+            'header'         => $header,
+            'movements'      => $movements,
+            'balance_cuadra' => $this->checkBalance($header, $movements),
+            'profile'        => 'vision',
+        ];
     }
 
     /** Pick the bank profile whose detection keywords appear in the text. */

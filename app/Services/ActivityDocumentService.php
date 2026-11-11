@@ -151,10 +151,31 @@ class ActivityDocumentService
 
     private function extractText(string $absolutePath): string
     {
-        return \Spatie\PdfToText\Pdf::getText(
-            $absolutePath,
-            config('services.pdftotext.path'),
-            ['layout'],
-        );
+        // Pure-PHP first (SAT constancias/opiniones are digital PDFs with a text
+        // layer) — no pdftotext binary, which Hostinger shared hosting lacks.
+        $text = '';
+        try {
+            $text = (new \Smalot\PdfParser\Parser())->parseFile($absolutePath)->getText();
+        } catch (\Throwable $e) {
+            $text = '';
+        }
+
+        if (mb_strlen(trim($text)) >= 30) {
+            return $text;
+        }
+
+        // Scanned or unreadable: OCR the PDF with the multimodal model, if enabled.
+        if (config('openai.pdf_fallback', true)) {
+            try {
+                return app(\App\Services\OpenAiClient::class)->ocrPdf(
+                    'Transcribe íntegramente el texto de este documento del SAT, tal como aparece.',
+                    $absolutePath,
+                );
+            } catch (\Throwable $e) {
+                // fall through to whatever little text we have
+            }
+        }
+
+        return $text;
     }
 }

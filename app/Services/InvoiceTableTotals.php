@@ -90,16 +90,38 @@ class InvoiceTableTotals
 
     private static function nomina(Builder $query): array
     {
-        $t = array_fill_keys(['subtotal','iva','total','importe_pago','count'], 0.0);
+        // Totals for the wide nómina table: the three complement totals and the
+        // CFDI total always; and per-SAT-code percepción/deducción/otro-pago sums
+        // so the footer matches whatever P/D/OP columns are on screen.
+        $t = [
+            'count' => 0, 'total' => 0.0, 'importe_pago' => 0.0,
+            'total_percepciones' => 0.0, 'total_deducciones' => 0.0, 'total_otros_pagos' => 0.0,
+            'perc' => [], 'ded' => [], 'op' => [],
+        ];
 
         $query->with(['paymentDocuments:id,iddocumento,imp_pagado,fecha_pago'])
             ->orderBy('id')->chunk(500, function ($rows) use (&$t) {
                 foreach ($rows as $inv) {
-                    $t['subtotal']     += (float) $inv->subtotal;
-                    $t['iva']          += (float) $inv->iva_trasladado;
+                    $t['count']++;
                     $t['total']        += (float) $inv->total;
                     $t['importe_pago'] += ($inv->pago_resumen['importe'] ?? 0);
-                    $t['count']++;
+
+                    $nd  = $inv->nomina_data ?? [];
+                    $tot = $nd['totales'] ?? [];
+                    $t['total_percepciones'] += (float) ($tot['total_percepciones'] ?? 0);
+                    $t['total_deducciones']  += (float) ($tot['total_deducciones'] ?? 0);
+                    $t['total_otros_pagos']  += (float) ($tot['total_otros_pagos'] ?? 0);
+
+                    foreach (($nd['percepciones'] ?? []) as $c => $v) {
+                        $t['perc'][$c]['exe'] = ($t['perc'][$c]['exe'] ?? 0) + (float) ($v['exe'] ?? 0);
+                        $t['perc'][$c]['gra'] = ($t['perc'][$c]['gra'] ?? 0) + (float) ($v['gra'] ?? 0);
+                    }
+                    foreach (($nd['deducciones'] ?? []) as $c => $v) {
+                        $t['ded'][$c] = ($t['ded'][$c] ?? 0) + (float) $v;
+                    }
+                    foreach (($nd['otros_pagos'] ?? []) as $c => $v) {
+                        $t['op'][$c] = ($t['op'][$c] ?? 0) + (float) $v;
+                    }
                 }
             });
 

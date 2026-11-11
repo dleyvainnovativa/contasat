@@ -20,6 +20,7 @@ class Account extends Model
         'nombre',
         'nivel',
         'naturaleza',
+        'tipo',
         'es_afectable',
         'activo',
         'rfc_asociado',

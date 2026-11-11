@@ -24,6 +24,7 @@ class CfdiIngestService
     public function __construct(
         private readonly CfdiParser $parser,
         private readonly \App\Services\PagoComplementService $pagoComplements,
+        private readonly NominaComplementParser $nominaParser,
 
     ) {}
 
@@ -129,6 +130,12 @@ class CfdiIngestService
             ]);
             if ($invoice->tipo_comprobante === 'P') {
                 $this->pagoComplements->process($invoice, $xml);
+            }
+
+            if ($invoice->tipo_comprobante === 'N') {
+                if ($nomina = $this->nominaParser->parse($xml)) {
+                    $invoice->update(['nomina_data' => $nomina]);
+                }
             }
 
             if (! empty($parsed['lines'])) {

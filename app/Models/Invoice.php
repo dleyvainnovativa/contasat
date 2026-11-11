@@ -37,6 +37,7 @@ class Invoice extends Model
         'fecha_timbrado',
         'cancelado',
         'xml_original',
+        'nomina_data',
         'estado_conciliacion',
         'cuenta_contable_id',
         'cuenta_abono_id',
@@ -49,6 +50,7 @@ class Invoice extends Model
     protected function casts(): array
     {
         return [
+            'nomina_data'    => 'array',
             'subtotal'       => 'decimal:2',
             'descuento'      => 'decimal:2',
             'total'          => 'decimal:2',

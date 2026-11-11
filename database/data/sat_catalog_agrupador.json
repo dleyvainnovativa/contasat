@@ -1,0 +1,7527 @@
+[
+{
+"codigo": "100",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": "Activa",
+"nombre": "Activo"
+},
+{
+"codigo": "100.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": "Activa",
+"nombre": "Activo a corto plazo"
+},
+{
+"codigo": "101",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": "Activa",
+"nombre": "Caja"
+},
+{
+"codigo": "101.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": "Activa",
+"nombre": "Caja y efectivo"
+},
+{
+"codigo": "102",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": "Activa",
+"nombre": "Bancos"
+},
+{
+"codigo": "102.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": "Activa",
+"nombre": "Bancos nacionales"
+},
+{
+"codigo": "102.02",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": "No Activa",
+"nombre": "Bancos extranjeros"
+},
+{
+"codigo": "103",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": "No Activa",
+"nombre": "Inversiones"
+},
+{
+"codigo": "103.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Inversiones temporales"
+},
+{
+"codigo": "103.02",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Inversiones en fideicomisos"
+},
+{
+"codigo": "103.03",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras inversiones"
+},
+{
+"codigo": "104",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros instrumentos financieros"
+},
+{
+"codigo": "104.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros instrumentos financieros"
+},
+{
+"codigo": "105",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Clientes"
+},
+{
+"codigo": "105.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Clientes nacionales"
+},
+{
+"codigo": "105.02",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Clientes extranjeros"
+},
+{
+"codigo": "105.03",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Clientes nacionales parte relacionada"
+},
+{
+"codigo": "105.04",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Clientes extranjeros parte relacionada"
+},
+{
+"codigo": "106",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuentas y documentos por cobrar a corto plazo"
+},
+{
+"codigo": "106.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuentas y documentos por cobrar a corto plazo nacional"
+},
+{
+"codigo": "106.02",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuentas y documentos por cobrar a corto plazo extranjero"
+},
+{
+"codigo": "106.03",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuentas y documentos por cobrar a corto plazo nacional parte relacionada"
+},
+{
+"codigo": "106.04",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuentas y documentos por cobrar a corto plazo extranjero parte relacionada"
+},
+{
+"codigo": "106.05",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Intereses por cobrar a corto plazo nacional"
+},
+{
+"codigo": "106.06",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Intereses por cobrar a corto plazo extranjero"
+},
+{
+"codigo": "106.07",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Intereses por cobrar a corto plazo nacional parte relacionada"
+},
+{
+"codigo": "106.08",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Intereses por cobrar a corto plazo extranjero parte relacionada"
+},
+{
+"codigo": "106.09",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras cuentas y documentos por cobrar a corto plazo"
+},
+{
+"codigo": "106.10",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras cuentas y documentos por cobrar a corto plazo parte relacionada"
+},
+{
+"codigo": "107",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": "Activa",
+"nombre": "Deudores diversos"
+},
+{
+"codigo": "107.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": "Activa",
+"nombre": "Funcionarios y empleados"
+},
+{
+"codigo": "107.02",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": "No Activa",
+"nombre": "Socios y accionistas"
+},
+{
+"codigo": "107.03",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": "No Activa",
+"nombre": "Partes relacionadas nacionales"
+},
+{
+"codigo": "107.04",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": "No Activa",
+"nombre": "Partes relacionadas extranjeros"
+},
+{
+"codigo": "107.05",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": "Activa",
+"nombre": "Otros deudores diversos"
+},
+{
+"codigo": "108",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Estimación de cuentas incobrables"
+},
+{
+"codigo": "108.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Estimación de cuentas incobrables nacional"
+},
+{
+"codigo": "108.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Estimación de cuentas incobrables extranjero"
+},
+{
+"codigo": "108.03",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Estimación de cuentas incobrables nacional parte relacionada"
+},
+{
+"codigo": "108.04",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Estimación de cuentas incobrables extranjero parte relacionada"
+},
+{
+"codigo": "109",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pagos anticipados"
+},
+{
+"codigo": "109.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Seguros y fianzas pagados por anticipado nacional"
+},
+{
+"codigo": "109.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Seguros y fianzas pagados por anticipado extranjero"
+},
+{
+"codigo": "109.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Seguros y fianzas pagados por anticipado nacional parte relacionada"
+},
+{
+"codigo": "109.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Seguros y fianzas pagados por anticipado extranjero parte relacionada"
+},
+{
+"codigo": "109.05",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Rentas pagados por anticipado nacional"
+},
+{
+"codigo": "109.06",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Rentas pagados por anticipado extranjero"
+},
+{
+"codigo": "109.07",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Rentas pagados por anticipado nacional parte relacionada"
+},
+{
+"codigo": "109.08",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Rentas pagados por anticipado extranjero parte relacionada"
+},
+{
+"codigo": "109.09",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Intereses pagados por anticipado nacional"
+},
+{
+"codigo": "109.10",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Intereses pagados por anticipado extranjero"
+},
+{
+"codigo": "109.11",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Intereses pagados por anticipado nacional parte relacionada"
+},
+{
+"codigo": "109.12",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Intereses pagados por anticipado extranjero parte relacionada"
+},
+{
+"codigo": "109.13",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Factoraje financiero pagados por anticipado nacional"
+},
+{
+"codigo": "109.14",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Factoraje financiero pagados por anticipado extranjero"
+},
+{
+"codigo": "109.15",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Factoraje financiero pagados por anticipado nacional parte relacionada"
+},
+{
+"codigo": "109.16",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Factoraje financiero pagados por anticipado extranjero parte relacionada"
+},
+{
+"codigo": "109.17",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Arrendamiento financiero pagados por anticipado nacional"
+},
+{
+"codigo": "109.18",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Arrendamiento financiero pagados por anticipado extranjero"
+},
+{
+"codigo": "109.19",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Arrendamiento financiero pagados por anticipado nacional parte relacionada"
+},
+{
+"codigo": "109.20",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Arrendamiento financiero pagados por anticipado extranjero parte relacionada"
+},
+{
+"codigo": "109.21",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida por deterioro de pagos anticipados"
+},
+{
+"codigo": "109.22",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Derechos fiduciarios"
+},
+{
+"codigo": "109.23",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros pagos anticipados"
+},
+{
+"codigo": "110",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Subsidio al empleo por aplicar"
+},
+{
+"codigo": "110.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Subsidio al empleo por aplicar"
+},
+{
+"codigo": "111",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Crédito al diesel por acreditar"
+},
+{
+"codigo": "111.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Crédito al diesel por acreditar"
+},
+{
+"codigo": "112",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros estímulos"
+},
+{
+"codigo": "112.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros estímulos"
+},
+{
+"codigo": "113",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Impuestos a favor"
+},
+{
+"codigo": "113.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "IVA a favor"
+},
+{
+"codigo": "113.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "ISR a favor"
+},
+{
+"codigo": "113.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "IETU a favor"
+},
+{
+"codigo": "113.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "IDE a favor"
+},
+{
+"codigo": "113.05",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "IA a favor"
+},
+{
+"codigo": "113.06",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Subsidio al empleo"
+},
+{
+"codigo": "113.07",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pago de lo indebido"
+},
+{
+"codigo": "113.08",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros impuestos a favor"
+},
+{
+"codigo": "114",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pagos provisionales"
+},
+{
+"codigo": "114.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pagos provisionales de ISR"
+},
+{
+"codigo": "115",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Inventario"
+},
+{
+"codigo": "115.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Inventario"
+},
+{
+"codigo": "115.02",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Materia prima y materiales"
+},
+{
+"codigo": "115.03",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Producción en proceso"
+},
+{
+"codigo": "115.04",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Productos terminados"
+},
+{
+"codigo": "115.05",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Mercancías en tránsito"
+},
+{
+"codigo": "115.06",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Mercancías en poder de terceros"
+},
+{
+"codigo": "115.07",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros"
+},
+{
+"codigo": "116",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Estimación de inventarios obsoletos y de lento movimiento"
+},
+{
+"codigo": "116.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Estimación de inventarios obsoletos y de lento movimiento"
+},
+{
+"codigo": "117",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Obras en proceso de inmuebles"
+},
+{
+"codigo": "117.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Obras en proceso de inmuebles"
+},
+{
+"codigo": "118",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Impuestos acreditables pagados"
+},
+{
+"codigo": "118.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "IVA acreditable pagado"
+},
+{
+"codigo": "118.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "IVA acreditable de importación pagado"
+},
+{
+"codigo": "118.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "IEPS acreditable pagado"
+},
+{
+"codigo": "118.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "IEPS pagado en importación"
+},
+{
+"codigo": "119",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Impuestos acreditables por pagar"
+},
+{
+"codigo": "119.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "IVA pendiente de pago"
+},
+{
+"codigo": "119.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "IVA de importación pendiente de pago"
+},
+{
+"codigo": "119.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "IEPS pendiente de pago"
+},
+{
+"codigo": "119.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "IEPS pendiente de pago en importación"
+},
+{
+"codigo": "120",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Anticipo a proveedores"
+},
+{
+"codigo": "120.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Anticipo a proveedores nacional"
+},
+{
+"codigo": "120.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Anticipo a proveedores extranjero"
+},
+{
+"codigo": "120.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Anticipo a proveedores nacional parte relacionada"
+},
+{
+"codigo": "120.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Anticipo a proveedores extranjero parte relacionada"
+},
+{
+"codigo": "121",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros activos a corto plazo"
+},
+{
+"codigo": "121.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros activos a corto plazo"
+},
+{
+"codigo": "100.02",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": "Activa",
+"nombre": "Activo a largo plazo"
+},
+{
+"codigo": "151",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Terrenos"
+},
+{
+"codigo": "151.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Terrenos"
+},
+{
+"codigo": "152",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Edificios"
+},
+{
+"codigo": "152.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Edificios"
+},
+{
+"codigo": "153",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Maquinaria y equipo"
+},
+{
+"codigo": "153.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Maquinaria y equipo"
+},
+{
+"codigo": "154",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Automóviles, autobuses, camiones de carga, tractocamiones, montacargas y remolques"
+},
+{
+"codigo": "154.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Automóviles, autobuses, camiones de carga, tractocamiones, montacargas y remolques"
+},
+{
+"codigo": "155",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Mobiliario y equipo de oficina"
+},
+{
+"codigo": "155.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Mobiliario y equipo de oficina"
+},
+{
+"codigo": "156",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Equipo de cómputo"
+},
+{
+"codigo": "156.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Equipo de cómputo"
+},
+{
+"codigo": "157",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Equipo de comunicación"
+},
+{
+"codigo": "157.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Equipo de comunicación"
+},
+{
+"codigo": "158",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Activos biológicos, vegetales y semovientes"
+},
+{
+"codigo": "158.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Activos biológicos, vegetales y semovientes"
+},
+{
+"codigo": "159",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Obras en proceso de activos fijos"
+},
+{
+"codigo": "159.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Obras en proceso de activos fijos"
+},
+{
+"codigo": "160",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros activos fijos"
+},
+{
+"codigo": "160.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros activos fijos"
+},
+{
+"codigo": "161",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Ferrocarriles"
+},
+{
+"codigo": "161.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Ferrocarriles"
+},
+{
+"codigo": "162",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Embarcaciones"
+},
+{
+"codigo": "162.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Embarcaciones"
+},
+{
+"codigo": "163",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aviones"
+},
+{
+"codigo": "163.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aviones"
+},
+{
+"codigo": "164",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Troqueles, moldes, matrices y herramental"
+},
+{
+"codigo": "164.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Troqueles, moldes, matrices y herramental"
+},
+{
+"codigo": "165",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Equipo de comunicaciones telefónicas"
+},
+{
+"codigo": "165.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Equipo de comunicaciones telefónicas"
+},
+{
+"codigo": "166",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Equipo de comunicación satelital"
+},
+{
+"codigo": "166.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Equipo de comunicación satelital"
+},
+{
+"codigo": "167",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Equipo de adaptaciones para personas con capacidades diferentes"
+},
+{
+"codigo": "167.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Equipo de adaptaciones para personas con capacidades diferentes"
+},
+{
+"codigo": "168",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Maquinaria y equipo de generación de energía de fuentes renovables o de sistemas de cogeneración de electricidad eficiente"
+},
+{
+"codigo": "168.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Maquinaria y equipo de generación de energía de fuentes renovables o de sistemas de cogeneración de electricidad eficiente"
+},
+{
+"codigo": "169",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otra maquinaria y equipo"
+},
+{
+"codigo": "169.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otra maquinaria y equipo"
+},
+{
+"codigo": "170",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Adaptaciones y mejoras"
+},
+{
+"codigo": "170.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Adaptaciones y mejoras"
+},
+{
+"codigo": "171",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": "Activa",
+"nombre": "Depreciación acumulada de activos fijos"
+},
+{
+"codigo": "171.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": "Activa",
+"nombre": "Depreciación acumulada de edificios"
+},
+{
+"codigo": "171.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": "Activa",
+"nombre": "Depreciación acumulada de maquinaria y equipo"
+},
+{
+"codigo": "171.03",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Depreciación acumulada de automóviles, autobuses, camiones de carga, tractocamiones, montacargas y remolques"
+},
+{
+"codigo": "171.04",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Depreciación acumulada de mobiliario y equipo de oficina"
+},
+{
+"codigo": "171.05",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Depreciación acumulada de equipo de cómputo"
+},
+{
+"codigo": "171.06",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": "DESACTIVAR",
+"nombre": "Depreciación acumulada de equipo de comunicación"
+},
+{
+"codigo": "171.07",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": "DESACTIVAR",
+"nombre": "Depreciación acumulada de activos biológicos, vegetales y semovientes"
+},
+{
+"codigo": "171.08",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": "DESACTIVAR",
+"nombre": "Depreciación acumulada de otros activos fijos"
+},
+{
+"codigo": "171.09",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": "DESACTIVAR",
+"nombre": "Depreciación acumulada de ferrocarriles"
+},
+{
+"codigo": "171.10",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": "DESACTIVAR",
+"nombre": "Depreciación acumulada de embarcaciones"
+},
+{
+"codigo": "171.11",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": "DESACTIVAR",
+"nombre": "Depreciación acumulada de aviones"
+},
+{
+"codigo": "171.12",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": "DESACTIVAR",
+"nombre": "Depreciación acumulada de troqueles, moldes, matrices y herramental"
+},
+{
+"codigo": "171.13",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": "DESACTIVAR",
+"nombre": "Depreciación acumulada de equipo de comunicaciones telefónicas"
+},
+{
+"codigo": "171.14",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": "DESACTIVAR",
+"nombre": "Depreciación acumulada de equipo de comunicación satelital"
+},
+{
+"codigo": "171.15",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Depreciación acumulada de equipo de adaptaciones para personas con capacidades diferentes"
+},
+{
+"codigo": "171.16",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Depreciación acumulada de maquinaria y equipo de generación de energía de fuentes renovables o de sistemas de cogeneración de electricidad eficiente"
+},
+{
+"codigo": "171.17",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Depreciación acumulada de adaptaciones y mejoras"
+},
+{
+"codigo": "171.18",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Depreciación acumulada de otra maquinaria y equipo"
+},
+{
+"codigo": "172",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de activos fijos"
+},
+{
+"codigo": "172.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de edificios"
+},
+{
+"codigo": "172.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de maquinaria y equipo"
+},
+{
+"codigo": "172.03",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de automóviles, autobuses, camiones de carga, tractocamiones, montacargas y remolques"
+},
+{
+"codigo": "172.04",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de mobiliario y equipo de oficina"
+},
+{
+"codigo": "172.05",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de equipo de cómputo"
+},
+{
+"codigo": "172.06",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de equipo de comunicación"
+},
+{
+"codigo": "172.07",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de activos biológicos, vegetales y semovientes"
+},
+{
+"codigo": "172.08",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de otros activos fijos"
+},
+{
+"codigo": "172.09",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de ferrocarriles"
+},
+{
+"codigo": "172.10",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de embarcaciones"
+},
+{
+"codigo": "172.11",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de aviones"
+},
+{
+"codigo": "172.12",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de troqueles, moldes, matrices y herramental"
+},
+{
+"codigo": "172.13",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de equipo de comunicaciones telefónicas"
+},
+{
+"codigo": "172.14",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de equipo de comunicación satelital"
+},
+{
+"codigo": "172.15",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de equipo de adaptaciones para personas con capacidades diferentes"
+},
+{
+"codigo": "172.16",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de maquinaria y equipo de generación de energía de fuentes renovables o de sistemas de cogeneración de electricidad eficiente"
+},
+{
+"codigo": "172.17",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de adaptaciones y mejoras"
+},
+{
+"codigo": "172.18",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida por deterioro acumulado de otra maquinaria y equipo"
+},
+{
+"codigo": "173",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos diferidos"
+},
+{
+"codigo": "173.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos diferidos"
+},
+{
+"codigo": "174",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos pre operativos"
+},
+{
+"codigo": "174.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos pre operativos"
+},
+{
+"codigo": "175",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías, asistencia técnica y otros gastos diferidos"
+},
+{
+"codigo": "175.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías, asistencia técnica y otros gastos diferidos"
+},
+{
+"codigo": "176",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Activos intangibles"
+},
+{
+"codigo": "176.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Activos intangibles"
+},
+{
+"codigo": "177",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos de organización"
+},
+{
+"codigo": "177.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos de organización"
+},
+{
+"codigo": "178",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Investigación y desarrollo de mercado"
+},
+{
+"codigo": "178.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Investigación y desarrollo de mercado"
+},
+{
+"codigo": "179",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Marcas y patentes"
+},
+{
+"codigo": "179.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Marcas y patentes"
+},
+{
+"codigo": "180",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Crédito mercantil"
+},
+{
+"codigo": "180.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Crédito mercantil"
+},
+{
+"codigo": "181",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos de instalación"
+},
+{
+"codigo": "181.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos de instalación"
+},
+{
+"codigo": "182",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros activos diferidos"
+},
+{
+"codigo": "182.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros activos diferidos"
+},
+{
+"codigo": "183",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Amortización acumulada de activos diferidos"
+},
+{
+"codigo": "183.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Amortización acumulada de gastos diferidos"
+},
+{
+"codigo": "183.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Amortización acumulada de gastos pre operativos"
+},
+{
+"codigo": "183.03",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Amortización acumulada de regalías, asistencia técnica y otros gastos diferidos"
+},
+{
+"codigo": "183.04",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Amortización acumulada de activos intangibles"
+},
+{
+"codigo": "183.05",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Amortización acumulada de gastos de organización"
+},
+{
+"codigo": "183.06",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Amortización acumulada de investigación y desarrollo de mercado"
+},
+{
+"codigo": "183.07",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Amortización acumulada de marcas y patentes"
+},
+{
+"codigo": "183.08",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Amortización acumulada de crédito mercantil"
+},
+{
+"codigo": "183.09",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Amortización acumulada de gastos de instalación"
+},
+{
+"codigo": "183.10",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Amortización acumulada de otros activos diferidos"
+},
+{
+"codigo": "184",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depósitos en garantía"
+},
+{
+"codigo": "184.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depósitos de fianzas"
+},
+{
+"codigo": "184.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depósitos de arrendamiento de bienes inmuebles"
+},
+{
+"codigo": "184.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros depósitos en garantía"
+},
+{
+"codigo": "185",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Impuestos diferidos"
+},
+{
+"codigo": "185.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Impuestos diferidos ISR"
+},
+{
+"codigo": "186",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuentas y documentos por cobrar a largo plazo"
+},
+{
+"codigo": "186.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuentas y documentos por cobrar a largo plazo nacional"
+},
+{
+"codigo": "186.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuentas y documentos por cobrar a largo plazo extranjero"
+},
+{
+"codigo": "186.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuentas y documentos por cobrar a largo plazo nacional parte relacionada"
+},
+{
+"codigo": "186.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuentas y documentos por cobrar a largo plazo extranjero parte relacionada"
+},
+{
+"codigo": "186.05",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Intereses por cobrar a largo plazo nacional"
+},
+{
+"codigo": "186.06",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Intereses por cobrar a largo plazo extranjero"
+},
+{
+"codigo": "186.07",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Intereses por cobrar a largo plazo nacional parte relacionada"
+},
+{
+"codigo": "186.08",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Intereses por cobrar a largo plazo extranjero parte relacionada"
+},
+{
+"codigo": "186.09",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras cuentas y documentos por cobrar a largo plazo"
+},
+{
+"codigo": "186.10",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras cuentas y documentos por cobrar a largo plazo parte relacionada"
+},
+{
+"codigo": "187",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Participación de los trabajadores en las utilidades diferidas"
+},
+{
+"codigo": "187.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Participación de los trabajadores en las utilidades diferidas"
+},
+{
+"codigo": "188",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Inversiones permanentes en acciones"
+},
+{
+"codigo": "188.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Inversiones a largo plazo en subsidiarias"
+},
+{
+"codigo": "188.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Inversiones a largo plazo en asociadas"
+},
+{
+"codigo": "188.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras inversiones permanentes en acciones"
+},
+{
+"codigo": "189",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Estimación por deterioro de inversiones permanentes en acciones"
+},
+{
+"codigo": "189.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Estimación por deterioro de inversiones permanentes en acciones"
+},
+{
+"codigo": "190",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros instrumentos financieros"
+},
+{
+"codigo": "190.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros instrumentos financieros"
+},
+{
+"codigo": "191",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros activos a largo plazo"
+},
+{
+"codigo": "191.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros activos a largo plazo"
+},
+{
+"codigo": "200",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": "Activa",
+"nombre": "Pasivo"
+},
+{
+"codigo": "200.01",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": "Activa",
+"nombre": "Pasivo a corto plazo"
+},
+{
+"codigo": "201",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Proveedores"
+},
+{
+"codigo": "201.01",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Proveedores nacionales"
+},
+{
+"codigo": "201.02",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Proveedores extranjeros"
+},
+{
+"codigo": "201.03",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Proveedores nacionales parte relacionada"
+},
+{
+"codigo": "201.04",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Proveedores extranjeros parte relacionada"
+},
+{
+"codigo": "202",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Cuentas por pagar a corto plazo"
+},
+{
+"codigo": "202.01",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Documentos por pagar bancario y financiero nacional"
+},
+{
+"codigo": "202.02",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Documentos por pagar bancario y financiero extranjero"
+},
+{
+"codigo": "202.03",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Documentos y cuentas por pagar a corto plazo nacional"
+},
+{
+"codigo": "202.04",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Documentos y cuentas por pagar a corto plazo extranjero"
+},
+{
+"codigo": "202.05",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Documentos y cuentas por pagar a corto plazo nacional parte relacionada"
+},
+{
+"codigo": "202.06",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Documentos y cuentas por pagar a corto plazo extranjero parte relacionada"
+},
+{
+"codigo": "202.07",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses por pagar a corto plazo nacional"
+},
+{
+"codigo": "202.08",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses por pagar a corto plazo extranjero"
+},
+{
+"codigo": "202.09",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses por pagar a corto plazo nacional parte relacionada"
+},
+{
+"codigo": "202.10",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses por pagar a corto plazo extranjero parte relacionada"
+},
+{
+"codigo": "202.11",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Dividendo por pagar nacional"
+},
+{
+"codigo": "202.12",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Dividendo por pagar extranjero"
+},
+{
+"codigo": "203",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Cobros anticipados a corto plazo"
+},
+{
+"codigo": "203.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Rentas cobradas por anticipado a corto plazo nacional"
+},
+{
+"codigo": "203.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Rentas cobradas por anticipado a corto plazo extranjero"
+},
+{
+"codigo": "203.03",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Rentas cobradas por anticipado a corto plazo nacional parte relacionada"
+},
+{
+"codigo": "203.04",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Rentas cobradas por anticipado a corto plazo extranjero parte relacionada"
+},
+{
+"codigo": "203.05",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses cobrados por anticipado a corto plazo nacional"
+},
+{
+"codigo": "203.06",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses cobrados por anticipado a corto plazo extranjero"
+},
+{
+"codigo": "203.07",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses cobrados por anticipado a corto plazo nacional parte relacionada"
+},
+{
+"codigo": "203.08",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses cobrados por anticipado a corto plazo extranjero parte relacionada"
+},
+{
+"codigo": "203.09",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Factoraje financiero cobrados por anticipado a corto plazo nacional"
+},
+{
+"codigo": "203.10",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Factoraje financiero cobrados por anticipado a corto plazo extranjero"
+},
+{
+"codigo": "203.11",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Factoraje financiero cobrados por anticipado a corto plazo nacional parte relacionada"
+},
+{
+"codigo": "203.12",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Factoraje financiero cobrados por anticipado a corto plazo extranjero parte relacionada"
+},
+{
+"codigo": "203.13",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Arrendamiento financiero cobrados por anticipado a corto plazo nacional"
+},
+{
+"codigo": "203.14",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Arrendamiento financiero cobrados por anticipado a corto plazo extranjero"
+},
+{
+"codigo": "203.15",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Arrendamiento financiero cobrados por anticipado a corto plazo nacional parte relacionada"
+},
+{
+"codigo": "203.16",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Arrendamiento financiero cobrados por anticipado a corto plazo extranjero parte relacionada"
+},
+{
+"codigo": "203.17",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Derechos fiduciarios"
+},
+{
+"codigo": "203.18",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros cobros anticipados"
+},
+{
+"codigo": "204",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Instrumentos financieros a corto plazo"
+},
+{
+"codigo": "204.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Instrumentos financieros a corto plazo"
+},
+{
+"codigo": "205",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Acreedores diversos a corto plazo"
+},
+{
+"codigo": "205.01",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Socios, accionistas o representante legal"
+},
+{
+"codigo": "205.02",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Acreedores diversos a corto plazo nacional"
+},
+{
+"codigo": "205.03",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Acreedores diversos a corto plazo extranjero"
+},
+{
+"codigo": "205.04",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Acreedores diversos a corto plazo nacional parte relacionada"
+},
+{
+"codigo": "205.05",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Acreedores diversos a corto plazo extranjero parte relacionada"
+},
+{
+"codigo": "205.06",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros acreedores diversos a corto plazo"
+},
+{
+"codigo": "206",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Anticipo de cliente"
+},
+{
+"codigo": "206.01",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Anticipo de cliente nacional"
+},
+{
+"codigo": "206.02",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Anticipo de cliente extranjero"
+},
+{
+"codigo": "206.03",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Anticipo de cliente nacional parte relacionada"
+},
+{
+"codigo": "206.04",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Anticipo de cliente extranjero parte relacionada"
+},
+{
+"codigo": "206.05",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros anticipos de clientes"
+},
+{
+"codigo": "207",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Impuestos trasladados"
+},
+{
+"codigo": "207.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "IVA trasladado"
+},
+{
+"codigo": "207.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "IEPS trasladado"
+},
+{
+"codigo": "208",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Impuestos trasladados cobrados"
+},
+{
+"codigo": "208.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "IVA trasladado cobrado"
+},
+{
+"codigo": "208.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "IEPS trasladado cobrado"
+},
+{
+"codigo": "209",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Impuestos trasladados no cobrados"
+},
+{
+"codigo": "209.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "IVA trasladado no cobrado"
+},
+{
+"codigo": "209.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "IEPS trasladado no cobrado"
+},
+{
+"codigo": "210",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Provisión de sueldos y salarios por pagar"
+},
+{
+"codigo": "210.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Provisión de sueldos y salarios por pagar"
+},
+{
+"codigo": "210.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Provisión de vacaciones por pagar"
+},
+{
+"codigo": "210.03",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Provisión de aguinaldo por pagar"
+},
+{
+"codigo": "210.04",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Provisión de fondo de ahorro por pagar"
+},
+{
+"codigo": "210.05",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Provisión de asimilados a salarios por pagar"
+},
+{
+"codigo": "210.06",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Provisión de anticipos o remanentes por distribuir"
+},
+{
+"codigo": "210.07",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Provisión de otros sueldos y salarios por pagar"
+},
+{
+"codigo": "211",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Provisión de contribuciones de seguridad social por pagar"
+},
+{
+"codigo": "211.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Provisión de IMSS patronal por pagar"
+},
+{
+"codigo": "211.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Provisión de SAR por pagar"
+},
+{
+"codigo": "211.03",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Provisión de infonavit por pagar"
+},
+{
+"codigo": "212",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Provisión de impuesto estatal sobre nómina por pagar"
+},
+{
+"codigo": "212.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Provisión de impuesto estatal sobre nómina por pagar"
+},
+{
+"codigo": "213",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Impuestos y derechos por pagar"
+},
+{
+"codigo": "213.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "IVA por pagar"
+},
+{
+"codigo": "213.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "IEPS por pagar"
+},
+{
+"codigo": "213.03",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "ISR por pagar"
+},
+{
+"codigo": "213.04",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Impuesto estatal sobre nómina por pagar"
+},
+{
+"codigo": "213.05",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Impuesto estatal y municipal por pagar"
+},
+{
+"codigo": "213.06",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Derechos por pagar"
+},
+{
+"codigo": "213.07",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros impuestos por pagar"
+},
+{
+"codigo": "214",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Dividendos por pagar"
+},
+{
+"codigo": "214.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Dividendos por pagar"
+},
+{
+"codigo": "215",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "PTU por pagar"
+},
+{
+"codigo": "215.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "PTU por pagar"
+},
+{
+"codigo": "215.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "PTU por pagar de ejercicios anteriores"
+},
+{
+"codigo": "215.03",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Provisión de PTU por pagar"
+},
+{
+"codigo": "216",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Impuestos retenidos"
+},
+{
+"codigo": "216.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Impuestos retenidos de ISR por sueldos y salarios"
+},
+{
+"codigo": "216.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Impuestos retenidos de ISR por asimilados a salarios"
+},
+{
+"codigo": "216.03",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Impuestos retenidos de ISR por arrendamiento"
+},
+{
+"codigo": "216.04",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Impuestos retenidos de ISR por servicios profesionales"
+},
+{
+"codigo": "216.05",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Impuestos retenidos de ISR por dividendos"
+},
+{
+"codigo": "216.06",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Impuestos retenidos de ISR por intereses"
+},
+{
+"codigo": "216.07",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Impuestos retenidos de ISR por pagos al extranjero"
+},
+{
+"codigo": "216.08",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Impuestos retenidos de ISR por venta de acciones"
+},
+{
+"codigo": "216.09",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Impuestos retenidos de ISR por venta de partes sociales"
+},
+{
+"codigo": "216.10",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Impuestos retenidos de IVA"
+},
+{
+"codigo": "216.11",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Retenciones de IMSS a los trabajadores"
+},
+{
+"codigo": "216.12",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otras impuestos retenidos"
+},
+{
+"codigo": "217",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pagos realizados por cuenta de terceros"
+},
+{
+"codigo": "217.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pagos realizados por cuenta de terceros"
+},
+{
+"codigo": "218",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros pasivos a corto plazo"
+},
+{
+"codigo": "218.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros pasivos a corto plazo"
+},
+{
+"codigo": "200.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": "Activa",
+"nombre": "Pasivo a largo plazo"
+},
+{
+"codigo": "251",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Acreedores diversos a largo plazo"
+},
+{
+"codigo": "251.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Socios, accionistas o representante legal"
+},
+{
+"codigo": "251.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Acreedores diversos a largo plazo nacional"
+},
+{
+"codigo": "251.03",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Acreedores diversos a largo plazo extranjero"
+},
+{
+"codigo": "251.04",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Acreedores diversos a largo plazo nacional parte relacionada"
+},
+{
+"codigo": "251.05",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Acreedores diversos a largo plazo extranjero parte relacionada"
+},
+{
+"codigo": "251.06",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros acreedores diversos a largo plazo"
+},
+{
+"codigo": "252",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Cuentas por pagar a largo plazo"
+},
+{
+"codigo": "252.01",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Documentos bancarios y financieros por pagar a largo plazo nacional"
+},
+{
+"codigo": "252.02",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Documentos bancarios y financieros por pagar a largo plazo extranjero"
+},
+{
+"codigo": "252.03",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Documentos y cuentas por pagar a largo plazo nacional"
+},
+{
+"codigo": "252.04",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Documentos y cuentas por pagar a largo plazo extranjero"
+},
+{
+"codigo": "252.05",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Documentos y cuentas por pagar a largo plazo nacional parte relacionada"
+},
+{
+"codigo": "252.06",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Documentos y cuentas por pagar a largo plazo extranjero parte relacionada"
+},
+{
+"codigo": "252.07",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Hipotecas por pagar a largo plazo nacional"
+},
+{
+"codigo": "252.08",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Hipotecas por pagar a largo plazo extranjero"
+},
+{
+"codigo": "252.09",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Hipotecas por pagar a largo plazo nacional parte relacionada"
+},
+{
+"codigo": "252.10",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Hipotecas por pagar a largo plazo extranjero parte relacionada"
+},
+{
+"codigo": "252.11",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses por pagar a largo plazo nacional"
+},
+{
+"codigo": "252.12",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses por pagar a largo plazo extranjero"
+},
+{
+"codigo": "252.13",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses por pagar a largo plazo nacional parte relacionada"
+},
+{
+"codigo": "252.14",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses por pagar a largo plazo extranjero parte relacionada"
+},
+{
+"codigo": "252.15",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Dividendos por pagar nacionales"
+},
+{
+"codigo": "252.16",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Dividendos por pagar extranjeros"
+},
+{
+"codigo": "252.17",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otras cuentas y documentos por pagar a largo plazo"
+},
+{
+"codigo": "253",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Cobros anticipados a largo plazo"
+},
+{
+"codigo": "253.01",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Rentas cobradas por anticipado a largo plazo nacional"
+},
+{
+"codigo": "253.02",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Rentas cobradas por anticipado a largo plazo extranjero"
+},
+{
+"codigo": "253.03",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Rentas cobradas por anticipado a largo plazo nacional parte relacionada"
+},
+{
+"codigo": "253.04",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Rentas cobradas por anticipado a largo plazo extranjero parte relacionada"
+},
+{
+"codigo": "253.05",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses cobrados por anticipado a largo plazo nacional"
+},
+{
+"codigo": "253.06",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses cobrados por anticipado a largo plazo extranjero"
+},
+{
+"codigo": "253.07",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses cobrados por anticipado a largo plazo nacional parte relacionada"
+},
+{
+"codigo": "253.08",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses cobrados por anticipado a largo plazo extranjero parte relacionada"
+},
+{
+"codigo": "253.09",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Factoraje financiero cobrados por anticipado a largo plazo nacional"
+},
+{
+"codigo": "253.10",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Factoraje financiero cobrados por anticipado a largo plazo extranjero"
+},
+{
+"codigo": "253.11",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Factoraje financiero cobrados por anticipado a largo plazo nacional parte relacionada"
+},
+{
+"codigo": "253.12",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Factoraje financiero cobrados por anticipado a largo plazo extranjero parte relacionada"
+},
+{
+"codigo": "253.13",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Arrendamiento financiero cobrados por anticipado a largo plazo nacional"
+},
+{
+"codigo": "253.14",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Arrendamiento financiero cobrados por anticipado a largo plazo extranjero"
+},
+{
+"codigo": "253.15",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Arrendamiento financiero cobrados por anticipado a largo plazo nacional parte relacionada"
+},
+{
+"codigo": "253.16",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Arrendamiento financiero cobrados por anticipado a largo plazo extranjero parte relacionada"
+},
+{
+"codigo": "253.17",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Derechos fiduciarios"
+},
+{
+"codigo": "253.18",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros cobros anticipados"
+},
+{
+"codigo": "254",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Instrumentos financieros a largo plazo"
+},
+{
+"codigo": "254.01",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Instrumentos financieros a largo plazo"
+},
+{
+"codigo": "255",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pasivos por beneficios a los empleados a largo plazo"
+},
+{
+"codigo": "255.01",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pasivos por beneficios a los empleados a largo plazo"
+},
+{
+"codigo": "256",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros pasivos a largo plazo"
+},
+{
+"codigo": "256.01",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros pasivos a largo plazo"
+},
+{
+"codigo": "257",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Participación de los trabajadores en las utilidades diferida"
+},
+{
+"codigo": "257.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Participación de los trabajadores en las utilidades diferida"
+},
+{
+"codigo": "258",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Obligaciones contraídas de fideicomisos"
+},
+{
+"codigo": "258.01",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Obligaciones contraídas de fideicomisos"
+},
+{
+"codigo": "259",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Impuestos diferidos"
+},
+{
+"codigo": "259.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "ISR diferido"
+},
+{
+"codigo": "259.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "ISR por dividendo diferido"
+},
+{
+"codigo": "259.03",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros impuestos diferidos"
+},
+{
+"codigo": "260",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pasivos diferidos"
+},
+{
+"codigo": "260.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pasivos diferidos"
+},
+{
+"codigo": "300",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": "Activa",
+"nombre": "Capital contable"
+},
+{
+"codigo": "301",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Capital social"
+},
+{
+"codigo": "301.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Capital fijo"
+},
+{
+"codigo": "301.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Capital variable"
+},
+{
+"codigo": "301.03",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Aportaciones para futuros aumentos de capital"
+},
+{
+"codigo": "301.04",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Prima en suscripción de acciones"
+},
+{
+"codigo": "301.05",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Prima en suscripción de partes sociales"
+},
+{
+"codigo": "302",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Patrimonio"
+},
+{
+"codigo": "302.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Patrimonio"
+},
+{
+"codigo": "302.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Aportación patrimonial"
+},
+{
+"codigo": "302.03",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Déficit o remanente del ejercicio"
+},
+{
+"codigo": "303",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Reserva legal"
+},
+{
+"codigo": "303.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Reserva legal"
+},
+{
+"codigo": "304",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Resultado de ejercicios anteriores"
+},
+{
+"codigo": "304.01",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Utilidad de ejercicios anteriores"
+},
+{
+"codigo": "304.02",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida de ejercicios anteriores"
+},
+{
+"codigo": "304.03",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Resultado integral de ejercicios anteriores"
+},
+{
+"codigo": "304.04",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Déficit o remanente de ejercicio anteriores"
+},
+{
+"codigo": "305",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Resultado del ejercicio"
+},
+{
+"codigo": "305.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Utilidad del ejercicio"
+},
+{
+"codigo": "305.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdida del ejercicio"
+},
+{
+"codigo": "305.03",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Resultado integral"
+},
+{
+"codigo": "306",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otras cuentas de capital"
+},
+{
+"codigo": "306.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otras cuentas de capital"
+},
+{
+"codigo": "400",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": "Activa",
+"nombre": "Ingresos"
+},
+{
+"codigo": "401",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos"
+},
+{
+"codigo": "401.01",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ventas y/o servicios gravados a la tasa general"
+},
+{
+"codigo": "401.02",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ventas y/o servicios gravados a la tasa general de contado"
+},
+{
+"codigo": "401.03",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ventas y/o servicios gravados a la tasa general a crédito"
+},
+{
+"codigo": "401.04",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ventas y/o servicios gravados al 0%"
+},
+{
+"codigo": "401.05",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ventas y/o servicios gravados al 0% de contado"
+},
+{
+"codigo": "401.06",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ventas y/o servicios gravados al 0% a crédito"
+},
+{
+"codigo": "401.07",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ventas y/o servicios exentos"
+},
+{
+"codigo": "401.08",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ventas y/o servicios exentos de contado"
+},
+{
+"codigo": "401.09",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ventas y/o servicios exentos a crédito"
+},
+{
+"codigo": "401.10",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ventas y/o servicios gravados a la tasa general nacionales partes relacionadas"
+},
+{
+"codigo": "401.11",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ventas y/o servicios gravados a la tasa general extranjeros partes relacionadas"
+},
+{
+"codigo": "401.12",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ventas y/o servicios gravados al 0% nacionales partes relacionadas"
+},
+{
+"codigo": "401.13",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ventas y/o servicios gravados al 0% extranjeros partes relacionadas"
+},
+{
+"codigo": "401.14",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ventas y/o servicios exentos nacionales partes relacionadas"
+},
+{
+"codigo": "401.15",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ventas y/o servicios exentos extranjeros partes relacionadas"
+},
+{
+"codigo": "401.16",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por servicios administrativos"
+},
+{
+"codigo": "401.17",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por servicios administrativos nacionales partes relacionadas"
+},
+{
+"codigo": "401.18",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por servicios administrativos extranjeros partes relacionadas"
+},
+{
+"codigo": "401.19",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por servicios profesionales"
+},
+{
+"codigo": "401.20",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por servicios profesionales nacionales partes relacionadas"
+},
+{
+"codigo": "401.21",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por servicios profesionales extranjeros partes relacionadas"
+},
+{
+"codigo": "401.22",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por arrendamiento"
+},
+{
+"codigo": "401.23",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por arrendamiento nacionales partes relacionadas"
+},
+{
+"codigo": "401.24",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por arrendamiento extranjeros partes relacionadas"
+},
+{
+"codigo": "401.25",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por exportación"
+},
+{
+"codigo": "401.26",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por comisiones"
+},
+{
+"codigo": "401.27",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por maquila"
+},
+{
+"codigo": "401.28",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por coordinados"
+},
+{
+"codigo": "401.29",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por regalías"
+},
+{
+"codigo": "401.30",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por asistencia técnica"
+},
+{
+"codigo": "401.31",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por donativos"
+},
+{
+"codigo": "401.32",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por intereses (actividad propia)"
+},
+{
+"codigo": "401.33",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos de copropiedad"
+},
+{
+"codigo": "401.34",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por fideicomisos"
+},
+{
+"codigo": "401.35",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por factoraje financiero"
+},
+{
+"codigo": "401.36",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por arrendamiento financiero"
+},
+{
+"codigo": "401.37",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos de extranjeros con establecimiento en el país"
+},
+{
+"codigo": "401.38",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros ingresos propios"
+},
+{
+"codigo": "402",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Devoluciones, descuentos o bonificaciones sobre ingresos"
+},
+{
+"codigo": "402.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Devoluciones, descuentos o bonificaciones sobre ventas y/o servicios a la tasa general"
+},
+{
+"codigo": "402.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Devoluciones, descuentos o bonificaciones sobre ventas y/o servicios al 0%"
+},
+{
+"codigo": "402.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Devoluciones, descuentos o bonificaciones sobre ventas y/o servicios exentos"
+},
+{
+"codigo": "402.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Devoluciones, descuentos o bonificaciones de otros ingresos"
+},
+{
+"codigo": "403",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros ingresos"
+},
+{
+"codigo": "403.01",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros Ingresos"
+},
+{
+"codigo": "403.02",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros ingresos nacionales parte relacionada"
+},
+{
+"codigo": "403.03",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros ingresos extranjeros parte relacionada"
+},
+{
+"codigo": "403.04",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por operaciones discontinuas"
+},
+{
+"codigo": "403.05",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por condonación de adeudo"
+},
+{
+"codigo": "500",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": "Activa",
+"nombre": "Costos"
+},
+{
+"codigo": "501",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Costo de venta y/o servicio"
+},
+{
+"codigo": "501.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Costo de venta"
+},
+{
+"codigo": "501.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Costo de servicios (Mano de obra)"
+},
+{
+"codigo": "501.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Materia prima directa utilizada para la producción"
+},
+{
+"codigo": "501.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Materia prima consumida en el proceso productivo"
+},
+{
+"codigo": "501.05",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Mano de obra directa consumida"
+},
+{
+"codigo": "501.06",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Mano de obra directa"
+},
+{
+"codigo": "501.07",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cargos indirectos de producción"
+},
+{
+"codigo": "501.08",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros conceptos de costo"
+},
+{
+"codigo": "502",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Compras"
+},
+{
+"codigo": "502.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Compras nacionales"
+},
+{
+"codigo": "502.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Compras nacionales parte relacionada"
+},
+{
+"codigo": "502.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Compras de Importación"
+},
+{
+"codigo": "502.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Compras de Importación partes relacionadas"
+},
+{
+"codigo": "503",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Devoluciones, descuentos o bonificaciones sobre compras"
+},
+{
+"codigo": "503.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Devoluciones, descuentos o bonificaciones sobre compras"
+},
+{
+"codigo": "504",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras cuentas de costos"
+},
+{
+"codigo": "504.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos indirectos de fabricación"
+},
+{
+"codigo": "504.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos indirectos de fabricación de partes relacionadas nacionales"
+},
+{
+"codigo": "504.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos indirectos de fabricación de partes relacionadas extranjeras"
+},
+{
+"codigo": "504.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras cuentas de costos incurridos"
+},
+{
+"codigo": "504.05",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras cuentas de costos incurridos con partes relacionadas nacionales"
+},
+{
+"codigo": "504.06",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras cuentas de costos incurridos con partes relacionadas extranjeras"
+},
+{
+"codigo": "504.07",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de edificios"
+},
+{
+"codigo": "504.08",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de maquinaria y equipo"
+},
+{
+"codigo": "504.09",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de automóviles, autobuses, camiones de carga, tractocamiones, montacargas y remolques"
+},
+{
+"codigo": "504.10",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de mobiliario y equipo de oficina"
+},
+{
+"codigo": "504.11",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de equipo de cómputo"
+},
+{
+"codigo": "504.12",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de equipo de comunicación"
+},
+{
+"codigo": "504.13",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de activos biológicos, vegetales y semovientes"
+},
+{
+"codigo": "504.14",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de otros activos fijos"
+},
+{
+"codigo": "504.15",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de ferrocarriles"
+},
+{
+"codigo": "504.16",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de embarcaciones"
+},
+{
+"codigo": "504.17",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de aviones"
+},
+{
+"codigo": "504.18",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de troqueles, moldes, matrices y herramental"
+},
+{
+"codigo": "504.19",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de equipo de comunicaciones telefónicas"
+},
+{
+"codigo": "504.20",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de equipo de comunicación satelital"
+},
+{
+"codigo": "504.21",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de equipo de adaptaciones para personas con capacidades diferentes"
+},
+{
+"codigo": "504.22",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de maquinaria y equipo de generación de energía de fuentes renovables o de sistemas de cogeneración de electricidad eficiente"
+},
+{
+"codigo": "504.23",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de adaptaciones y mejoras"
+},
+{
+"codigo": "504.24",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de otra maquinaria y equipo"
+},
+{
+"codigo": "504.25",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras cuentas de costos"
+},
+{
+"codigo": "505",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Costo de activo fijo"
+},
+{
+"codigo": "505.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Costo por venta de activo fijo"
+},
+{
+"codigo": "505.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Costo por baja de activo fijo"
+},
+{
+"codigo": "600",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": "Activa",
+"nombre": "Gastos"
+},
+{
+"codigo": "601",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos generales"
+},
+{
+"codigo": "601.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Sueldos y salarios"
+},
+{
+"codigo": "601.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Compensaciones"
+},
+{
+"codigo": "601.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Tiempos extras"
+},
+{
+"codigo": "601.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Premios de asistencia"
+},
+{
+"codigo": "601.05",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Premios de puntualidad"
+},
+{
+"codigo": "601.06",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Vacaciones"
+},
+{
+"codigo": "601.07",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Prima vacacional"
+},
+{
+"codigo": "601.08",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Prima dominical"
+},
+{
+"codigo": "601.09",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Días festivos"
+},
+{
+"codigo": "601.10",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gratificaciones"
+},
+{
+"codigo": "601.11",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Primas de antigüedad"
+},
+{
+"codigo": "601.12",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aguinaldo"
+},
+{
+"codigo": "601.13",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Indemnizaciones"
+},
+{
+"codigo": "601.14",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Destajo"
+},
+{
+"codigo": "601.15",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Despensa"
+},
+{
+"codigo": "601.16",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Transporte"
+},
+{
+"codigo": "601.17",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Servicio médico"
+},
+{
+"codigo": "601.18",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Ayuda en gastos funerarios"
+},
+{
+"codigo": "601.19",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Fondo de ahorro"
+},
+{
+"codigo": "601.20",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuotas sindicales"
+},
+{
+"codigo": "601.21",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "PTU"
+},
+{
+"codigo": "601.22",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Estímulo al personal"
+},
+{
+"codigo": "601.23",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Previsión social"
+},
+{
+"codigo": "601.24",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aportaciones para el plan de jubilación"
+},
+{
+"codigo": "601.25",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras prestaciones al personal"
+},
+{
+"codigo": "601.26",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuotas al IMSS"
+},
+{
+"codigo": "601.27",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aportaciones al infonavit"
+},
+{
+"codigo": "601.28",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aportaciones al SAR"
+},
+{
+"codigo": "601.29",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Impuesto estatal sobre nóminas"
+},
+{
+"codigo": "601.30",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras aportaciones"
+},
+{
+"codigo": "601.31",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Asimilados a salarios"
+},
+{
+"codigo": "601.32",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Servicios administrativos"
+},
+{
+"codigo": "601.33",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Servicios administrativos partes relacionadas"
+},
+{
+"codigo": "601.34",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas físicas residentes nacionales"
+},
+{
+"codigo": "601.35",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas físicas residentes nacionales partes relacionadas"
+},
+{
+"codigo": "601.36",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas físicas residentes del extranjero"
+},
+{
+"codigo": "601.37",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas físicas residentes del extranjero partes relacionadas"
+},
+{
+"codigo": "601.38",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas morales residentes nacionales"
+},
+{
+"codigo": "601.39",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas morales residentes nacionales partes relacionadas"
+},
+{
+"codigo": "601.40",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas morales residentes del extranjero"
+},
+{
+"codigo": "601.41",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas morales residentes del extranjero partes relacionadas"
+},
+{
+"codigo": "601.42",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios aduanales personas físicas"
+},
+{
+"codigo": "601.43",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios aduanales personas morales"
+},
+{
+"codigo": "601.44",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios al consejo de administración"
+},
+{
+"codigo": "601.45",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Arrendamiento a personas físicas residentes nacionales"
+},
+{
+"codigo": "601.46",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Arrendamiento a personas morales residentes nacionales"
+},
+{
+"codigo": "601.47",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Arrendamiento a residentes del extranjero"
+},
+{
+"codigo": "601.48",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Combustibles y lubricantes"
+},
+{
+"codigo": "601.49",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Viáticos y gastos de viaje"
+},
+{
+"codigo": "601.50",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Teléfono, internet"
+},
+{
+"codigo": "601.51",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Agua"
+},
+{
+"codigo": "601.52",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Energía eléctrica"
+},
+{
+"codigo": "601.53",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Vigilancia y seguridad"
+},
+{
+"codigo": "601.54",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Limpieza"
+},
+{
+"codigo": "601.55",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Papelería y artículos de oficina"
+},
+{
+"codigo": "601.56",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Mantenimiento y conservación"
+},
+{
+"codigo": "601.57",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Seguros y fianzas"
+},
+{
+"codigo": "601.58",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros impuestos y derechos"
+},
+{
+"codigo": "601.59",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Recargos fiscales"
+},
+{
+"codigo": "601.60",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuotas y suscripciones"
+},
+{
+"codigo": "601.61",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Propaganda y publicidad"
+},
+{
+"codigo": "601.62",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Capacitación al personal"
+},
+{
+"codigo": "601.63",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Donativos y ayudas"
+},
+{
+"codigo": "601.64",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Asistencia técnica"
+},
+{
+"codigo": "601.65",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas a otros porcentajes"
+},
+{
+"codigo": "601.66",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 5%"
+},
+{
+"codigo": "601.67",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 10%"
+},
+{
+"codigo": "601.68",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 15%"
+},
+{
+"codigo": "601.69",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 25%"
+},
+{
+"codigo": "601.70",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 30%"
+},
+{
+"codigo": "601.71",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sin retención"
+},
+{
+"codigo": "601.72",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Fletes y acarreos"
+},
+{
+"codigo": "601.73",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos de importación"
+},
+{
+"codigo": "601.74",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Comisiones sobre ventas"
+},
+{
+"codigo": "601.75",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Comisiones por tarjetas de crédito"
+},
+{
+"codigo": "601.76",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Patentes y marcas"
+},
+{
+"codigo": "601.77",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Uniformes"
+},
+{
+"codigo": "601.78",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Prediales"
+},
+{
+"codigo": "601.79",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos generales de urbanización"
+},
+{
+"codigo": "601.80",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos generales de construcción"
+},
+{
+"codigo": "601.81",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Fletes del extranjero"
+},
+{
+"codigo": "601.82",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Recolección de bienes del sector agropecuario y/o ganadero"
+},
+{
+"codigo": "601.83",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos no deducibles (sin requisitos fiscales)"
+},
+{
+"codigo": "601.84",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros gastos generales"
+},
+{
+"codigo": "602",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos de venta"
+},
+{
+"codigo": "602.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Sueldos y salarios"
+},
+{
+"codigo": "602.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Compensaciones"
+},
+{
+"codigo": "602.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Tiempos extras"
+},
+{
+"codigo": "602.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Premios de asistencia"
+},
+{
+"codigo": "602.05",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Premios de puntualidad"
+},
+{
+"codigo": "602.06",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Vacaciones"
+},
+{
+"codigo": "602.07",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Prima vacacional"
+},
+{
+"codigo": "602.08",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Prima dominical"
+},
+{
+"codigo": "602.09",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Días festivos"
+},
+{
+"codigo": "602.10",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gratificaciones"
+},
+{
+"codigo": "602.11",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Primas de antigüedad"
+},
+{
+"codigo": "602.12",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aguinaldo"
+},
+{
+"codigo": "602.13",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Indemnizaciones"
+},
+{
+"codigo": "602.14",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Destajo"
+},
+{
+"codigo": "602.15",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Despensa"
+},
+{
+"codigo": "602.16",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Transporte"
+},
+{
+"codigo": "602.17",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Servicio médico"
+},
+{
+"codigo": "602.18",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Ayuda en gastos funerarios"
+},
+{
+"codigo": "602.19",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Fondo de ahorro"
+},
+{
+"codigo": "602.20",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuotas sindicales"
+},
+{
+"codigo": "602.21",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "PTU"
+},
+{
+"codigo": "602.22",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Estímulo al personal"
+},
+{
+"codigo": "602.23",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Previsión social"
+},
+{
+"codigo": "602.24",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aportaciones para el plan de jubilación"
+},
+{
+"codigo": "602.25",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras prestaciones al personal"
+},
+{
+"codigo": "602.26",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuotas al IMSS"
+},
+{
+"codigo": "602.27",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aportaciones al infonavit"
+},
+{
+"codigo": "602.28",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aportaciones al SAR"
+},
+{
+"codigo": "602.29",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Impuesto estatal sobre nóminas"
+},
+{
+"codigo": "602.30",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras aportaciones"
+},
+{
+"codigo": "602.31",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Asimilados a salarios"
+},
+{
+"codigo": "602.32",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Servicios administrativos"
+},
+{
+"codigo": "602.33",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Servicios administrativos partes relacionadas"
+},
+{
+"codigo": "602.34",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas físicas residentes nacionales"
+},
+{
+"codigo": "602.35",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas físicas residentes nacionales partes relacionadas"
+},
+{
+"codigo": "602.36",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas físicas residentes del extranjero"
+},
+{
+"codigo": "602.37",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas físicas residentes del extranjero partes relacionadas"
+},
+{
+"codigo": "602.38",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas morales residentes nacionales"
+},
+{
+"codigo": "602.39",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas morales residentes nacionales partes relacionadas"
+},
+{
+"codigo": "602.40",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas morales residentes del extranjero"
+},
+{
+"codigo": "602.41",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas morales residentes del extranjero partes relacionadas"
+},
+{
+"codigo": "602.42",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios aduanales personas físicas"
+},
+{
+"codigo": "602.43",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios aduanales personas morales"
+},
+{
+"codigo": "602.44",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios al consejo de administración"
+},
+{
+"codigo": "602.45",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Arrendamiento a personas físicas residentes nacionales"
+},
+{
+"codigo": "602.46",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Arrendamiento a personas morales residentes nacionales"
+},
+{
+"codigo": "602.47",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Arrendamiento a residentes del extranjero"
+},
+{
+"codigo": "602.48",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Combustibles y lubricantes"
+},
+{
+"codigo": "602.49",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Viáticos y gastos de viaje"
+},
+{
+"codigo": "602.50",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Teléfono, internet"
+},
+{
+"codigo": "602.51",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Agua"
+},
+{
+"codigo": "602.52",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Energía eléctrica"
+},
+{
+"codigo": "602.53",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Vigilancia y seguridad"
+},
+{
+"codigo": "602.54",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Limpieza"
+},
+{
+"codigo": "602.55",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Papelería y artículos de oficina"
+},
+{
+"codigo": "602.56",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Mantenimiento y conservación"
+},
+{
+"codigo": "602.57",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Seguros y fianzas"
+},
+{
+"codigo": "602.58",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros impuestos y derechos"
+},
+{
+"codigo": "602.59",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Recargos fiscales"
+},
+{
+"codigo": "602.60",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuotas y suscripciones"
+},
+{
+"codigo": "602.61",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Propaganda y publicidad"
+},
+{
+"codigo": "602.62",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Capacitación al personal"
+},
+{
+"codigo": "602.63",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Donativos y ayudas"
+},
+{
+"codigo": "602.64",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Asistencia técnica"
+},
+{
+"codigo": "602.65",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas a otros porcentajes"
+},
+{
+"codigo": "602.66",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 5%"
+},
+{
+"codigo": "602.67",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 10%"
+},
+{
+"codigo": "602.68",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 15%"
+},
+{
+"codigo": "602.69",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 25%"
+},
+{
+"codigo": "602.70",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 30%"
+},
+{
+"codigo": "602.71",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sin retención"
+},
+{
+"codigo": "602.72",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Fletes y acarreos"
+},
+{
+"codigo": "602.73",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos de importación"
+},
+{
+"codigo": "602.74",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Comisiones sobre ventas"
+},
+{
+"codigo": "602.75",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Comisiones por tarjetas de crédito"
+},
+{
+"codigo": "602.76",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Patentes y marcas"
+},
+{
+"codigo": "602.77",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Uniformes"
+},
+{
+"codigo": "602.78",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Prediales"
+},
+{
+"codigo": "602.79",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos de venta de urbanización"
+},
+{
+"codigo": "602.80",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos de venta de construcción"
+},
+{
+"codigo": "602.81",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Fletes del extranjero"
+},
+{
+"codigo": "602.82",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Recolección de bienes del sector agropecuario y/o ganadero"
+},
+{
+"codigo": "602.83",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos no deducibles (sin requisitos fiscales)"
+},
+{
+"codigo": "602.84",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros gastos de venta"
+},
+{
+"codigo": "603",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos de administración"
+},
+{
+"codigo": "603.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Sueldos y salarios"
+},
+{
+"codigo": "603.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Compensaciones"
+},
+{
+"codigo": "603.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Tiempos extras"
+},
+{
+"codigo": "603.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Premios de asistencia"
+},
+{
+"codigo": "603.05",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Premios de puntualidad"
+},
+{
+"codigo": "603.06",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Vacaciones"
+},
+{
+"codigo": "603.07",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Prima vacacional"
+},
+{
+"codigo": "603.08",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Prima dominical"
+},
+{
+"codigo": "603.09",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Días festivos"
+},
+{
+"codigo": "603.10",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gratificaciones"
+},
+{
+"codigo": "603.11",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Primas de antigüedad"
+},
+{
+"codigo": "603.12",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aguinaldo"
+},
+{
+"codigo": "603.13",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Indemnizaciones"
+},
+{
+"codigo": "603.14",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Destajo"
+},
+{
+"codigo": "603.15",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Despensa"
+},
+{
+"codigo": "603.16",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Transporte"
+},
+{
+"codigo": "603.17",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Servicio médico"
+},
+{
+"codigo": "603.18",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Ayuda en gastos funerarios"
+},
+{
+"codigo": "603.19",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Fondo de ahorro"
+},
+{
+"codigo": "603.20",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuotas sindicales"
+},
+{
+"codigo": "603.21",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "PTU"
+},
+{
+"codigo": "603.22",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Estímulo al personal"
+},
+{
+"codigo": "603.23",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Previsión social"
+},
+{
+"codigo": "603.24",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aportaciones para el plan de jubilación"
+},
+{
+"codigo": "603.25",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras prestaciones al personal"
+},
+{
+"codigo": "603.26",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuotas al IMSS"
+},
+{
+"codigo": "603.27",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aportaciones al infonavit"
+},
+{
+"codigo": "603.28",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aportaciones al SAR"
+},
+{
+"codigo": "603.29",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Impuesto estatal sobre nóminas"
+},
+{
+"codigo": "603.30",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras aportaciones"
+},
+{
+"codigo": "603.31",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Asimilados a salarios"
+},
+{
+"codigo": "603.32",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Servicios administrativos"
+},
+{
+"codigo": "603.33",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Servicios administrativos partes relacionadas"
+},
+{
+"codigo": "603.34",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas físicas residentes nacionales"
+},
+{
+"codigo": "603.35",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas físicas residentes nacionales partes relacionadas"
+},
+{
+"codigo": "603.36",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas físicas residentes del extranjero"
+},
+{
+"codigo": "603.37",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas físicas residentes del extranjero partes relacionadas"
+},
+{
+"codigo": "603.38",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas morales residentes nacionales"
+},
+{
+"codigo": "603.39",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas morales residentes nacionales partes relacionadas"
+},
+{
+"codigo": "603.40",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas morales residentes del extranjero"
+},
+{
+"codigo": "603.41",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas morales residentes del extranjero partes relacionadas"
+},
+{
+"codigo": "603.42",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios aduanales personas físicas"
+},
+{
+"codigo": "603.43",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios aduanales personas morales"
+},
+{
+"codigo": "603.44",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios al consejo de administración"
+},
+{
+"codigo": "603.45",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Arrendamiento a personas físicas residentes nacionales"
+},
+{
+"codigo": "603.46",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Arrendamiento a personas morales residentes nacionales"
+},
+{
+"codigo": "603.47",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Arrendamiento a residentes del extranjero"
+},
+{
+"codigo": "603.48",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Combustibles y lubricantes"
+},
+{
+"codigo": "603.49",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Viáticos y gastos de viaje"
+},
+{
+"codigo": "603.50",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Teléfono, internet"
+},
+{
+"codigo": "603.51",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Agua"
+},
+{
+"codigo": "603.52",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Energía eléctrica"
+},
+{
+"codigo": "603.53",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Vigilancia y seguridad"
+},
+{
+"codigo": "603.54",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Limpieza"
+},
+{
+"codigo": "603.55",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Papelería y artículos de oficina"
+},
+{
+"codigo": "603.56",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Mantenimiento y conservación"
+},
+{
+"codigo": "603.57",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Seguros y fianzas"
+},
+{
+"codigo": "603.58",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros impuestos y derechos"
+},
+{
+"codigo": "603.59",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Recargos fiscales"
+},
+{
+"codigo": "603.60",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuotas y suscripciones"
+},
+{
+"codigo": "603.61",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Propaganda y publicidad"
+},
+{
+"codigo": "603.62",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Capacitación al personal"
+},
+{
+"codigo": "603.63",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Donativos y ayudas"
+},
+{
+"codigo": "603.64",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Asistencia técnica"
+},
+{
+"codigo": "603.65",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas a otros porcentajes"
+},
+{
+"codigo": "603.66",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 5%"
+},
+{
+"codigo": "603.67",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 10%"
+},
+{
+"codigo": "603.68",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 15%"
+},
+{
+"codigo": "603.69",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 25%"
+},
+{
+"codigo": "603.70",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 30%"
+},
+{
+"codigo": "603.71",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sin retención"
+},
+{
+"codigo": "603.72",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Fletes y acarreos"
+},
+{
+"codigo": "603.73",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos de importación"
+},
+{
+"codigo": "603.74",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Patentes y marcas"
+},
+{
+"codigo": "603.75",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Uniformes"
+},
+{
+"codigo": "603.76",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Prediales"
+},
+{
+"codigo": "603.77",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos de administración de urbanización"
+},
+{
+"codigo": "603.78",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos de administración de construcción"
+},
+{
+"codigo": "603.79",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Fletes del extranjero"
+},
+{
+"codigo": "603.80",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Recolección de bienes del sector agropecuario y/o ganadero"
+},
+{
+"codigo": "603.81",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos no deducibles (sin requisitos fiscales)"
+},
+{
+"codigo": "603.82",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros gastos de administración"
+},
+{
+"codigo": "604",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos de fabricación"
+},
+{
+"codigo": "604.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Sueldos y salarios"
+},
+{
+"codigo": "604.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Compensaciones"
+},
+{
+"codigo": "604.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Tiempos extras"
+},
+{
+"codigo": "604.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Premios de asistencia"
+},
+{
+"codigo": "604.05",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Premios de puntualidad"
+},
+{
+"codigo": "604.06",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Vacaciones"
+},
+{
+"codigo": "604.07",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Prima vacacional"
+},
+{
+"codigo": "604.08",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Prima dominical"
+},
+{
+"codigo": "604.09",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Días festivos"
+},
+{
+"codigo": "604.10",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gratificaciones"
+},
+{
+"codigo": "604.11",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Primas de antigüedad"
+},
+{
+"codigo": "604.12",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aguinaldo"
+},
+{
+"codigo": "604.13",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Indemnizaciones"
+},
+{
+"codigo": "604.14",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Destajo"
+},
+{
+"codigo": "604.15",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Despensa"
+},
+{
+"codigo": "604.16",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Transporte"
+},
+{
+"codigo": "604.17",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Servicio médico"
+},
+{
+"codigo": "604.18",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Ayuda en gastos funerarios"
+},
+{
+"codigo": "604.19",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Fondo de ahorro"
+},
+{
+"codigo": "604.20",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuotas sindicales"
+},
+{
+"codigo": "604.21",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "PTU"
+},
+{
+"codigo": "604.22",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Estímulo al personal"
+},
+{
+"codigo": "604.23",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Previsión social"
+},
+{
+"codigo": "604.24",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aportaciones para el plan de jubilación"
+},
+{
+"codigo": "604.25",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras prestaciones al personal"
+},
+{
+"codigo": "604.26",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuotas al IMSS"
+},
+{
+"codigo": "604.27",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aportaciones al infonavit"
+},
+{
+"codigo": "604.28",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aportaciones al SAR"
+},
+{
+"codigo": "604.29",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Impuesto estatal sobre nóminas"
+},
+{
+"codigo": "604.30",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras aportaciones"
+},
+{
+"codigo": "604.31",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Asimilados a salarios"
+},
+{
+"codigo": "604.32",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Servicios administrativos"
+},
+{
+"codigo": "604.33",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Servicios administrativos partes relacionadas"
+},
+{
+"codigo": "604.34",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas físicas residentes nacionales"
+},
+{
+"codigo": "604.35",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas físicas residentes nacionales partes relacionadas"
+},
+{
+"codigo": "604.36",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas físicas residentes del extranjero"
+},
+{
+"codigo": "604.37",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas físicas residentes del extranjero partes relacionadas"
+},
+{
+"codigo": "604.38",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas morales residentes nacionales"
+},
+{
+"codigo": "604.39",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas morales residentes nacionales partes relacionadas"
+},
+{
+"codigo": "604.40",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas morales residentes del extranjero"
+},
+{
+"codigo": "604.41",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios a personas morales residentes del extranjero partes relacionadas"
+},
+{
+"codigo": "604.42",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios aduanales personas físicas"
+},
+{
+"codigo": "604.43",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios aduanales personas morales"
+},
+{
+"codigo": "604.44",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Honorarios al consejo de administración"
+},
+{
+"codigo": "604.45",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Arrendamiento a personas físicas residentes nacionales"
+},
+{
+"codigo": "604.46",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Arrendamiento a personas morales residentes nacionales"
+},
+{
+"codigo": "604.47",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Arrendamiento a residentes del extranjero"
+},
+{
+"codigo": "604.48",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Combustibles y lubricantes"
+},
+{
+"codigo": "604.49",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Viáticos y gastos de viaje"
+},
+{
+"codigo": "604.50",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Teléfono, internet"
+},
+{
+"codigo": "604.51",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Agua"
+},
+{
+"codigo": "604.52",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Energía eléctrica"
+},
+{
+"codigo": "604.53",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Vigilancia y seguridad"
+},
+{
+"codigo": "604.54",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Limpieza"
+},
+{
+"codigo": "604.55",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Papelería y artículos de oficina"
+},
+{
+"codigo": "604.56",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Mantenimiento y conservación"
+},
+{
+"codigo": "604.57",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Seguros y fianzas"
+},
+{
+"codigo": "604.58",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros impuestos y derechos"
+},
+{
+"codigo": "604.59",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Recargos fiscales"
+},
+{
+"codigo": "604.60",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuotas y suscripciones"
+},
+{
+"codigo": "604.61",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Propaganda y publicidad"
+},
+{
+"codigo": "604.62",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Capacitación al personal"
+},
+{
+"codigo": "604.63",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Donativos y ayudas"
+},
+{
+"codigo": "604.64",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Asistencia técnica"
+},
+{
+"codigo": "604.65",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas a otros porcentajes"
+},
+{
+"codigo": "604.66",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 5%"
+},
+{
+"codigo": "604.67",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 10%"
+},
+{
+"codigo": "604.68",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 15%"
+},
+{
+"codigo": "604.69",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 25%"
+},
+{
+"codigo": "604.70",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sujetas al 30%"
+},
+{
+"codigo": "604.71",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Regalías sin retención"
+},
+{
+"codigo": "604.72",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Fletes y acarreos"
+},
+{
+"codigo": "604.73",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos de importación"
+},
+{
+"codigo": "604.74",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Patentes y marcas"
+},
+{
+"codigo": "604.75",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Uniformes"
+},
+{
+"codigo": "604.76",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Prediales"
+},
+{
+"codigo": "604.77",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos de fabricación de urbanización"
+},
+{
+"codigo": "604.78",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos de fabricación de construcción"
+},
+{
+"codigo": "604.79",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Fletes del extranjero"
+},
+{
+"codigo": "604.80",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Recolección de bienes del sector agropecuario y/o ganadero"
+},
+{
+"codigo": "604.81",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos no deducibles (sin requisitos fiscales)"
+},
+{
+"codigo": "604.82",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros gastos de fabricación"
+},
+{
+"codigo": "605",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Mano de obra directa"
+},
+{
+"codigo": "605.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Mano de obra"
+},
+{
+"codigo": "605.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Sueldos y Salarios"
+},
+{
+"codigo": "605.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Compensaciones"
+},
+{
+"codigo": "605.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Tiempos extras"
+},
+{
+"codigo": "605.05",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Premios de asistencia"
+},
+{
+"codigo": "605.06",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Premios de puntualidad"
+},
+{
+"codigo": "605.07",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Vacaciones"
+},
+{
+"codigo": "605.08",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Prima vacacional"
+},
+{
+"codigo": "605.09",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Prima dominical"
+},
+{
+"codigo": "605.10",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Días festivos"
+},
+{
+"codigo": "605.11",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gratificaciones"
+},
+{
+"codigo": "605.12",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Primas de antigüedad"
+},
+{
+"codigo": "605.13",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aguinaldo"
+},
+{
+"codigo": "605.14",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Indemnizaciones"
+},
+{
+"codigo": "605.15",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Destajo"
+},
+{
+"codigo": "605.16",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Despensa"
+},
+{
+"codigo": "605.17",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Transporte"
+},
+{
+"codigo": "605.18",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Servicio médico"
+},
+{
+"codigo": "605.19",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Ayuda en gastos funerarios"
+},
+{
+"codigo": "605.20",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Fondo de ahorro"
+},
+{
+"codigo": "605.21",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuotas sindicales"
+},
+{
+"codigo": "605.22",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "PTU"
+},
+{
+"codigo": "605.23",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Estímulo al personal"
+},
+{
+"codigo": "605.24",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Previsión social"
+},
+{
+"codigo": "605.25",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aportaciones para el plan de jubilación"
+},
+{
+"codigo": "605.26",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otras prestaciones al personal"
+},
+{
+"codigo": "605.27",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Asimilados a salarios"
+},
+{
+"codigo": "605.28",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Cuotas al IMSS"
+},
+{
+"codigo": "605.29",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aportaciones al infonavit"
+},
+{
+"codigo": "605.30",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Aportaciones al SAR"
+},
+{
+"codigo": "605.31",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros costos de mano de obra directa"
+},
+{
+"codigo": "606",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Facilidades administrativas fiscales"
+},
+{
+"codigo": "606.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Facilidades administrativas fiscales"
+},
+{
+"codigo": "607",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Participación de los trabajadores en las utilidades"
+},
+{
+"codigo": "607.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Participación de los trabajadores en las utilidades"
+},
+{
+"codigo": "608",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Participación en resultados de subsidiarias"
+},
+{
+"codigo": "608.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Participación en resultados de subsidiarias"
+},
+{
+"codigo": "609",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Participación en resultados de asociadas"
+},
+{
+"codigo": "609.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Participación en resultados de asociadas"
+},
+{
+"codigo": "610",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Participación de los trabajadores en las utilidades diferida"
+},
+{
+"codigo": "610.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Participación de los trabajadores en las utilidades diferida"
+},
+{
+"codigo": "611",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Impuesto Sobre la renta"
+},
+{
+"codigo": "611.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Impuesto Sobre la renta"
+},
+{
+"codigo": "611.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Impuesto Sobre la renta por remanente distribuible"
+},
+{
+"codigo": "612",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos no deducibles para CUFIN"
+},
+{
+"codigo": "612.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos no deducibles para CUFIN"
+},
+{
+"codigo": "613",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación contable"
+},
+{
+"codigo": "613.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de edificios"
+},
+{
+"codigo": "613.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de maquinaria y equipo"
+},
+{
+"codigo": "613.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de automóviles, autobuses, camiones de carga, tractocamiones, montacargas y remolques"
+},
+{
+"codigo": "613.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de mobiliario y equipo de oficina"
+},
+{
+"codigo": "613.05",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de equipo de cómputo"
+},
+{
+"codigo": "613.06",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de equipo de comunicación"
+},
+{
+"codigo": "613.07",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de activos biológicos, vegetales y semovientes"
+},
+{
+"codigo": "613.08",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de otros activos fijos"
+},
+{
+"codigo": "613.09",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de ferrocarriles"
+},
+{
+"codigo": "613.10",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de embarcaciones"
+},
+{
+"codigo": "613.11",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de aviones"
+},
+{
+"codigo": "613.12",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de troqueles, moldes, matrices y herramental"
+},
+{
+"codigo": "613.13",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de equipo de comunicaciones telefónicas"
+},
+{
+"codigo": "613.14",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de equipo de comunicación satelital"
+},
+{
+"codigo": "613.15",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de equipo de adaptaciones para personas con capacidades diferentes"
+},
+{
+"codigo": "613.16",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de maquinaria y equipo de generación de energía de fuentes renovables o de sistemas de cogeneración de electricidad eficiente"
+},
+{
+"codigo": "613.17",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de adaptaciones y mejoras"
+},
+{
+"codigo": "613.18",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Depreciación de otra maquinaria y equipo"
+},
+{
+"codigo": "614",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Amortización contable"
+},
+{
+"codigo": "614.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Amortización de gastos diferidos"
+},
+{
+"codigo": "614.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Amortización de gastos pre operativos"
+},
+{
+"codigo": "614.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Amortización de regalías, asistencia técnica y otros gastos diferidos"
+},
+{
+"codigo": "614.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Amortización de activos intangibles"
+},
+{
+"codigo": "614.05",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Amortización de gastos de organización"
+},
+{
+"codigo": "614.06",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Amortización de investigación y desarrollo de mercado"
+},
+{
+"codigo": "614.07",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Amortización de marcas y patentes"
+},
+{
+"codigo": "614.08",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Amortización de crédito mercantil"
+},
+{
+"codigo": "614.09",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Amortización de gastos de instalación"
+},
+{
+"codigo": "614.10",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Amortización de otros activos diferidos"
+},
+{
+"codigo": "700",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": "Activa",
+"nombre": "Resultado integral de financiamiento"
+},
+{
+"codigo": "701",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Gastos financieros"
+},
+{
+"codigo": "701.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida cambiaria"
+},
+{
+"codigo": "701.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida cambiaria nacional parte relacionada"
+},
+{
+"codigo": "701.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida cambiaria extranjero parte relacionada"
+},
+{
+"codigo": "701.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Intereses a cargo bancario nacional"
+},
+{
+"codigo": "701.05",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Intereses a cargo bancario extranjero"
+},
+{
+"codigo": "701.06",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Intereses a cargo de personas físicas nacional"
+},
+{
+"codigo": "701.07",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Intereses a cargo de personas físicas extranjero"
+},
+{
+"codigo": "701.08",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Intereses a cargo de personas morales nacional"
+},
+{
+"codigo": "701.09",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Intereses a cargo de personas morales extranjero"
+},
+{
+"codigo": "701.10",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Comisiones bancarias"
+},
+{
+"codigo": "701.11",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros gastos financieros"
+},
+{
+"codigo": "702",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Productos financieros"
+},
+{
+"codigo": "702.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Utilidad cambiaria"
+},
+{
+"codigo": "702.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Utilidad cambiaria nacional parte relacionada"
+},
+{
+"codigo": "702.03",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Utilidad cambiaria extranjero parte relacionada"
+},
+{
+"codigo": "702.04",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses a favor bancarios nacional"
+},
+{
+"codigo": "702.05",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses a favor bancarios extranjero"
+},
+{
+"codigo": "702.06",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses a favor de personas físicas nacional"
+},
+{
+"codigo": "702.07",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses a favor de personas físicas extranjero"
+},
+{
+"codigo": "702.08",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses a favor de personas morales nacional"
+},
+{
+"codigo": "702.09",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Intereses a favor de personas morales extranjero"
+},
+{
+"codigo": "702.10",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros productos financieros"
+},
+{
+"codigo": "703",
+"tipo": "Agrupador",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros gastos"
+},
+{
+"codigo": "703.01",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida en venta y/o baja de terrenos"
+},
+{
+"codigo": "703.02",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida en venta y/o baja de edificios"
+},
+{
+"codigo": "703.03",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida en venta y/o baja de maquinaria y equipo"
+},
+{
+"codigo": "703.04",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida en venta y/o baja de automóviles, autobuses, camiones de carga, tractocamiones, montacargas y remolques"
+},
+{
+"codigo": "703.05",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida en venta y/o baja de mobiliario y equipo de oficina"
+},
+{
+"codigo": "703.06",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida en venta y/o baja de equipo de cómputo"
+},
+{
+"codigo": "703.07",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida en venta y/o baja de equipo de comunicación"
+},
+{
+"codigo": "703.08",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida en venta y/o baja de activos biológicos, vegetales y semovientes"
+},
+{
+"codigo": "703.09",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida en venta y/o baja de otros activos fijos"
+},
+{
+"codigo": "703.10",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida en venta y/o baja de ferrocarriles"
+},
+{
+"codigo": "703.11",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida en venta y/o baja de embarcaciones"
+},
+{
+"codigo": "703.12",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida en venta y/o baja de aviones"
+},
+{
+"codigo": "703.13",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida en venta y/o baja de troqueles, moldes, matrices y herramental"
+},
+{
+"codigo": "703.14",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida en venta y/o baja de equipo de comunicaciones telefónicas"
+},
+{
+"codigo": "703.15",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida en venta y/o baja de equipo de comunicación satelital"
+},
+{
+"codigo": "703.16",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida en venta y/o baja de equipo de adaptaciones para personas con capacidades diferentes"
+},
+{
+"codigo": "703.17",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida en venta y/o baja de maquinaria y equipo de generación de energía de fuentes renovables o de sistemas de cogeneración de electricidad eficiente"
+},
+{
+"codigo": "703.18",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida en venta y/o baja de otra maquinaria y equipo"
+},
+{
+"codigo": "703.19",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida por enajenación de acciones"
+},
+{
+"codigo": "703.20",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Pérdida por enajenación de partes sociales"
+},
+{
+"codigo": "703.21",
+"tipo": "Afectable",
+"naturaleza": "D",
+"estado": null,
+"nombre": "Otros gastos"
+},
+{
+"codigo": "704",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros productos"
+},
+{
+"codigo": "704.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia en venta y/o baja de terrenos"
+},
+{
+"codigo": "704.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia en venta y/o baja de edificios"
+},
+{
+"codigo": "704.03",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia en venta y/o baja de maquinaria y equipo"
+},
+{
+"codigo": "704.04",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia en venta y/o baja de automóviles, autobuses, camiones de carga, tractocamiones, montacargas y remolques"
+},
+{
+"codigo": "704.05",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia en venta y/o baja de mobiliario y equipo de oficina"
+},
+{
+"codigo": "704.06",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia en venta y/o baja de equipo de cómputo"
+},
+{
+"codigo": "704.07",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia en venta y/o baja de equipo de comunicación"
+},
+{
+"codigo": "704.08",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia en venta y/o baja de activos biológicos, vegetales y semovientes"
+},
+{
+"codigo": "704.09",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia en venta y/o baja de otros activos fijos"
+},
+{
+"codigo": "704.10",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia en venta y/o baja de ferrocarriles"
+},
+{
+"codigo": "704.11",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia en venta y/o baja de embarcaciones"
+},
+{
+"codigo": "704.12",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia en venta y/o baja de aviones"
+},
+{
+"codigo": "704.13",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia en venta y/o baja de troqueles, moldes, matrices y herramental"
+},
+{
+"codigo": "704.14",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia en venta y/o baja de equipo de comunicaciones telefónicas"
+},
+{
+"codigo": "704.15",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia en venta y/o baja de equipo de comunicación satelital"
+},
+{
+"codigo": "704.16",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia en venta y/o baja de equipo de adaptaciones para personas con capacidades diferentes"
+},
+{
+"codigo": "704.17",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia en venta de maquinaria y equipo de generación de energía de fuentes renovables o de sistemas de cogeneración de electricidad eficiente"
+},
+{
+"codigo": "704.18",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia en venta y/o baja de otra maquinaria y equipo"
+},
+{
+"codigo": "704.19",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia por enajenación de acciones"
+},
+{
+"codigo": "704.20",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ganancia por enajenación de partes sociales"
+},
+{
+"codigo": "704.21",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por estímulos fiscales"
+},
+{
+"codigo": "704.22",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ingresos por condonación de adeudo"
+},
+{
+"codigo": "704.23",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otros productos"
+},
+{
+"codigo": "800",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": "No Activa",
+"nombre": "Cuentas de orden"
+},
+{
+"codigo": "801",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "UFIN del ejercicio"
+},
+{
+"codigo": "801.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "UFIN"
+},
+{
+"codigo": "801.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Contra cuenta UFIN"
+},
+{
+"codigo": "802",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "CUFIN del ejercicio"
+},
+{
+"codigo": "802.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "CUFIN"
+},
+{
+"codigo": "802.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Contra cuenta CUFIN"
+},
+{
+"codigo": "803",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "CUFIN de ejercicios anteriores"
+},
+{
+"codigo": "803.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "CUFIN de ejercicios anteriores"
+},
+{
+"codigo": "803.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Contra cuenta CUFIN de ejercicios anteriores"
+},
+{
+"codigo": "804",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "CUFINRE del ejercicio"
+},
+{
+"codigo": "804.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "CUFINRE"
+},
+{
+"codigo": "804.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Contra cuenta CUFINRE"
+},
+{
+"codigo": "805",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "CUFINRE de ejercicios anteriores"
+},
+{
+"codigo": "805.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "CUFINRE de ejercicios anteriores"
+},
+{
+"codigo": "805.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Contra cuenta CUFINRE de ejercicios anteriores"
+},
+{
+"codigo": "806",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "CUCA del ejercicio"
+},
+{
+"codigo": "806.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "CUCA"
+},
+{
+"codigo": "806.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Contra cuenta CUCA"
+},
+{
+"codigo": "807",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "CUCA de ejercicios anteriores"
+},
+{
+"codigo": "807.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "CUCA de ejercicios anteriores"
+},
+{
+"codigo": "807.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Contra cuenta CUCA de ejercicios anteriores"
+},
+{
+"codigo": "808",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ajuste anual por inflación acumulable"
+},
+{
+"codigo": "808.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ajuste anual por inflación acumulable"
+},
+{
+"codigo": "808.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Acumulación del ajuste anual inflacionario"
+},
+{
+"codigo": "809",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ajuste anual por inflación deducible"
+},
+{
+"codigo": "809.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Ajuste anual por inflación deducible"
+},
+{
+"codigo": "809.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Deducción del ajuste anual inflacionario"
+},
+{
+"codigo": "810",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Deducción de inversión"
+},
+{
+"codigo": "810.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Deducción de inversión"
+},
+{
+"codigo": "810.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Contra cuenta deducción de inversiones"
+},
+{
+"codigo": "811",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Utilidad o pérdida fiscal en venta y/o baja de activo fijo"
+},
+{
+"codigo": "811.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Utilidad o pérdida fiscal en venta y/o baja de activo fijo"
+},
+{
+"codigo": "811.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Contra cuenta utilidad o pérdida fiscal en venta y/o baja de activo fijo"
+},
+{
+"codigo": "812",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Utilidad o pérdida fiscal en venta acciones o partes sociales"
+},
+{
+"codigo": "812.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Utilidad o pérdida fiscal en venta acciones o partes sociales"
+},
+{
+"codigo": "812.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Contra cuenta utilidad o pérdida fiscal en venta acciones o partes sociales"
+},
+{
+"codigo": "813",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdidas fiscales pendientes de amortizar actualizadas de ejercicios anteriores"
+},
+{
+"codigo": "813.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Pérdidas fiscales pendientes de amortizar actualizadas de ejercicios anteriores"
+},
+{
+"codigo": "813.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Actualización de pérdidas fiscales pendientes de amortizar de ejercicios anteriores"
+},
+{
+"codigo": "814",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Mercancías recibidas en consignación"
+},
+{
+"codigo": "814.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Mercancías recibidas en consignación"
+},
+{
+"codigo": "814.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Consignación de mercancías recibidas"
+},
+{
+"codigo": "815",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Crédito fiscal de IVA e IEPS por la importación de mercancías para empresas certificadas"
+},
+{
+"codigo": "815.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Crédito fiscal de IVA e IEPS por la importación de mercancías"
+},
+{
+"codigo": "815.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Importación de mercancías con aplicación de crédito fiscal de IVA e IEPS"
+},
+{
+"codigo": "816",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Crédito fiscal de IVA e IEPS por la importación de activos fijos para empresas certificadas"
+},
+{
+"codigo": "816.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Crédito fiscal de IVA e IEPS por la importación de activo fijo"
+},
+{
+"codigo": "816.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Importación de activo fijo con aplicación de crédito fiscal de IVA e IEPS"
+},
+{
+"codigo": "899",
+"tipo": "Agrupador",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otras cuentas de orden"
+},
+{
+"codigo": "899.01",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Otras cuentas de orden"
+},
+{
+"codigo": "899.02",
+"tipo": "Afectable",
+"naturaleza": "A",
+"estado": null,
+"nombre": "Contra cuenta otras cuentas de orden"
+}
+]

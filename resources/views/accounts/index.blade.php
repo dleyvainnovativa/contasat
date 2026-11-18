@@ -73,6 +73,12 @@
                            onchange="this.form.submit()">
                     Solo afectables
                 </label>
+                <label class="d-flex align-items-center gap-2" style="font-size:13px; white-space:nowrap;">
+                    <input type="checkbox" name="solo_activas" value="1"
+                           {{ request()->boolean('solo_activas') ? 'checked' : '' }}
+                           onchange="this.form.submit()">
+                    Solo activas
+                </label>
                 {{-- Default: only the client's own accounts. Opt IN to also see the
                      global catalog. Absence of the param = client-only (default). --}}
                 <label class="d-flex align-items-center gap-2" style="font-size:13px; white-space:nowrap;">

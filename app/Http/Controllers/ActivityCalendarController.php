@@ -9,7 +9,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Calendario de actividades — a per-client, per-period semáforo of the ~11
@@ -45,6 +47,26 @@ class ActivityCalendarController extends Controller
             'doneCount'  => $done,
             'totalCount' => $activities->count(),
         ]);
+    }
+
+    /** Open the PDF uploaded for an activity, inline, scoped to the active client + period. */
+    public function document(string $activityKey): StreamedResponse|RedirectResponse
+    {
+        if (! $this->context->hasPeriod()) {
+            return redirect()->route('dashboard')
+                ->with('toast', ['type' => 'warning', 'message' => 'Selecciona un cliente y periodo primero.']);
+        }
+
+        $doc = \App\Models\ActivityDocument::where('client_id', $this->context->client()->id)
+            ->where('period_id', $this->context->period()->id)
+            ->where('activity_key', $activityKey)
+            ->whereNotNull('path')
+            ->latest()
+            ->first();
+
+        abort_if(! $doc || ! Storage::exists($doc->path), 404, 'Documento no encontrado.');
+
+        return Storage::response($doc->path, $doc->original_name, ['Content-Type' => 'application/pdf']);
     }
 
     /** Set (or clear) the manual status tag for one activity. */

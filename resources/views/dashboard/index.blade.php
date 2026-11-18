@@ -57,15 +57,16 @@
     .dash-sem th.cert, .dash-sem td.cert { text-align:center; white-space:nowrap; }
 </style>
 @php
-    // Compact expiry pill for a cert date (semáforo: green ≥91d, yellow 30–90, red <30, gray none).
-    $certPill = function ($date) {
+    // Certificate semáforo dot, rendered like the activity dots (green ≥91d,
+    // yellow 30–90, red <30, gray none). The expiry date lives in the tooltip.
+    $certStatusMap = ['ok' => 'realizada', 'warn' => 'en_proceso', 'danger' => 'pendiente', 'none' => 'no_aplica'];
+    $certDot = function ($date) use ($certStatusMap) {
         $s = \App\Models\Client::certStatus($date);
-        if ($s['status'] === 'none') {
-            return '<span class="cert-pill cert-none">—</span>';
-        }
-        $title = 'Vence ' . $date->format('d/m/Y') . ' · ' . $s['days'] . ' días';
-        return '<span class="cert-pill cert-' . $s['status'] . '" title="' . e($title) . '">'
-            . $date->format('d/m/y') . '</span>';
+        $cls = $certStatusMap[$s['status']] ?? 'no_aplica';
+        $title = $date
+            ? 'Vence ' . $date->format('d/m/Y') . ' · ' . $s['days'] . ' días'
+            : 'Sin fecha registrada';
+        return '<span class="cal-dot cal-dot--' . $cls . '" title="' . e($title) . '"></span>';
     };
 @endphp
 
@@ -136,8 +137,8 @@
                     <tr>
                         <th>Cliente</th>
                         <th>RFC</th>
-                        <th class="cert" title="Firma electrónica (e.firma)">e.firma</th>
-                        <th class="cert" title="Sello digital (CSD)">Sello</th>
+                        <th class="act" title="Firma electrónica (e.firma)"><span>e.firma</span></th>
+                        <th class="act" title="Sello digital (CSD)"><span>Sello</span></th>
                         @foreach($activityOrder as $act)
                             <th class="act"><span>{{ $shortLabels[$act['key']] ?? $act['label'] }}</span></th>
                         @endforeach
@@ -154,8 +155,8 @@
                                 </a>
                             </td>
                             <td><span class="data text-muted">{{ $row['client']->rfc }}</span></td>
-                            <td class="cert">{!! $certPill($row['client']->efirma_expira) !!}</td>
-                            <td class="cert">{!! $certPill($row['client']->csd_expira) !!}</td>
+                            <td class="act">{!! $certDot($row['client']->efirma_expira) !!}</td>
+                            <td class="act">{!! $certDot($row['client']->csd_expira) !!}</td>
                             @foreach($row['activities'] as $act)
                                 <td class="act">
                                     <span class="cal-dot cal-dot--{{ $act['status'] }}"

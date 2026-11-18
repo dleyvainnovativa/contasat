@@ -42,6 +42,7 @@ class AccountController extends Controller
                     ->orWhere('codigo_agrupador', 'like', "%{$term}%"));
             })
             ->when($request->boolean('solo_afectables'), fn($q) => $q->where('es_afectable', true))
+            ->when($request->boolean('solo_activas'), fn($q) => $q->activeFor($client->id))
             ->when(
                 ! $request->has('todas'),
                 fn($q) => $q->clientOwned($client->id)

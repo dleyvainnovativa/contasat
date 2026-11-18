@@ -154,6 +154,35 @@ $rendered = [];
 @endphp
 
 <div class="cal-board" data-reveal>
+    {{-- Certificados: e.firma / sello digital as semáforo dots (green ≥91d, yellow 30–90, red <30). --}}
+    @php
+        $certMap = ['ok' => 'realizada', 'warn' => 'en_proceso', 'danger' => 'pendiente', 'none' => 'no_aplica'];
+        $certRows = [
+            ['label' => 'Firma electrónica (e.firma)', 'date' => $client->efirma_expira],
+            ['label' => 'Sello digital (CSD)',         'date' => $client->csd_expira],
+        ];
+    @endphp
+    <div class="cal-group-head">Certificados</div>
+    @foreach($certRows as $cr)
+        @php $cs = \App\Models\Client::certStatus($cr['date']); @endphp
+        <div class="cal-row">
+            <div class="cal-row__status">
+                <span class="cal-dot cal-dot--{{ $certMap[$cs['status']] ?? 'no_aplica' }}"></span>
+            </div>
+            <div class="cal-row__label">
+                <span>{{ $cr['label'] }}</span>
+                <span class="text-muted" style="font-size:11px; display:block; margin-top:.15rem;">
+                    @if($cr['date'])
+                        <i class="fa-solid fa-id-card"></i> Vence el {{ $cr['date']->format('d/m/Y') }} · {{ $cs['days'] }} días
+                    @else
+                        <i class="fa-solid fa-id-card"></i> Sin fecha registrada
+                    @endif
+                </span>
+            </div>
+            <div class="cal-row__action"></div>
+        </div>
+    @endforeach
+
     @foreach($activities as $act)
     @php
     $group = $act['group'];
@@ -207,6 +236,14 @@ $rendered = [];
             @if($act['deep_link'])
             <a href="{{ $act['deep_link'] }}" class="btn btn-soft btn-sm btn-icon">
                 <i class="fa-solid fa-arrow-right"></i> Ir al pendiente
+            </a>
+            @endif
+
+            {{-- Open the uploaded document --}}
+            @if($act['mode'] === 'upload' && ($act['document']['name'] ?? null))
+            <a href="{{ route('calendario.document', $act['key']) }}" target="_blank" rel="noopener"
+                class="btn btn-soft btn-sm btn-icon">
+                <i class="fa-solid fa-file-pdf"></i> Abrir
             </a>
             @endif
 

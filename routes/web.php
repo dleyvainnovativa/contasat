@@ -138,6 +138,7 @@ Route::middleware('firebase')->group(function () {
     Route::get('/calendario/expediente/preview', [\App\Http\Controllers\ActivityCalendarController::class, 'expedientePreview'])->name('calendario.expediente.preview');
     Route::post('/calendario/expediente/send', [\App\Http\Controllers\ActivityCalendarController::class, 'sendExpediente'])->name('calendario.expediente.send');
     Route::post('/calendario/{activityKey}/upload', [\App\Http\Controllers\ActivityCalendarController::class, 'upload'])->name('calendario.upload');
+    Route::get('/calendario/{activityKey}/document', [\App\Http\Controllers\ActivityCalendarController::class, 'document'])->name('calendario.document');
     Route::get('/asientos', [\App\Http\Controllers\PolizaSummaryController::class, 'index'])->name('asientos.index');
     Route::get('/asientos/{poliza}', [\App\Http\Controllers\PolizaSummaryController::class, 'show'])->name('asientos.show');
 

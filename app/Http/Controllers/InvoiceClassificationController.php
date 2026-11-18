@@ -39,7 +39,7 @@ class InvoiceClassificationController extends Controller
 
         $candidates = Account::forClient($invoice->client_id)
             ->where('es_afectable', true)
-            ->where('activo', true)
+            ->activeFor($invoice->client_id)
             ->where(function ($q) use ($prefixes) {
                 foreach ($prefixes as $p) {
                     $q->orWhere('codigo_agrupador', 'like', "{$p}%");

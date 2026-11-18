@@ -42,6 +42,9 @@ class GlobalCatalogController extends Controller
         return view('catalog.index', [
             'accounts' => $accounts,
             'counts'   => $counts,
+            'parentOptions' => Account::global()
+                ->orderBy('numero_cuenta')
+                ->get(['id', 'numero_cuenta', 'nombre', 'codigo_agrupador', 'naturaleza', 'nivel']),
             'hiddenColumns' => auth()->user()->pref('accounts_columns', []),
             'q'        => $request->string('q')->toString(),
         ]);
@@ -75,6 +78,8 @@ class GlobalCatalogController extends Controller
             'codigo_agrupador' => ['required', 'string', 'max:20'],
             'naturaleza'       => ['required', 'in:D,A'],
             'nivel'            => ['required', 'integer', 'min:1', 'max:6'],
+            'tipo'             => ['nullable', 'in:Afectable,Agrupador'],
+            'rfc_asociado'     => ['nullable', 'string', 'max:13'],
             'es_afectable'     => ['boolean'],
             'parent_id'        => ['nullable', 'integer', 'exists:accounts,id'],
         ]);

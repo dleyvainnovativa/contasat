@@ -24,8 +24,8 @@ class CatalogoXmlGenerator
     {
         $client = $period->client;
 
-        $accounts = Account::forClient($client->id)->where('activo', true)
-            ->where('activo', true)
+        $accounts = Account::forClient($client->id)
+            ->activeFor($client->id)
             ->orderBy('numero_cuenta')
             ->get();
 

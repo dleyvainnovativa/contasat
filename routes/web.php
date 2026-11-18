@@ -114,6 +114,9 @@ Route::middleware('firebase')->group(function () {
 
     Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
     Route::post('/accounts/import', [AccountController::class, 'import'])->name('accounts.import');
+    Route::get('/accounts/next-code', [AccountController::class, 'nextCode'])->name('accounts.next-code');
+    Route::post('/accounts/{account}/toggle', [AccountController::class, 'toggle'])->name('accounts.toggle');
+    Route::put('/accounts/{account}', [AccountController::class, 'update'])->name('accounts.update');
 
     Route::get('/catalogo-global', [GlobalCatalogController::class, 'index'])->name('catalog.index');
     Route::post('/catalogo-global/import', [GlobalCatalogController::class, 'import'])->name('catalog.import');

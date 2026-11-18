@@ -56,7 +56,7 @@ class ReconciliationController extends Controller
             ->get();
 
         $accounts = Account::forClient($period->client_id)
-            ->where('activo', true)
+            ->activeFor($period->client_id)
             ->where('es_afectable', true)
             ->orderBy('numero_cuenta')
             ->get();

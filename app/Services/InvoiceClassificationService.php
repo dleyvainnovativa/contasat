@@ -106,7 +106,7 @@ class InvoiceClassificationService
     {
         return Account::forClient($clientId)
             ->where('numero_cuenta', self::NOMINA_CONTABLE)
-            ->where('activo', true)
+            ->activeFor($clientId)
             ->orderByRaw('client_id is null')   // prefer a client-owned row over the global one
             ->first();
     }

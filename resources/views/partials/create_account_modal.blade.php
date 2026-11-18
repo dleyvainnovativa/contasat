@@ -45,6 +45,11 @@
                 </div>
 
                 <div class="mb-2">
+                    <label class="form-label">RFC asociado (opcional)</label>
+                    <input type="text" id="ca-rfc" class="form-control" placeholder="RFC de la contraparte" maxlength="13">
+                </div>
+
+                <div class="mb-2">
                     <label class="form-label">Cuenta padre (opcional)</label>
                     <select id="ca-parent">
                         <option value="">Sin padre</option>
@@ -52,6 +57,7 @@
                             <option value="{{ $p->id }}">{{ $p->numero_cuenta }} — {{ $p->nombre }}</option>
                         @endforeach
                     </select>
+                    <div class="form-hint">Al elegir un padre se asigna el número y se heredan sus atributos.</div>
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-3">
@@ -73,6 +79,19 @@
             searchEnabled: true, itemSelectText: '', shouldSort: false,
             searchPlaceholderValue: 'Buscar cuenta padre…',
         });
+
+        // Selecting a father auto-assigns the next code and inherits its
+        // agrupador / naturaleza / nivel (all still editable).
+        parentSel.addEventListener('change', async () => {
+            if (!parentSel.value) return;
+            try {
+                const r = await App.http.get('{{ route('accounts.next-code') }}?parent_id=' + parentSel.value);
+                if (r.numero_cuenta)    document.getElementById('ca-numero').value = r.numero_cuenta;
+                if (r.codigo_agrupador) document.getElementById('ca-agrupador').value = r.codigo_agrupador;
+                if (r.naturaleza)       document.getElementById('ca-naturaleza').value = r.naturaleza;
+                if (r.nivel)            document.getElementById('ca-nivel').value = r.nivel;
+            } catch (e) { /* manual entry still works */ }
+        });
     }
 
     document.querySelectorAll('[data-create-account]').forEach(b =>
@@ -80,13 +99,16 @@
 
     const submit = document.getElementById('ca-submit');
     submit?.addEventListener('click', async function () {
+        const afectable = document.getElementById('ca-afectable').value === '1';
         const body = {
             numero_cuenta:    document.getElementById('ca-numero').value.trim(),
             codigo_agrupador: document.getElementById('ca-agrupador').value.trim(),
             nombre:           document.getElementById('ca-nombre').value.trim(),
             naturaleza:       document.getElementById('ca-naturaleza').value,
             nivel:            document.getElementById('ca-nivel').value,
-            es_afectable:     document.getElementById('ca-afectable').value === '1',
+            es_afectable:     afectable,
+            tipo:             afectable ? 'Afectable' : 'Agrupador',
+            rfc_asociado:     document.getElementById('ca-rfc').value.trim() || null,
             parent_id:        parentSel.value || null,
         };
         if (!body.numero_cuenta || !body.nombre || !body.codigo_agrupador) {

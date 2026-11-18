@@ -52,6 +52,43 @@ class Account extends Model
         return $this->hasMany(Account::class, 'parent_id');
     }
 
+    /** Per-client active/inactive overlays for this account. */
+    public function clientStatuses(): HasMany
+    {
+        return $this->hasMany(AccountClientStatus::class);
+    }
+
+    /**
+     * Restrict to accounts effectively ACTIVE for a client: the per-client
+     * overlay when one exists, otherwise the account's own `activo`. Pure WHERE
+     * (no join), so it composes with forClient()/es_afectable and column selects.
+     */
+    public function scopeActiveFor($query, int $clientId)
+    {
+        return $query->where(function ($q) use ($clientId) {
+            // Overlay row for this client marks it active...
+            $q->whereIn('accounts.id', function ($sub) use ($clientId) {
+                $sub->select('account_id')->from('account_client_status')
+                    ->where('client_id', $clientId)->where('activo', true);
+            })
+            // ...or there's no overlay row and the account's own flag is active.
+            ->orWhere(function ($q2) use ($clientId) {
+                $q2->where('accounts.activo', true)
+                   ->whereNotExists(function ($sub) use ($clientId) {
+                       $sub->selectRaw('1')->from('account_client_status')
+                           ->whereColumn('account_client_status.account_id', 'accounts.id')
+                           ->where('account_client_status.client_id', $clientId);
+                   });
+            });
+        });
+    }
+
+    /** Effective active state for a client, given a prefetched overlay map [account_id => activo]. */
+    public function effectiveActivo(array $overlay): bool
+    {
+        return array_key_exists($this->id, $overlay) ? (bool) $overlay[$this->id] : (bool) $this->activo;
+    }
+
     public function getFullLabelAttribute(): string
     {
         return "{$this->numero_cuenta} — {$this->nombre}";

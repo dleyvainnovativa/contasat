@@ -122,7 +122,23 @@
         </div>
     </div>
 
-    <div class="mt-3">{{ $accounts->links() }}</div>
+    <div class="d-flex align-items-center justify-content-between mt-3 flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+            <label class="text-muted" style="font-size:12.5px;">Mostrar</label>
+            <select class="form-select form-select-sm" style="width:auto;" onchange="
+                const u = new window.URL(window.location.href);
+                u.searchParams.set('per_page', this.value);
+                u.searchParams.delete('page');
+                window.location = u.toString();
+            ">
+                @foreach([25, 100, 200, 500] as $opt)
+                    <option value="{{ $opt }}" @selected(($perPage ?? 25) === $opt)>{{ $opt }}</option>
+                @endforeach
+            </select>
+            <span class="text-muted" style="font-size:12.5px;">por página</span>
+        </div>
+        <div>{{ $accounts->links() }}</div>
+    </div>
 @endif
 
 {{-- Import modal --}}

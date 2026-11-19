@@ -48,7 +48,7 @@ class AccountController extends Controller
                 fn($q) => $q->clientOwned($client->id)
             )
             ->orderBy('numero_cuenta')
-            ->paginate(50)
+            ->paginate($this->perPage($request))
             ->withQueryString();
 
         $activeCount = Account::forClient($client->id)->activeFor($client->id)->count();
@@ -69,7 +69,17 @@ class AccountController extends Controller
             'parentOptions' => $this->parentOptions($client->id),
             'hiddenColumns' => auth()->user()->pref('accounts_columns', []),
             'q'             => $request->string('q')->toString(),
+            'perPage'       => $this->perPage($request),
         ]);
+    }
+
+    /** Rows per page: one of 25/100/200/500, default 25. */
+    private function perPage(Request $request): int
+    {
+        $allowed = [25, 100, 200, 500];
+        $requested = (int) $request->integer('per_page', 25);
+
+        return in_array($requested, $allowed, true) ? $requested : 25;
     }
 
     public function import(Request $request): JsonResponse

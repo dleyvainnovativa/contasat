@@ -33,6 +33,8 @@ class AccountController extends Controller
         }
 
         $client = $this->context->client();
+        $tipo   = $request->input('tipo');     // '', 'afectables', 'agrupadoras'
+        $estado = $request->input('estado');   // '', 'activas', 'inactivas'
 
         $accounts = Account::forClient($client->id)
             ->when($request->filled('q'), function ($q) use ($request) {
@@ -41,34 +43,32 @@ class AccountController extends Controller
                     ->orWhere('nombre', 'like', "%{$term}%")
                     ->orWhere('codigo_agrupador', 'like', "%{$term}%"));
             })
-            ->when($request->boolean('solo_afectables'), fn($q) => $q->where('es_afectable', true))
-            ->when($request->boolean('solo_activas'), fn($q) => $q->activeFor($client->id))
+            ->when($tipo === 'afectables', fn($q) => $q->where('es_afectable', true))
+            ->when($tipo === 'agrupadoras', fn($q) => $q->where('es_afectable', false))
+            ->when($request->filled('naturaleza'), fn($q) => $q->where('naturaleza', $request->input('naturaleza')))
+            ->when($estado === 'activas', fn($q) => $q->activeFor($client->id))
+            ->when($estado === 'inactivas', fn($q) => $q->inactiveFor($client->id))
             ->when(
-                ! $request->has('todas'),
+                ! $request->boolean('todas'),
                 fn($q) => $q->clientOwned($client->id)
             )
-            ->orderBy('numero_cuenta')
+            ->orderBy('sort_key')
             ->paginate($this->perPage($request))
             ->withQueryString();
-
-        $activeCount = Account::forClient($client->id)->activeFor($client->id)->count();
-        $total       = Account::forClient($client->id)->count();
-
-        $counts = [
-            'total'      => $total,
-            'afectables' => Account::forClient($client->id)->where('es_afectable', true)->count(),
-            'auto'       => Account::forClient($client->id)->where('auto_generada', true)->count(),
-            'inactivas'  => $total - $activeCount,
-        ];
 
         return view('accounts.index', [
             'client'        => $client,
             'accounts'      => $accounts,
-            'counts'        => $counts,
             'overlay'       => $this->status->overlayMap($client->id),
             'parentOptions' => $this->parentOptions($client->id),
             'hiddenColumns' => auth()->user()->pref('accounts_columns', []),
             'q'             => $request->string('q')->toString(),
+            'filters'       => [
+                'tipo'       => $tipo,
+                'naturaleza' => $request->input('naturaleza'),
+                'estado'     => $estado,
+                'todas'      => $request->boolean('todas'),
+            ],
             'perPage'       => $this->perPage($request),
         ]);
     }
@@ -157,15 +157,70 @@ class AccountController extends Controller
 
         if ($activo) {
             $msg = "Cuenta {$account->numero_cuenta} activada.";
+        } elseif (! empty($result['aborted'])) {
+            // Whole branch left active because a node in it carries movimientos.
+            $msg = 'No se inactivó ' . $account->numero_cuenta . ': '
+                 . implode(', ', $result['blocked']) . ' tiene(n) movimientos registrados.';
         } else {
             $n = count($result['changed']);
             $msg = $n > 0 ? "{$n} cuenta(s) inactivada(s)." : 'No se inactivó ninguna cuenta.';
-            if ($result['blocked']) {
-                $msg .= ' Con facturas asociadas (no inactivadas): ' . implode(', ', $result['blocked']) . '.';
-            }
         }
 
         return response()->json(['ok' => true, 'result' => $result, 'message' => $msg]);
+    }
+
+    /**
+     * Bulk activate / inactivate the selected accounts (current page selection).
+     * Each account runs through the same per-client toggle rules; results are
+     * aggregated. Inactivate is all-or-nothing per branch (see AccountStatusService),
+     * so a father whose branch carries movimientos comes back under `blocked`.
+     */
+    public function bulkToggle(Request $request): JsonResponse
+    {
+        if (! $this->context->hasClient()) {
+            return response()->json(['message' => 'Selecciona un cliente primero.'], 422);
+        }
+        $clientId = $this->context->client()->id;
+
+        $data = $request->validate([
+            'ids'    => ['required', 'array', 'min:1'],
+            'ids.*'  => ['integer'],
+            'activo' => ['required', 'boolean'],
+        ]);
+        $activo = (bool) $data['activo'];
+
+        $accounts = Account::forClient($clientId)->whereIn('id', $data['ids'])->get();
+
+        $changed = [];
+        $blocked = [];
+
+        foreach ($accounts as $account) {
+            // Ownership guard: global rows or this client's own accounts only.
+            if ($account->client_id !== null && $account->client_id !== $clientId) {
+                continue;
+            }
+            $res = $this->status->toggle($account, $activo, $clientId);
+            $changed = array_merge($changed, $res['changed']);
+            $blocked = array_merge($blocked, $res['blocked']);
+        }
+
+        $changed = array_values(array_unique($changed));
+        $blocked = array_values(array_unique($blocked));
+
+        $verb = $activo ? 'activada(s)' : 'inactivada(s)';
+        $msg  = count($changed) > 0
+            ? count($changed) . " cuenta(s) {$verb}."
+            : 'No se modificó ninguna cuenta.';
+        if ($blocked) {
+            $msg .= ' Con movimientos (omitidas): ' . implode(', ', $blocked) . '.';
+        }
+
+        return response()->json([
+            'ok'      => true,
+            'changed' => $changed,
+            'blocked' => $blocked,
+            'message' => $msg,
+        ]);
     }
 
     /** Suggest the next child code + inherited attributes for the create modal. */
@@ -219,10 +274,12 @@ class AccountController extends Controller
         ]);
     }
 
+    /** Only agrupador (non-afectable) accounts can be a parent in the create modal. */
     private function parentOptions(int $clientId)
     {
         return Account::forClient($clientId)
-            ->orderBy('numero_cuenta')
+            ->where('es_afectable', false)
+            ->orderBy('sort_key')
             ->get(['id', 'numero_cuenta', 'nombre', 'codigo_agrupador', 'naturaleza', 'nivel']);
     }
 }

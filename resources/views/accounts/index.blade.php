@@ -27,34 +27,13 @@
     </div>
 </div>
 
-<div class="row g-3 mb-4" data-reveal>
-    <div class="col-4">
-        <div class="stat-card">
-            <div class="stat-card__value">{{ number_format($counts['total']) }}</div>
-            <div class="stat-card__label">Cuentas totales</div>
-        </div>
-    </div>
-    <div class="col-4">
-        <div class="stat-card">
-            <div class="stat-card__value">{{ number_format($counts['afectables']) }}</div>
-            <div class="stat-card__label">Afectables</div>
-        </div>
-    </div>
-    <div class="col-4">
-        <div class="stat-card">
-            <div class="stat-card__value">{{ number_format($counts['auto']) }}</div>
-            <div class="stat-card__label">Subcuentas auto</div>
-        </div>
-    </div>
-</div>
-
-@if($accounts->isEmpty() && ! request()->has('q'))
+@if($accounts->isEmpty() && ! request()->hasAny(['q','tipo','naturaleza','estado','todas']))
     <div class="card-clean" data-reveal>
         <div class="empty-state">
             <i class="fa-solid fa-sitemap"></i>
             <h3>Sin cuentas del cliente</h3>
             <p>Este cliente aún no tiene cuentas propias.<br>
-               El catálogo global está disponible — activa "Mostrar catálogo global" para verlo,
+               El catálogo global está disponible — activa "Incluir catálogo global" para verlo,
                o crea una cuenta específica del cliente.</p>
             <button class="btn btn-brand btn-icon mt-2" data-create-account type="button">
                 <i class="fa-solid fa-plus"></i> Crear cuenta
@@ -65,34 +44,62 @@
     <div class="card-clean" data-reveal>
         <div class="card-clean__head" style="gap:1rem; flex-wrap:wrap;">
             <form method="get" class="d-flex gap-2 align-items-center" style="flex:1; min-width:220px; flex-wrap:wrap;">
+                <input type="hidden" name="per_page" value="{{ $perPage ?? 25 }}">
                 <input type="search" name="q" value="{{ $q ?? '' }}" class="form-control"
-                       placeholder="Buscar por número, nombre o agrupador…" style="max-width:320px;">
-                <label class="d-flex align-items-center gap-2" style="font-size:13px; white-space:nowrap;">
-                    <input type="checkbox" name="solo_afectables" value="1"
-                           {{ request()->boolean('solo_afectables') ? 'checked' : '' }}
-                           onchange="this.form.submit()">
-                    Solo afectables
-                </label>
-                <label class="d-flex align-items-center gap-2" style="font-size:13px; white-space:nowrap;">
-                    <input type="checkbox" name="solo_activas" value="1"
-                           {{ request()->boolean('solo_activas') ? 'checked' : '' }}
-                           onchange="this.form.submit()">
-                    Solo activas
-                </label>
-                {{-- Default: only the client's own accounts. Opt IN to also see the
-                     global catalog. Absence of the param = client-only (default). --}}
-                <label class="d-flex align-items-center gap-2" style="font-size:13px; white-space:nowrap;">
-                    <input type="checkbox" name="todas" value="1"
-                           {{ request()->has('todas') ? 'checked' : '' }}
-                           onchange="this.form.submit()">
-                    Mostrar catálogo global
-                </label>
+                       placeholder="Buscar por número, nombre o agrupador…" style="max-width:300px;">
+
+                <select name="tipo" class="form-select form-select-sm" style="width:auto;" onchange="this.form.submit()">
+                    <option value="">Tipo: todas</option>
+                    <option value="afectables"  @selected(($filters['tipo'] ?? '')==='afectables')>Afectables</option>
+                    <option value="agrupadoras" @selected(($filters['tipo'] ?? '')==='agrupadoras')>Agrupadoras</option>
+                </select>
+
+                <select name="naturaleza" class="form-select form-select-sm" style="width:auto;" onchange="this.form.submit()">
+                    <option value="">Naturaleza: todas</option>
+                    <option value="D" @selected(($filters['naturaleza'] ?? '')==='D')>Deudora</option>
+                    <option value="A" @selected(($filters['naturaleza'] ?? '')==='A')>Acreedora</option>
+                </select>
+
+                <select name="estado" class="form-select form-select-sm" style="width:auto;" onchange="this.form.submit()">
+                    <option value="">Estado: todas</option>
+                    <option value="activas"   @selected(($filters['estado'] ?? '')==='activas')>Activas</option>
+                    <option value="inactivas" @selected(($filters['estado'] ?? '')==='inactivas')>Inactivas</option>
+                </select>
+
+                <select name="todas" class="form-select form-select-sm" style="width:auto;" onchange="this.form.submit()">
+                    <option value="">Ámbito: propias</option>
+                    <option value="1" @selected(!empty($filters['todas']))>Incluir catálogo global</option>
+                </select>
+
+                @if(($q ?? '') !== '' || ($filters['tipo'] ?? '') || ($filters['naturaleza'] ?? '') || ($filters['estado'] ?? '') || !empty($filters['todas']))
+                    <a href="{{ route('accounts.index') }}" class="btn btn-soft btn-sm" title="Limpiar filtros">
+                        <i class="fa-solid fa-xmark"></i> Limpiar
+                    </a>
+                @endif
             </form>
         </div>
+
+        {{-- Bulk action bar — shown only when at least one row is selected. --}}
+        <div id="bulk-bar" class="align-items-center gap-2"
+             style="display:none; padding:.6rem 1rem; border-top:1px solid var(--border); background:var(--surface-2);">
+            <span id="bulk-count" style="font-size:12.5px; font-weight:550;">0 seleccionadas</span>
+            <div class="ms-auto d-flex gap-2">
+                <button type="button" class="btn btn-brand" id="bulk-activate" style="padding:.3rem .6rem; font-size:12px;">
+                    <i class="fa-solid fa-check"></i> Activar
+                </button>
+                <button type="button" class="btn btn-soft" id="bulk-inactivate" style="padding:.3rem .6rem; font-size:12px;">
+                    <i class="fa-solid fa-ban"></i> Inactivar
+                </button>
+            </div>
+        </div>
+
         <div class="table-responsive">
             <table class="table-clean">
                 <thead>
                     <tr>
+                        <th class="text-center" style="width:36px;">
+                            <input type="checkbox" id="acct-select-all" title="Seleccionar todas (esta página)">
+                        </th>
                         <th>Número</th>
                         <th class="col-codigo_agrupador">Agrupador</th>
                         <th>Nombre</th>
@@ -105,8 +112,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($accounts as $account)
+                    @forelse($accounts as $account)
+                        @php $isActive = $account->effectiveActivo($overlay ?? []); @endphp
                         <tr>
+                            <td class="text-center">
+                                <input type="checkbox" class="acct-check"
+                                       data-id="{{ $account->id }}"
+                                       data-numero="{{ $account->numero_cuenta }}">
+                            </td>
                             <td class="data" style="font-weight:550;">
                                 {{ $account->numero_cuenta }}
                                 @if($account->client_id === null)
@@ -129,7 +142,6 @@
                                 @endif
                             </td>
                             <td class="col-rfc data text-muted" style="font-size:11.5px;">{{ $account->rfc_asociado ?: '—' }}</td>
-                            @php $isActive = $account->effectiveActivo($overlay ?? []); @endphp
                             <td class="text-center">
                                 @if($isActive)
                                     <span class="badge-status s-success" style="font-size:11px;">Activa</span>
@@ -160,7 +172,13 @@
                                 </button>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="10" class="text-center text-muted" style="padding:1.5rem;">
+                                Sin resultados para los filtros aplicados.
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -224,12 +242,73 @@
         });
     });
 
-    // ---- Activate / inactivate (per client) ----
+    // ---- Row selection + bulk activate / inactivate ----
+    const selectAll = document.getElementById('acct-select-all');
+    const bulkBar   = document.getElementById('bulk-bar');
+    const bulkCount = document.getElementById('bulk-count');
+    const checks    = () => Array.from(document.querySelectorAll('.acct-check'));
+    const checked   = () => checks().filter(c => c.checked);
+
+    function refreshBulk() {
+        const all = checks();
+        const n = checked().length;
+        if (bulkCount) bulkCount.textContent = n + (n === 1 ? ' seleccionada' : ' seleccionadas');
+        if (bulkBar) bulkBar.style.display = n > 0 ? 'flex' : 'none';
+        if (selectAll) {
+            selectAll.checked = all.length > 0 && n === all.length;
+            selectAll.indeterminate = n > 0 && n < all.length;
+        }
+    }
+
+    selectAll?.addEventListener('change', () => {
+        checks().forEach(c => c.checked = selectAll.checked);
+        refreshBulk();
+    });
+    checks().forEach(c => c.addEventListener('change', refreshBulk));
+
+    async function bulkToggle(activate) {
+        const items = checked();
+        if (!items.length) return;
+        const ids = items.map(c => c.dataset.id);
+
+        const ok = await App.modal.confirm({
+            title: activate ? 'Activar cuentas' : 'Inactivar cuentas',
+            message: activate
+                ? '¿Activar ' + ids.length + ' cuenta(s) seleccionada(s)?'
+                : '¿Inactivar ' + ids.length + ' cuenta(s) y sus subcuentas? Si una cuenta (o alguna de sus subcuentas) tiene movimientos, esa rama no se inactivará.',
+            confirmText: activate ? 'Activar' : 'Inactivar',
+            danger: !activate,
+        });
+        if (!ok) return;
+
+        const btn = document.getElementById(activate ? 'bulk-activate' : 'bulk-inactivate');
+        await App.loading.button(btn, async () => {
+            try {
+                const res = await App.http.post('{{ route('accounts.bulk-toggle') }}', { ids, activo: activate });
+                (res.blocked && res.blocked.length) ? App.toast.warning(res.message) : App.toast.success(res.message);
+                setTimeout(() => window.location.reload(), 900);
+            } catch (e) { App.toast.error(e.message); }
+        });
+    }
+
+    document.getElementById('bulk-activate')?.addEventListener('click', () => bulkToggle(true));
+    document.getElementById('bulk-inactivate')?.addEventListener('click', () => bulkToggle(false));
+    refreshBulk();
+
+    // ---- Single-row activate / inactivate (per client) ----
     document.querySelectorAll('.acct-toggle').forEach(btn => {
         btn.addEventListener('click', async () => {
             const activate = btn.dataset.activate === '1';
-            if (!activate && !confirm('¿Inactivar la cuenta ' + btn.dataset.numero
-                + ' y sus subcuentas? Las que tengan facturas asociadas no se inactivarán.')) return;
+            if (!activate) {
+                const ok = await App.modal.confirm({
+                    title: 'Inactivar cuenta',
+                    message: '¿Inactivar la cuenta ' + btn.dataset.numero
+                        + ' y sus subcuentas? Si la cuenta o alguna subcuenta tiene movimientos, no se inactivará ninguna.',
+                    confirmText: 'Inactivar',
+                    danger: true,
+                });
+                if (!ok) return;
+            }
             await App.loading.button(btn, async () => {
                 try {
                     const res = await App.http.post('{{ url('accounts') }}/' + btn.dataset.id + '/toggle', { activo: activate });

@@ -18,8 +18,10 @@ use Illuminate\Support\Collection;
  *   - Activate is a single account, always allowed (inactive -> active), and
  *     independent of the parent (a son can be activated while the father stays
  *     inactive).
- *   - Inactivate cascades to the whole branch, but any account with invoices
- *     registered for this client is skipped (partial cascade) and reported.
+ *   - Inactivate cascades to the whole branch, but is ALL-OR-NOTHING: if the
+ *     account or ANY descendant has movimientos registered for this client, the
+ *     whole operation is aborted (nothing is inactivated) and the offending
+ *     accounts are reported. You can't inactivate a father while a child is in use.
  */
 class AccountStatusService
 {
@@ -35,29 +37,35 @@ class AccountStatusService
     /**
      * Apply an activate/inactivate. Returns a summary of what happened.
      *
-     * @return array{action:string, changed:array<int,string>, blocked:array<int,string>}
+     * @return array{action:string, changed:array<int,string>, blocked:array<int,string>, aborted:bool}
      */
     public function toggle(Account $account, bool $activo, int $clientId): array
     {
         if ($activo) {
             $this->setActive($account, true, $clientId);
-            return ['action' => 'activada', 'changed' => [$account->numero_cuenta], 'blocked' => []];
+            return ['action' => 'activada', 'changed' => [$account->numero_cuenta], 'blocked' => [], 'aborted' => false];
         }
 
-        // Inactivate the whole branch, skipping accounts that have invoices.
-        $changed = [];
-        $blocked = [];
+        $branch = $this->branch($account, $clientId);
 
-        foreach ($this->branch($account, $clientId) as $node) {
-            if ($this->hasInvoices($node->id, $clientId)) {
-                $blocked[] = $node->numero_cuenta;
-                continue;
-            }
+        // All-or-nothing: if any node in the branch carries movimientos, abort.
+        $blocked = $branch
+            ->filter(fn ($node) => $this->hasInvoices($node->id, $clientId))
+            ->pluck('numero_cuenta')
+            ->values()
+            ->all();
+
+        if ($blocked) {
+            return ['action' => 'inactivada', 'changed' => [], 'blocked' => $blocked, 'aborted' => true];
+        }
+
+        $changed = [];
+        foreach ($branch as $node) {
             $this->setActive($node, false, $clientId);
             $changed[] = $node->numero_cuenta;
         }
 
-        return ['action' => 'inactivada', 'changed' => $changed, 'blocked' => $blocked];
+        return ['action' => 'inactivada', 'changed' => $changed, 'blocked' => [], 'aborted' => false];
     }
 
     /** Does this account carry any register of invoices for this client? */

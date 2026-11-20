@@ -37,6 +37,40 @@ class Account extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        // Keep sort_key derived from numero_cuenta on every write (create/import/edit).
+        static::saving(function (Account $account) {
+            $account->sort_key = self::sortKeyFor($account->numero_cuenta);
+        });
+    }
+
+    /**
+     * Natural-sort key for a dotted account code: each numeric segment is
+     * zero-padded to 6 digits so a plain string ORDER BY sorts numerically and
+     * keeps parents before their children. Non-numeric segments (rare) are
+     * lowercased and kept as-is.
+     */
+    public static function sortKeyFor(?string $numero): string
+    {
+        $numero = trim((string) $numero);
+        if ($numero === '') {
+            return '';
+        }
+
+        $out = [];
+        foreach (explode('.', $numero) as $segment) {
+            $segment = trim($segment);
+            if ($segment !== '' && ctype_digit($segment)) {
+                $out[] = str_pad($segment, 6, '0', STR_PAD_LEFT);
+            } else {
+                $out[] = strtolower($segment);
+            }
+        }
+
+        return implode('.', $out);
+    }
+
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
@@ -74,6 +108,30 @@ class Account extends Model
             // ...or there's no overlay row and the account's own flag is active.
             ->orWhere(function ($q2) use ($clientId) {
                 $q2->where('accounts.activo', true)
+                   ->whereNotExists(function ($sub) use ($clientId) {
+                       $sub->selectRaw('1')->from('account_client_status')
+                           ->whereColumn('account_client_status.account_id', 'accounts.id')
+                           ->where('account_client_status.client_id', $clientId);
+                   });
+            });
+        });
+    }
+
+    /**
+     * The inverse of scopeActiveFor: accounts effectively INACTIVE for a client
+     * (overlay says inactive, or no overlay and the account's own flag is off).
+     */
+    public function scopeInactiveFor($query, int $clientId)
+    {
+        return $query->where(function ($q) use ($clientId) {
+            // Overlay row for this client marks it inactive...
+            $q->whereIn('accounts.id', function ($sub) use ($clientId) {
+                $sub->select('account_id')->from('account_client_status')
+                    ->where('client_id', $clientId)->where('activo', false);
+            })
+            // ...or there's no overlay row and the account's own flag is inactive.
+            ->orWhere(function ($q2) use ($clientId) {
+                $q2->where('accounts.activo', false)
                    ->whereNotExists(function ($sub) use ($clientId) {
                        $sub->selectRaw('1')->from('account_client_status')
                            ->whereColumn('account_client_status.account_id', 'accounts.id')

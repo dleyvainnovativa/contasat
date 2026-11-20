@@ -30,7 +30,7 @@ class GlobalCatalogController extends Controller
                     ->orWhere('codigo_agrupador', 'like', "%{$term}%"));
             })
             ->when($request->boolean('solo_afectables'), fn($q) => $q->where('es_afectable', true))
-            ->orderBy('numero_cuenta')
+            ->orderBy('sort_key')
             ->paginate($this->perPage($request))
             ->withQueryString();
 
@@ -43,7 +43,8 @@ class GlobalCatalogController extends Controller
             'accounts' => $accounts,
             'counts'   => $counts,
             'parentOptions' => Account::global()
-                ->orderBy('numero_cuenta')
+                ->where('es_afectable', false)
+                ->orderBy('sort_key')
                 ->get(['id', 'numero_cuenta', 'nombre', 'codigo_agrupador', 'naturaleza', 'nivel']),
             'hiddenColumns' => auth()->user()->pref('accounts_columns', []),
             'q'        => $request->string('q')->toString(),

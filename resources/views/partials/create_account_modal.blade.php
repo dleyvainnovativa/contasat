@@ -1,6 +1,10 @@
 {{-- Create-account modal. Context-aware: on the client accounts page it creates a
      client account; on the global catalog page, a global one (the store route
-     differs — pass $storeRoute from the including view). --}}
+     differs — pass $storeRoute from the including view).
+
+     Parent (cuenta padre) lists only agrupador accounts (filtered server-side).
+     When a parent is chosen, Naturaleza / Nivel / Afectable are inherited and
+     locked; with "Sin padre" they stay editable (for creating a root/global). --}}
 <div class="modal fade" id="create-account-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius:var(--radius-lg); border-color:var(--border); background:var(--surface);">
@@ -24,24 +28,28 @@
                 </div>
 
                 <div class="row g-2">
-                    <div class="col-4 mb-2">
+                    <div class="col-4 mb-1">
                         <label class="form-label">Naturaleza</label>
                         <select id="ca-naturaleza" class="form-select">
                             <option value="D">Deudora</option>
                             <option value="A">Acreedora</option>
                         </select>
                     </div>
-                    <div class="col-4 mb-2">
+                    <div class="col-4 mb-1">
                         <label class="form-label">Nivel</label>
                         <input type="number" id="ca-nivel" class="form-control" value="2" min="1" max="6">
                     </div>
-                    <div class="col-4 mb-2">
+                    <div class="col-4 mb-1">
                         <label class="form-label">Afectable</label>
                         <select id="ca-afectable" class="form-select">
                             <option value="1">Sí</option>
                             <option value="0">No</option>
                         </select>
                     </div>
+                </div>
+                <div class="form-hint mb-2" id="ca-inherit-hint" style="display:none;">
+                    <i class="fa-solid fa-lock" style="font-size:10px;"></i>
+                    Heredado de la cuenta padre.
                 </div>
 
                 <div class="mb-2">
@@ -74,6 +82,17 @@
 
 (function () {
     const parentSel = document.getElementById('ca-parent');
+    const natSel    = document.getElementById('ca-naturaleza');
+    const nivInput  = document.getElementById('ca-nivel');
+    const afeSel    = document.getElementById('ca-afectable');
+    const hint      = document.getElementById('ca-inherit-hint');
+
+    // Lock (inherit) or unlock the derived fields.
+    function setInherited(locked) {
+        [natSel, nivInput, afeSel].forEach(el => { if (el) el.disabled = locked; });
+        if (hint) hint.style.display = locked ? 'block' : 'none';
+    }
+
     if (parentSel) {
         new Choices(parentSel, {
             searchEnabled: true, itemSelectText: '', shouldSort: false,
@@ -81,16 +100,23 @@
         });
 
         // Selecting a father auto-assigns the next code and inherits its
-        // agrupador / naturaleza / nivel (all still editable).
+        // agrupador / naturaleza / nivel. A child under an agrupador is a
+        // postable leaf, so Afectable is locked to "Sí". With no father the
+        // fields stay editable (root / global account).
         parentSel.addEventListener('change', async () => {
-            if (!parentSel.value) return;
+            if (!parentSel.value) {
+                setInherited(false);
+                return;
+            }
             try {
                 const r = await App.http.get('{{ route('accounts.next-code') }}?parent_id=' + parentSel.value);
                 if (r.numero_cuenta)    document.getElementById('ca-numero').value = r.numero_cuenta;
                 if (r.codigo_agrupador) document.getElementById('ca-agrupador').value = r.codigo_agrupador;
-                if (r.naturaleza)       document.getElementById('ca-naturaleza').value = r.naturaleza;
-                if (r.nivel)            document.getElementById('ca-nivel').value = r.nivel;
-            } catch (e) { /* manual entry still works */ }
+                if (r.naturaleza)       natSel.value = r.naturaleza;
+                if (r.nivel)            nivInput.value = r.nivel;
+                afeSel.value = '1'; // new leaf under an agrupador = afectable
+                setInherited(true);
+            } catch (e) { setInherited(false); /* manual entry still works */ }
         });
     }
 
@@ -99,13 +125,13 @@
 
     const submit = document.getElementById('ca-submit');
     submit?.addEventListener('click', async function () {
-        const afectable = document.getElementById('ca-afectable').value === '1';
+        const afectable = afeSel.value === '1';
         const body = {
             numero_cuenta:    document.getElementById('ca-numero').value.trim(),
             codigo_agrupador: document.getElementById('ca-agrupador').value.trim(),
             nombre:           document.getElementById('ca-nombre').value.trim(),
-            naturaleza:       document.getElementById('ca-naturaleza').value,
-            nivel:            document.getElementById('ca-nivel').value,
+            naturaleza:       natSel.value,
+            nivel:            nivInput.value,
             es_afectable:     afectable,
             tipo:             afectable ? 'Afectable' : 'Agrupador',
             rfc_asociado:     document.getElementById('ca-rfc').value.trim() || null,

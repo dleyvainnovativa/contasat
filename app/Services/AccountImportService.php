@@ -9,76 +9,101 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use RuntimeException;
 
 /**
- * Imports the SAT "Código Agrupador" catalog into a client's chart of accounts.
+ * Imports the SAT "Código Agrupador" catalog into a chart of accounts (global
+ * when $client is null, or a client's own otherwise).
  *
- * The SAT file (xlsx or csv) has three columns:
- *   Nivel | Código agrupador | Nombre de la cuenta y/o subcuenta
+ * Two layouts are accepted, detected from the header row:
  *
- * Structure rules derived from the format:
- *   - The código agrupador's dot-depth gives the hierarchy: 100 -> 100.01 -> 101
- *     nests by matching a row to its longest existing prefix.
- *   - `Nivel` distinguishes postable accounts from grouping headers. Grouping
- *     rows (blank Nivel, or the top agrupador rows like 100 / 100.01) are NOT
- *     afectable — they're headers. Rows with a populated Nivel are real accounts
- *     that can receive postings, so es_afectable = true.
- *   - The código agrupador doubles as the account number (NumCta), per decision.
+ *   LEGACY (3 columns):
+ *       Nivel | Código agrupador | Nombre de la cuenta y/o subcuenta
+ *     es_afectable is guessed (blank Nivel = grouping header) and naturaleza is
+ *     inferred from the major group.
  *
- * Naturaleza (D/A) is inferred from the account's major group, following the
- * standard accounting equation: assets & expenses are debit-natured (D),
- * liabilities, equity & income are credit-natured (A).
+ *   RICH (CAT + CONTPAQ):
+ *       Nivel | Código agrupador | Cuenta(Activa/No Activa) | Tipo(Afectable/
+ *       Agrupador) | Naturaleza | Nombre de la cuenta | Nombre de subcuenta |
+ *       Tipo(clasificación) | Cuenta de mayor | Nivel (NIF) | Rubro (NIF)
+ *     Here the file is authoritative for es_afectable, tipo, naturaleza and
+ *     activo, and carries the extra NIF/CONTPAQ descriptive columns.
+ *
+ * Shared rules:
+ *   - The código agrupador doubles as numero_cuenta. Codes are matched to
+ *     existing rows by NUMERIC value, so cosmetic format differences (100 vs
+ *     100.00, 106.1 vs 106.10) reconcile to one row instead of duplicating.
+ *   - Structural `nivel` is the dot-depth of the code (what the contabilidad
+ *     electrónica XML needs), NOT the file's Nivel column.
+ *   - Hierarchy is linked by code prefix (105.01 -> 105), unchanged.
  */
 class AccountImportService
 {
     /**
      * @return array{imported:int, updated:int, skipped:int}
      */
-    public function importFromFile(string $absolutePath, ?\App\Models\Client $client = null): array
+    public function importFromFile(string $absolutePath, ?Client $client = null): array
     {
-        $rows = $this->readRows($absolutePath);
+        $parsed = $this->readRows($absolutePath);
+        $rows   = $parsed['rows'];
 
         if (empty($rows)) {
-            throw new \RuntimeException('El archivo no contiene filas legibles.');
+            throw new RuntimeException('El archivo no contiene filas legibles.');
         }
 
         $clientId = $client?->id;   // null => global
 
-        $summary = ['imported' => 0, 'updated' => 0, 'skipped' => 0];
+        $summary  = ['imported' => 0, 'updated' => 0, 'skipped' => 0];
         $codeToId = [];
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($rows, $clientId, &$summary, &$codeToId) {
+        DB::transaction(function () use ($rows, $clientId, &$summary, &$codeToId) {
+            // Existing rows in this scope, keyed by numeric value for format-safe matching.
+            $existing = Account::query()
+                ->when($clientId === null, fn ($q) => $q->whereNull('client_id'))
+                ->when($clientId !== null, fn ($q) => $q->where('client_id', $clientId))
+                ->get(['id', 'numero_cuenta'])
+                ->keyBy(fn ($a) => $this->numKey($a->numero_cuenta));
+
             foreach ($rows as $row) {
-                $codigo = $this->cleanCode($row['codigo']);
+                $codigo = $row['codigo'];
                 if ($codigo === '') {
                     $summary['skipped']++;
                     continue;
                 }
 
-                $nivel = $this->parseNivel($row['nivel'], $codigo);
-                $afectable = $this->isAfectable($row['nivel'], $codigo);
+                $attrs = [
+                    'client_id'        => $clientId,
+                    'codigo_agrupador' => $codigo,
+                    'numero_cuenta'    => $codigo,
+                    'nombre'           => $row['nombre'] !== '' ? $row['nombre'] : $codigo,
+                    'nombre_subcuenta' => $row['nombre_subcuenta'],
+                    'nivel'            => substr_count($codigo, '.') + 1,   // structural depth
+                    'naturaleza'       => $row['naturaleza'],
+                    'tipo'             => $row['tipo'],
+                    'clasificacion'    => $row['clasificacion'],
+                    'cuenta_mayor'     => $row['cuenta_mayor'],
+                    'nivel_nif'        => $row['nivel_nif'],
+                    'rubro_nif'        => $row['rubro_nif'],
+                    'es_afectable'     => $row['es_afectable'],
+                    'activo'           => $row['activo'],
+                    'auto_generada'    => false,
+                ];
 
-                // Match on (client_id, numero_cuenta). For global, client_id is null;
-                // updateOrCreate handles the null match correctly.
-                $account = \App\Models\Account::updateOrCreate(
-                    ['client_id' => $clientId, 'numero_cuenta' => $codigo],
-                    [
-                        'codigo_agrupador' => $codigo,
-                        'nombre'           => trim($row['nombre']) ?: $codigo,
-                        'nivel'            => $nivel,
-                        'naturaleza'       => $this->naturaleza($codigo),
-                        'es_afectable'     => $afectable,
-                        'auto_generada'    => false,
-                        'activo'           => true,
-                    ],
-                );
+                $found = $existing->get($this->numKey($codigo));
+                if ($found) {
+                    Account::whereKey($found->id)->update($attrs);
+                    $id = $found->id;
+                    $summary['updated']++;
+                } else {
+                    $id = Account::create($attrs)->id;
+                    $summary['imported']++;
+                }
 
-                $account->wasRecentlyCreated ? $summary['imported']++ : $summary['updated']++;
-                $codeToId[$codigo] = $account->id;
+                $codeToId[$codigo] = $id;
             }
 
+            // Link parents by code prefix (105.01 -> 105; 101 -> 100).
             foreach ($codeToId as $codigo => $id) {
                 $parentCode = $this->parentCode($codigo, $codeToId);
-                if ($parentCode !== null) {
-                    \App\Models\Account::where('id', $id)->update(['parent_id' => $codeToId[$parentCode]]);
+                if ($parentCode !== null && $parentCode !== $codigo) {
+                    Account::whereKey($id)->update(['parent_id' => $codeToId[$parentCode]]);
                 }
             }
         });
@@ -87,10 +112,10 @@ class AccountImportService
     }
 
     /**
-     * Read the file (xlsx or csv) into normalized rows. Skips the header row and
-     * anything that doesn't look like data.
+     * Read and normalize the file into rows, resolving columns by header name and
+     * by value (so the two "Tipo" columns and the Activa column are found reliably).
      *
-     * @return array<int, array{nivel:string, codigo:string, nombre:string}>
+     * @return array{format:string, rows:array<int,array<string,mixed>>}
      */
     private function readRows(string $path): array
     {
@@ -104,90 +129,254 @@ class AccountImportService
             throw new RuntimeException('No se pudo leer el archivo: ' . $e->getMessage(), previous: $e);
         }
 
-        $sheet = $spreadsheet->getActiveSheet();
-        $out = [];
+        $sheet = $this->pickSheet($spreadsheet);
+        // formatData = true so the numeric código column keeps its 0.00 form.
+        $grid = $sheet->toArray(null, true, true);
 
-        foreach ($sheet->toArray() as $i => $cells) {
-            // Expect at least 3 columns. Tolerate extra.
-            $nivel  = isset($cells[0]) ? trim((string) $cells[0]) : '';
-            $codigo = isset($cells[1]) ? trim((string) $cells[1]) : '';
-            $nombre = isset($cells[2]) ? trim((string) $cells[2]) : '';
+        $headerRow = $this->findHeaderRow($grid);
+        if ($headerRow === null) {
+            throw new RuntimeException('No se encontró la columna "Código agrupador" en el archivo.');
+        }
 
-            // Skip the header row (matches the SAT column titles).
-            if ($i === 0 && (mb_stripos($codigo, 'código') !== false || mb_stripos($codigo, 'codigo') !== false || mb_stripos($nombre, 'nombre') !== false)) {
-                continue;
-            }
+        $map = $this->mapColumns($grid, $headerRow);
+        if (! isset($map['codigo'])) {
+            throw new RuntimeException('No se encontró la columna de código agrupador.');
+        }
 
-            // A row needs a código that looks like a SAT agrupador (digits + dots).
+        $rich = isset($map['nombre_subcuenta']) || isset($map['clasificacion']) || isset($map['activa']);
+        $rows = [];
+
+        foreach (array_slice($grid, $headerRow + 1) as $cells) {
+            $codigo = $this->canonicalCode($this->cell($cells, $map['codigo'] ?? null));
             if ($codigo === '' || ! preg_match('/^\d+(\.\d+)*$/', $codigo)) {
                 continue;
             }
 
-            $out[] = ['nivel' => $nivel, 'codigo' => $codigo, 'nombre' => $nombre];
+            $nombre = trim($this->cell($cells, $map['nombre'] ?? null));
+
+            if ($rich) {
+                $tipoRaw = mb_strtolower(trim($this->cell($cells, $map['tipo'] ?? null)));
+                $afectable = $tipoRaw === 'afectable';
+                $rows[] = [
+                    'codigo'           => $codigo,
+                    'nombre'           => $nombre,
+                    'nombre_subcuenta' => $this->nullable($this->cell($cells, $map['nombre_subcuenta'] ?? null)),
+                    'naturaleza'       => $this->naturalezaFrom($this->cell($cells, $map['naturaleza'] ?? null), $codigo),
+                    'tipo'             => $afectable ? 'Afectable' : 'Agrupador',
+                    'clasificacion'    => $this->nullable($this->cell($cells, $map['clasificacion'] ?? null)),
+                    'cuenta_mayor'     => $this->nullable($this->cell($cells, $map['cuenta_mayor'] ?? null)),
+                    'nivel_nif'        => $this->nullable($this->cell($cells, $map['nivel_nif'] ?? null)),
+                    'rubro_nif'        => $this->nullable($this->cell($cells, $map['rubro_nif'] ?? null)),
+                    'es_afectable'     => $afectable,
+                    'activo'           => mb_strtolower(trim($this->cell($cells, $map['activa'] ?? null))) === 'activa',
+                ];
+            } else {
+                $nivelRaw = trim($this->cell($cells, $map['nivel'] ?? null));
+                $rows[] = [
+                    'codigo'           => $codigo,
+                    'nombre'           => $nombre,
+                    'nombre_subcuenta' => null,
+                    'naturaleza'       => $this->naturalezaFromCode($codigo),
+                    'tipo'             => ($nivelRaw !== '' && is_numeric($nivelRaw)) ? 'Afectable' : 'Agrupador',
+                    'clasificacion'    => null,
+                    'cuenta_mayor'     => null,
+                    'nivel_nif'        => null,
+                    'rubro_nif'        => null,
+                    'es_afectable'     => $nivelRaw !== '' && is_numeric($nivelRaw),
+                    'activo'           => true,
+                ];
+            }
         }
 
-        return $out;
+        return ['format' => $rich ? 'rich' : 'legacy', 'rows' => $rows];
     }
 
-    private function cleanCode(string $codigo): string
+    /** Prefer a sheet whose header contains "código agrupador"; else the active one. */
+    private function pickSheet($spreadsheet)
     {
-        return preg_replace('/[^\d.]/', '', $codigo) ?? '';
+        foreach ($spreadsheet->getAllSheets() as $sheet) {
+            $grid = $sheet->toArray(null, true, true);
+            if ($this->findHeaderRow($grid) !== null) {
+                return $sheet;
+            }
+        }
+
+        return $spreadsheet->getActiveSheet();
+    }
+
+    /** Index of the row that holds the column titles (contains "código agrupador"). */
+    private function findHeaderRow(array $grid): ?int
+    {
+        foreach (array_slice($grid, 0, 10, true) as $i => $cells) {
+            foreach ($cells as $v) {
+                if (mb_stripos($this->norm($v), 'codigo agrupador') !== false) {
+                    return $i;
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
-     * Nivel for the catálogo XML is the account's depth in the hierarchy, which
-     * the código agrupador encodes structurally: 100 = level 1, 100.01 = level 2,
-     * 100.01.001 = level 3.
+     * Resolve column indices from the header row plus value sampling for the
+     * ambiguous columns (two "Tipo" headers, and the Activa column labelled "Cuenta").
      *
-     * We derive it from dot-depth rather than the file's Nivel column, because
-     * that column reflects SAT's own account-classification sense and can disagree
-     * with the tree (e.g. 105.01 is marked Nivel 1 in the file but is structurally
-     * a level-2 child of 105). The XML's Nivel attribute must match the hierarchy,
-     * so structure wins.
+     * @return array<string,int>
      */
-    private function parseNivel(string $nivelRaw, string $codigo): int
+    private function mapColumns(array $grid, int $headerRow): array
     {
-        return substr_count($codigo, '.') + 1;
+        $header = $grid[$headerRow];
+        $map = [];
+        $tipoCols = [];
+
+        foreach ($header as $idx => $raw) {
+            $h = $this->norm($raw);
+            if ($h === '') {
+                continue;
+            }
+            if (str_contains($h, 'codigo agrupador'))              $map['codigo'] = $idx;
+            elseif (str_contains($h, 'nombre de la cuenta'))       $map['nombre'] = $idx;
+            elseif (str_contains($h, 'nombre de subcuenta'))       $map['nombre_subcuenta'] = $idx;
+            elseif (str_contains($h, 'naturaleza'))                $map['naturaleza'] = $idx;
+            elseif (str_contains($h, 'cuenta de mayor'))           $map['cuenta_mayor'] = $idx;
+            elseif (str_contains($h, 'nivel') && str_contains($h, 'nif')) $map['nivel_nif'] = $idx;
+            elseif (str_contains($h, 'rubro'))                     $map['rubro_nif'] = $idx;
+            elseif ($h === 'nivel')                                $map['nivel'] = $idx;
+            elseif ($h === 'tipo')                                 $tipoCols[] = $idx;
+        }
+
+        // Sample values to split the two "Tipo" columns and locate the Activa column.
+        $sample = array_slice($grid, $headerRow + 1, 60);
+
+        foreach ($tipoCols as $idx) {
+            $vals = $this->sampleValues($sample, $idx);
+            if ($vals && $this->allIn($vals, ['afectable', 'agrupador'])) {
+                $map['tipo'] = $idx;           // Afectable / Agrupador
+            } else {
+                $map['clasificacion'] = $idx;  // "Activo deudora", etc.
+            }
+        }
+
+        if (! isset($map['activa'])) {
+            foreach (array_keys($header) as $idx) {
+                $vals = $this->sampleValues($sample, $idx);
+                if ($vals && $this->allIn($vals, ['activa', 'no activa'])) {
+                    $map['activa'] = $idx;
+                    break;
+                }
+            }
+        }
+
+        return $map;
+    }
+
+    /** Distinct lowercased non-empty values in a column across sample rows. */
+    private function sampleValues(array $sample, int $idx): array
+    {
+        $out = [];
+        foreach ($sample as $cells) {
+            $v = mb_strtolower(trim($this->cell($cells, $idx)));
+            if ($v !== '') {
+                $out[$v] = true;
+            }
+        }
+
+        return array_keys($out);
+    }
+
+    private function allIn(array $vals, array $allowed): bool
+    {
+        return count(array_diff($vals, $allowed)) === 0;
+    }
+
+    private function cell(array $cells, ?int $idx): string
+    {
+        if ($idx === null || ! array_key_exists($idx, $cells) || $cells[$idx] === null) {
+            return '';
+        }
+
+        return (string) $cells[$idx];
+    }
+
+    private function nullable(string $v): ?string
+    {
+        $v = trim($v);
+
+        return $v === '' ? null : mb_substr($v, 0, 160);
+    }
+
+    private function norm(mixed $v): string
+    {
+        return mb_strtolower(trim((string) ($v ?? '')));
     }
 
     /**
-     * A row is postable (afectable) when the file marks it with an explicit Nivel.
-     * The SAT catalog leaves Nivel blank on pure grouping rows (the agrupador
-     * headers like 100 "Activo" and 100.01 "Activo a corto plazo"), and populates
-     * it on the real accounts (101 "Caja" with Nivel 1). We mirror that: explicit
-     * Nivel => afectable; blank => header.
+     * Canonical código: integers keep no decimals, sub-accounts keep their
+     * decimals. The file's 0.00 format yields e.g. "100.00" -> "100",
+     * "101.01" -> "101.01", "106.10" -> "106.10".
      */
-    private function isAfectable(string $nivelRaw, string $codigo): bool
+    private function canonicalCode(string $raw): string
     {
-        return trim($nivelRaw) !== '' && is_numeric(trim($nivelRaw));
+        $raw = trim($raw);
+        if ($raw === '') {
+            return '';
+        }
+
+        // Plain dotted integer/decimal from the formatted cell. The 0.00 format
+        // yields 2-digit sub-codes; keep them verbatim ("106.10" stays "106.10"),
+        // collapsing only the all-zero decimal ("100.00" -> "100").
+        if (preg_match('/^\d+\.\d+$/', $raw)) {
+            [$int, $dec] = explode('.', $raw, 2);
+
+            return preg_match('/^0+$/', $dec) ? $int : "{$int}.{$dec}";
+        }
+
+        if (preg_match('/^\d+$/', $raw)) {
+            return $raw;
+        }
+
+        // Anything else (already multi-level or noisy): strip to digits/dots.
+        return rtrim(preg_replace('/[^\d.]/', '', $raw) ?? '', '.');
     }
 
-    /**
-     * Naturaleza by major group (first path segment):
-     *   1xx Activo -> D | 2xx Pasivo -> A | 3xx Capital -> A
-     *   4xx Ingresos -> A | 5xx Costos -> D | 6xx Gastos -> D
-     *   7xx/8xx resultado & orden -> default A
-     */
-    private function naturaleza(string $codigo): string
+    /** Numeric match key so 100 / 100.00 and 106.1 / 106.10 collapse to one row. */
+    private function numKey(string $code): string
     {
-        $first = (int) substr($codigo, 0, 1);
+        $code = trim($code);
+        // Multi-level codes (counterparty subaccounts) match by exact string.
+        if (substr_count($code, '.') > 1 || ! is_numeric($code)) {
+            return 's:' . $code;
+        }
 
-        return match ($first) {
+        return 'n:' . number_format((float) $code, 2, '.', '');
+    }
+
+    private function naturalezaFrom(string $raw, string $codigo): string
+    {
+        $r = mb_strtolower(trim($raw));
+        if (str_starts_with($r, 'd')) {
+            return 'D';
+        }
+        if (str_starts_with($r, 'a')) {
+            return 'A';
+        }
+
+        return $this->naturalezaFromCode($codigo);
+    }
+
+    /** Naturaleza by major group when the file doesn't state it. */
+    private function naturalezaFromCode(string $codigo): string
+    {
+        return match ((int) substr($codigo, 0, 1)) {
             1, 5, 6 => 'D',
-            2, 3, 4 => 'A',
             default => 'A',
         };
     }
 
-    /**
-     * The parent code is the longest strict prefix of $codigo that also exists in
-     * the imported set. e.g. parent of "105.01" is "105"; parent of "101" is
-     * whichever of "100.01"/"100" exists — but SAT codes nest by dots, so we trim
-     * the last dot segment first, then fall back to major-group grouping.
-     */
+    /** Parent code: dot hierarchy first (105.01 -> 105), else nearest hundred (101 -> 100). */
     private function parentCode(string $codigo, array $codeToId): ?string
     {
-        // Dot hierarchy: 105.01.001 -> 105.01 -> 105
         if (str_contains($codigo, '.')) {
             $parent = substr($codigo, 0, strrpos($codigo, '.'));
 
@@ -197,24 +386,14 @@ class AccountImportService
         return $this->groupParent($codigo, $codeToId);
     }
 
-    /**
-     * For a top-level numeric code like "101", its logical parent is the group
-     * header "100.01" or "100" if present. We look for the nearest lower hundred
-     * grouping row.
-     */
     private function groupParent(string $codigo, array $codeToId): ?string
     {
         $base = (int) explode('.', $codigo)[0];
         if ($base <= 0) {
             return null;
         }
-
-        // Nearest hundred (101 -> 100). Don't parent a header to itself.
         $hundred = (string) (intdiv($base, 100) * 100);
-        if ($hundred !== $codigo && isset($codeToId[$hundred])) {
-            return $hundred;
-        }
 
-        return null;
+        return ($hundred !== $codigo && isset($codeToId[$hundred])) ? $hundred : null;
     }
 }

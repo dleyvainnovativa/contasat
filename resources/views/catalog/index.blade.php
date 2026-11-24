@@ -14,7 +14,7 @@
                 <i class="fa-solid fa-table-columns"></i> Columnas
             </button>
             <div class="cols-menu" id="cols-menu" style="display:none;">
-                @foreach(['codigo_agrupador'=>'Agrupador','nivel'=>'Nivel','naturaleza'=>'Naturaleza','tipo'=>'Tipo'] as $col => $label)
+                @foreach(['codigo_agrupador'=>'Agrupador','nivel'=>'Nivel','naturaleza'=>'Naturaleza','tipo'=>'Tipo','nombre_subcuenta'=>'Nombre subcuenta','clasificacion'=>'Clasificación','cuenta_mayor'=>'Cuenta de mayor','nivel_nif'=>'Nivel NIF','rubro_nif'=>'Rubro NIF'] as $col => $label)
                     <label class="cols-item">
                         <input type="checkbox" class="col-toggle" data-col="{{ $col }}" checked> {{ $label }}
                     </label>
@@ -106,6 +106,11 @@
                         <th class="col-nivel text-center">Nivel</th>
                         <th class="col-naturaleza text-center">Naturaleza</th>
                         <th class="col-tipo text-center">Tipo</th>
+                        <th class="col-nombre_subcuenta">Nombre subcuenta</th>
+                        <th class="col-clasificacion">Clasificación</th>
+                        <th class="col-cuenta_mayor text-center">Cuenta de mayor</th>
+                        <th class="col-nivel_nif">Nivel NIF</th>
+                        <th class="col-rubro_nif">Rubro NIF</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -127,6 +132,11 @@
                                     <span class="badge-status s-secondary" style="font-size:11px;">Agrupador</span>
                                 @endif
                             </td>
+                            <td class="col-nombre_subcuenta text-muted" style="font-size:11.5px;">{{ $account->nombre_subcuenta ?: '—' }}</td>
+                            <td class="col-clasificacion text-muted" style="font-size:11.5px;">{{ $account->clasificacion ?: '—' }}</td>
+                            <td class="col-cuenta_mayor text-center data text-muted" style="font-size:11.5px;">{{ $account->cuenta_mayor ?: '—' }}</td>
+                            <td class="col-nivel_nif text-muted" style="font-size:11.5px;">{{ $account->nivel_nif ?: '—' }}</td>
+                            <td class="col-rubro_nif text-muted" style="font-size:11.5px;">{{ $account->rubro_nif ?: '—' }}</td>
                         </tr>
                     @endforeach
                 </tbody>

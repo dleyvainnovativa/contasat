@@ -51,6 +51,10 @@
         <div class="card-clean">
             <div class="card-clean__head"><strong>Documentos</strong></div>
             <div class="card-clean__body" style="display:flex; flex-direction:column; gap:.625rem;">
+                <a href="{{ route('reports.balanza') }}" class="report-link">
+                    <span><i class="fa-solid fa-scale-balanced"></i> Balanza de comprobación</span>
+                    <i class="fa-solid fa-chevron-right text-muted"></i>
+                </a>
                 <a href="{{ route('reports.polizas') }}" class="report-link">
                     <span><i class="fa-solid fa-book"></i> Pólizas</span>
                     <i class="fa-solid fa-chevron-right text-muted"></i>

@@ -44,16 +44,28 @@
 </div>
 
 <div class="row g-3 mb-4" data-reveal>
-    <div class="col-6">
+    <div class="col-6 col-md-3">
         <div class="stat-card">
             <div class="stat-card__value">{{ number_format($counts['total']) }}</div>
             <div class="stat-card__label">Cuentas globales</div>
         </div>
     </div>
-    <div class="col-6">
+    <div class="col-6 col-md-3">
         <div class="stat-card">
             <div class="stat-card__value">{{ number_format($counts['afectables']) }}</div>
             <div class="stat-card__label">Afectables</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-card__value" style="color:var(--ok);">{{ number_format($counts['activas']) }}</div>
+            <div class="stat-card__label">Activas</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-card__value" style="color:var(--danger);">{{ number_format($counts['inactivas']) }}</div>
+            <div class="stat-card__label">Inactivas</div>
         </div>
     </div>
 </div>

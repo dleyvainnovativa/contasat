@@ -145,6 +145,66 @@ class ReportExporter
         return $this->write($spreadsheet, "ingresos_gastos_{$period->id}");
     }
 
+    /**
+     * Balanza de comprobación: six summary rows followed by the account table.
+     *
+     * @param array<int,array<string,mixed>> $rows  TrialBalanceService rows
+     * @param array<string,float>            $cards headline totals
+     */
+    public function balanzaXlsx(Period $period, array $rows, array $cards): string
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Balanza');
+
+        $sheet->setCellValue('A1', 'Balanza de comprobación — ' . $period->client->display_name . ' — ' . $period->label);
+        $sheet->mergeCells('A1:H1');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(13);
+
+        $summary = [
+            ['Activos', $cards['activos']],
+            ['Pasivos', $cards['pasivos']],
+            ['Capital', $cards['capital']],
+            ['Ingresos', $cards['ingresos']],
+            ['Egresos', $cards['egresos']],
+            ['Remanente o utilidad', $cards['remanente']],
+        ];
+        $r = 3;
+        foreach ($summary as [$label, $value]) {
+            $sheet->setCellValue("A{$r}", $label);
+            $sheet->setCellValue("B{$r}", $value);
+            $sheet->getStyle("A{$r}")->getFont()->setBold(true);
+            $r++;
+        }
+        $this->money($sheet, "B3:B" . ($r - 1));
+        $r += 1;
+
+        $headers = ['Tipo', 'Naturaleza', 'Cuenta', 'ID Contable', 'Saldo inicial', 'Cargos', 'Abonos', 'Saldo'];
+        $sheet->fromArray($headers, null, "A{$r}");
+        $hr = "A{$r}:H{$r}";
+        $sheet->getStyle($hr)->getFont()->setBold(true)->getColor()->setARGB(self::HEADER_FG);
+        $sheet->getStyle($hr)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB(self::HEADER_BG);
+        $sheet->getStyle($hr)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $r++;
+
+        $first = $r;
+        foreach ($rows as $row) {
+            $sheet->fromArray([
+                $row['tipo'], $row['naturaleza'], $row['nombre'], $row['numero_cuenta'],
+                $row['saldo_inicial'], $row['cargos'], $row['abonos'], $row['saldo'],
+            ], null, "A{$r}");
+            $r++;
+        }
+        if ($r > $first) {
+            $this->money($sheet, "E{$first}:H" . ($r - 1));
+        }
+        foreach (range('A', 'H') as $c) {
+            $sheet->getColumnDimension($c)->setAutoSize(true);
+        }
+
+        return $this->write($spreadsheet, "balanza_{$period->id}");
+    }
+
     private function styleHeaderRow($sheet, int $row): void
     {
         $range = "A{$row}:G{$row}";

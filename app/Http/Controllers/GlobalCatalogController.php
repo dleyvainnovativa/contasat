@@ -37,6 +37,8 @@ class GlobalCatalogController extends Controller
         $counts = [
             'total'      => Account::global()->count(),
             'afectables' => Account::global()->where('es_afectable', true)->count(),
+            'activas'    => Account::global()->where('activo', true)->count(),
+            'inactivas'  => Account::global()->where('activo', false)->count(),
         ];
 
         return view('catalog.index', [

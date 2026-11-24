@@ -15,6 +15,10 @@
                     <label class="form-label">RFC asociado (opcional)</label>
                     <input type="text" id="ea-rfc" class="form-control" maxlength="13">
                 </div>
+                <div class="mb-2">
+                    <label class="form-label">Saldo inicial</label>
+                    <input type="number" id="ea-saldo" class="form-control" step="0.01" placeholder="0.00">
+                </div>
 
                 <div class="d-flex justify-content-end gap-2 mt-3">
                     <button class="btn btn-soft" data-bs-dismiss="modal">Cancelar</button>
@@ -36,6 +40,7 @@
             document.getElementById('ea-numero').textContent = btn.dataset.numero;
             document.getElementById('ea-nombre').value = btn.dataset.nombre || '';
             document.getElementById('ea-rfc').value = btn.dataset.rfc || '';
+            document.getElementById('ea-saldo').value = btn.dataset.saldo || '0';
             App.modal.show('edit-account-modal');
         });
     });
@@ -44,6 +49,7 @@
         const body = {
             nombre:  document.getElementById('ea-nombre').value.trim(),
             rfc_asociado: document.getElementById('ea-rfc').value.trim() || null,
+            saldo_inicial: parseFloat(document.getElementById('ea-saldo').value) || 0,
         };
         if (!body.nombre) { App.toast.warning('El nombre es obligatorio.'); return; }
         await App.loading.button(this, async () => {

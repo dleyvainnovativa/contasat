@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Account;
 use App\Services\AccountImportService;
 use App\Services\AccountStatusService;
+use App\Services\SaldosInicialesImportService;
 use App\Services\WorkContext;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -23,6 +24,7 @@ class AccountController extends Controller
         private readonly WorkContext $context,
         private readonly AccountImportService $importer,
         private readonly AccountStatusService $status,
+        private readonly SaldosInicialesImportService $saldosImporter,
     ) {}
 
     public function index(Request $request): View|RedirectResponse
@@ -33,8 +35,16 @@ class AccountController extends Controller
         }
 
         $client = $this->context->client();
-        $tipo   = $request->input('tipo');     // '', 'afectables', 'agrupadoras'
-        $estado = $request->input('estado');   // '', 'activas', 'inactivas'
+
+        // Defaults apply when a param is absent (fresh load / sidebar nav /
+        // "Limpiar"): Estado=activas, Ámbito=incluir catálogo global. Once the
+        // user touches the filter bar every param is submitted, so explicit
+        // choices (e.g. Estado=todas) always win.
+        $tipo       = $request->input('tipo', '');
+        $naturaleza = $request->input('naturaleza', '');
+        $nivel      = $request->input('nivel', '');
+        $estado     = $request->has('estado') ? $request->input('estado') : 'activas';
+        $todas      = $request->has('todas') ? $request->boolean('todas') : true;
 
         $accounts = Account::forClient($client->id)
             ->when($request->filled('q'), function ($q) use ($request) {
@@ -45,13 +55,11 @@ class AccountController extends Controller
             })
             ->when($tipo === 'afectables', fn($q) => $q->where('es_afectable', true))
             ->when($tipo === 'agrupadoras', fn($q) => $q->where('es_afectable', false))
-            ->when($request->filled('naturaleza'), fn($q) => $q->where('naturaleza', $request->input('naturaleza')))
+            ->when($naturaleza !== '', fn($q) => $q->where('naturaleza', $naturaleza))
+            ->when($nivel !== '' && $nivel !== null, fn($q) => $q->where('nivel', (int) $nivel))
             ->when($estado === 'activas', fn($q) => $q->activeFor($client->id))
             ->when($estado === 'inactivas', fn($q) => $q->inactiveFor($client->id))
-            ->when(
-                ! $request->boolean('todas'),
-                fn($q) => $q->clientOwned($client->id)
-            )
+            ->when(! $todas, fn($q) => $q->clientOwned($client->id))
             ->orderBy('sort_key')
             ->paginate($this->perPage($request))
             ->withQueryString();
@@ -65,9 +73,10 @@ class AccountController extends Controller
             'q'             => $request->string('q')->toString(),
             'filters'       => [
                 'tipo'       => $tipo,
-                'naturaleza' => $request->input('naturaleza'),
+                'naturaleza' => $naturaleza,
+                'nivel'      => $nivel,
                 'estado'     => $estado,
-                'todas'      => $request->boolean('todas'),
+                'todas'      => $todas,
             ],
             'perPage'       => $this->perPage($request),
         ]);
@@ -108,6 +117,61 @@ class AccountController extends Controller
         ]);
     }
 
+    /**
+     * Step 1 of the saldos-iniciales import: parse the uploaded workbook and
+     * return a preview the user checks/unchecks before committing. Nothing is
+     * written here.
+     */
+    public function importSaldosPreview(Request $request): JsonResponse
+    {
+        if (! $this->context->hasClient()) {
+            return response()->json(['message' => 'Selecciona un cliente primero.'], 422);
+        }
+
+        $request->validate([
+            'archivo' => ['required', 'file', 'mimes:xlsx,xls,csv,txt', 'max:5120'],
+        ]);
+
+        try {
+            $preview = $this->saldosImporter->parse(
+                $request->file('archivo')->getRealPath(),
+                $this->context->client(),
+            );
+        } catch (Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json(['ok' => true, 'rows' => $preview]);
+    }
+
+    /** Step 2: apply the rows the user selected in the preview. */
+    public function importSaldosCommit(Request $request): JsonResponse
+    {
+        if (! $this->context->hasClient()) {
+            return response()->json(['message' => 'Selecciona un cliente primero.'], 422);
+        }
+
+        $data = $request->validate([
+            'rows'               => ['required', 'array', 'min:1'],
+            'rows.*.codigo'      => ['required', 'string', 'max:50'],
+            'rows.*.descripcion' => ['nullable', 'string', 'max:255'],
+            'rows.*.rfc'         => ['nullable', 'string', 'max:13'],
+            'rows.*.saldo'       => ['nullable', 'numeric'],
+            'rows.*.action'      => ['required', 'in:create,update,override'],
+        ]);
+
+        try {
+            $summary = $this->saldosImporter->commit($this->context->client(), $data['rows']);
+        } catch (Throwable $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        $msg = "Saldos importados: {$summary['imported']} nuevas, {$summary['updated']} actualizadas"
+             . ($summary['skipped'] ? ", {$summary['skipped']} omitidas." : '.');
+
+        return response()->json(['ok' => true, 'summary' => $summary, 'message' => $msg]);
+    }
+
     public function store(Request $request): JsonResponse
     {
         $data = $this->validateAccount($request);
@@ -132,8 +196,9 @@ class AccountController extends Controller
         }
 
         $data = $request->validate([
-            'nombre'       => ['required', 'string', 'max:200'],
-            'rfc_asociado' => ['nullable', 'string', 'max:13'],
+            'nombre'        => ['required', 'string', 'max:200'],
+            'rfc_asociado'  => ['nullable', 'string', 'max:13'],
+            'saldo_inicial' => ['nullable', 'numeric'],
         ]);
         $account->update($data);
 
@@ -270,6 +335,7 @@ class AccountController extends Controller
             'tipo'             => ['nullable', 'in:Afectable,Agrupador'],
             'rfc_asociado'     => ['nullable', 'string', 'max:13'],
             'es_afectable'     => ['boolean'],
+            'saldo_inicial'    => ['nullable', 'numeric'],
             'parent_id'        => ['nullable', 'integer', 'exists:accounts,id'],
         ]);
     }

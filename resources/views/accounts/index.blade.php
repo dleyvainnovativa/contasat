@@ -21,6 +21,9 @@
                 @endforeach
             </div>
         </div>
+        <button class="btn btn-soft btn-icon" data-import-saldos type="button">
+            <i class="fa-solid fa-file-import"></i> Importar saldos
+        </button>
         <button class="btn btn-brand btn-icon" data-create-account type="button">
             <i class="fa-solid fa-plus"></i> Crear cuenta
         </button>
@@ -60,6 +63,13 @@
                     <option value="A" @selected(($filters['naturaleza'] ?? '')==='A')>Acreedora</option>
                 </select>
 
+                <select name="nivel" class="form-select form-select-sm" style="width:auto;" onchange="this.form.submit()">
+                    <option value="">Nivel: todos</option>
+                    @for($n = 1; $n <= 6; $n++)
+                        <option value="{{ $n }}" @selected((string)($filters['nivel'] ?? '') === (string)$n)>Nivel {{ $n }}</option>
+                    @endfor
+                </select>
+
                 <select name="estado" class="form-select form-select-sm" style="width:auto;" onchange="this.form.submit()">
                     <option value="">Estado: todas</option>
                     <option value="activas"   @selected(($filters['estado'] ?? '')==='activas')>Activas</option>
@@ -71,8 +81,8 @@
                     <option value="1" @selected(!empty($filters['todas']))>Incluir catálogo global</option>
                 </select>
 
-                @if(($q ?? '') !== '' || ($filters['tipo'] ?? '') || ($filters['naturaleza'] ?? '') || ($filters['estado'] ?? '') || !empty($filters['todas']))
-                    <a href="{{ route('accounts.index') }}" class="btn btn-soft btn-sm" title="Limpiar filtros">
+                @if(($q ?? '') !== '' || ($filters['tipo'] ?? '') || ($filters['naturaleza'] ?? '') || ($filters['nivel'] ?? '') !== '' && ($filters['nivel'] ?? '') !== null || ($filters['estado'] ?? '') !== 'activas' || empty($filters['todas']))
+                    <a href="{{ route('accounts.index') }}" class="btn btn-soft btn-sm" title="Restablecer filtros">
                         <i class="fa-solid fa-xmark"></i> Limpiar
                     </a>
                 @endif
@@ -157,7 +167,8 @@
                                             data-nombre="{{ $account->nombre }}"
                                             data-rfc="{{ $account->rfc_asociado }}"
                                             data-numero="{{ $account->numero_cuenta }}"
-                                            title="Editar nombre/RFC">
+                                            data-saldo="{{ $account->saldo_inicial }}"
+                                            title="Editar nombre/RFC/saldo">
                                         <i class="fa-solid fa-pen"></i>
                                     </button>
                                 @endif
@@ -206,6 +217,7 @@
 @php $storeRoute = route('accounts.store'); @endphp
 @include('partials.create_account_modal', ['storeRoute' => $storeRoute, 'parentOptions' => $parentOptions ?? []])
 @include('partials.edit_account_modal')
+@include('partials.import_saldos_modal')
 @endsection
 
 @push('scripts')

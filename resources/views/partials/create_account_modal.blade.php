@@ -52,9 +52,15 @@
                     Heredado de la cuenta padre.
                 </div>
 
-                <div class="mb-2">
-                    <label class="form-label">RFC asociado (opcional)</label>
-                    <input type="text" id="ca-rfc" class="form-control" placeholder="RFC de la contraparte" maxlength="13">
+                <div class="row g-2">
+                    <div class="col-6 mb-2">
+                        <label class="form-label">RFC asociado (opcional)</label>
+                        <input type="text" id="ca-rfc" class="form-control" placeholder="RFC de la contraparte" maxlength="13">
+                    </div>
+                    <div class="col-6 mb-2">
+                        <label class="form-label">Saldo inicial</label>
+                        <input type="number" id="ca-saldo" class="form-control" value="0" step="0.01" placeholder="0.00">
+                    </div>
                 </div>
 
                 <div class="mb-2">
@@ -135,6 +141,7 @@
             es_afectable:     afectable,
             tipo:             afectable ? 'Afectable' : 'Agrupador',
             rfc_asociado:     document.getElementById('ca-rfc').value.trim() || null,
+            saldo_inicial:    parseFloat(document.getElementById('ca-saldo').value) || 0,
             parent_id:        parentSel.value || null,
         };
         if (!body.numero_cuenta || !body.nombre || !body.codigo_agrupador) {

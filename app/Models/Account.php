@@ -25,15 +25,16 @@ class Account extends Model
         'activo',
         'rfc_asociado',
         'auto_generada',
-
+        'saldo_inicial',
     ];
 
     protected function casts(): array
     {
         return [
-            'es_afectable' => 'boolean',
-            'activo'       => 'boolean',
+            'es_afectable'  => 'boolean',
+            'activo'        => 'boolean',
             'auto_generada' => 'boolean',
+            'saldo_inicial' => 'decimal:2',
         ];
     }
 

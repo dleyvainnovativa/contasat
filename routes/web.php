@@ -98,6 +98,8 @@ Route::middleware('firebase')->group(function () {
     Route::get('/reports/income-expense', [ReportController::class, 'incomeExpense'])->name('reports.income_expense');
     Route::get('/reports/polizas/export', [ReportController::class, 'exportPolizas'])->name('reports.polizas.export');
     Route::get('/reports/income-expense/export', [ReportController::class, 'exportIncomeExpense'])->name('reports.income_expense.export');
+    Route::get('/reports/balanza', [ReportController::class, 'balanza'])->name('reports.balanza');
+    Route::get('/reports/balanza/export', [ReportController::class, 'exportBalanza'])->name('reports.balanza.export');
 
     // Contabilidad electrónica (Phase 5) — SAT XML generation
     Route::get('/contabilidad', [ContabilidadController::class, 'index'])->name('contabilidad.index');
@@ -115,6 +117,8 @@ Route::middleware('firebase')->group(function () {
     Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
     Route::post('/accounts/import', [AccountController::class, 'import'])->name('accounts.import');
     Route::get('/accounts/next-code', [AccountController::class, 'nextCode'])->name('accounts.next-code');
+    Route::post('/accounts/import-saldos/preview', [AccountController::class, 'importSaldosPreview'])->name('accounts.import-saldos.preview');
+    Route::post('/accounts/import-saldos/commit', [AccountController::class, 'importSaldosCommit'])->name('accounts.import-saldos.commit');
     Route::post('/accounts/bulk-toggle', [AccountController::class, 'bulkToggle'])->name('accounts.bulk-toggle');
     Route::post('/accounts/{account}/toggle', [AccountController::class, 'toggle'])->name('accounts.toggle');
     Route::put('/accounts/{account}', [AccountController::class, 'update'])->name('accounts.update');

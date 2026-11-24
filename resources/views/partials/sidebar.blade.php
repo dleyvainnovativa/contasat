@@ -108,10 +108,29 @@
             class="nav-link-item {{ request()->routeIs('reconciliation.*') ? 'active' : '' }}">
             <i class="fa-solid fa-code-compare"></i> Conciliación
         </a>
-        <a href="{{ route('reports.index') }}"
-            class="nav-link-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
-            <i class="fa-solid fa-chart-column"></i> Reportes
-        </a>
+        <div class="nav-group {{ request()->routeIs('reports.*') ? 'open' : '' }}" data-nav-group>
+            <a href="{{ route('reports.index') }}"
+                class="nav-link-item {{ request()->routeIs('reports.index') ? 'active' : '' }}">
+                <i class="fa-solid fa-chart-column"></i> Reportes
+                <button class="nav-group__toggle" data-nav-toggle aria-label="Desplegar">
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+            </a>
+            <div class="nav-group__items">
+                <a href="{{ route('reports.balanza') }}"
+                    class="nav-sublink {{ request()->routeIs('reports.balanza') ? 'active' : '' }}">
+                    Balanza de comprobación
+                </a>
+                <a href="{{ route('reports.polizas') }}"
+                    class="nav-sublink {{ request()->routeIs('reports.polizas') ? 'active' : '' }}">
+                    Pólizas
+                </a>
+                <a href="{{ route('reports.income_expense') }}"
+                    class="nav-sublink {{ request()->routeIs('reports.income_expense') ? 'active' : '' }}">
+                    Ingresos y gastos
+                </a>
+            </div>
+        </div>
         <a href="{{ route('contabilidad.index') }}"
             class="nav-link-item {{ request()->routeIs('contabilidad.*') ? 'active' : '' }}">
             <i class="fa-solid fa-file-code"></i> Contabilidad electrónica

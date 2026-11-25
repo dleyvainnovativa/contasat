@@ -40,10 +40,13 @@ class AccountController extends Controller
         // "Limpiar"): Estado=activas, Ámbito=incluir catálogo global. Once the
         // user touches the filter bar every param is submitted, so explicit
         // choices (e.g. Estado=todas) always win.
-        $tipo       = $request->input('tipo', '');
-        $naturaleza = $request->input('naturaleza', '');
-        $nivel      = $request->input('nivel', '');
-        $estado     = $request->has('estado') ? $request->input('estado') : 'activas';
+        // Cast to string: the ConvertEmptyStringsToNull middleware turns an empty
+        // filter param (naturaleza=) into null, and `null !== ''` would wrongly
+        // trigger a `where(..., null)` → `IS NULL` clause that matches nothing.
+        $tipo       = (string) $request->input('tipo', '');
+        $naturaleza = (string) $request->input('naturaleza', '');
+        $nivel      = (string) $request->input('nivel', '');
+        $estado     = $request->has('estado') ? (string) $request->input('estado') : 'activas';
         $todas      = $request->has('todas') ? $request->boolean('todas') : true;
 
         $accounts = Account::forClient($client->id)
@@ -56,7 +59,7 @@ class AccountController extends Controller
             ->when($tipo === 'afectables', fn($q) => $q->where('es_afectable', true))
             ->when($tipo === 'agrupadoras', fn($q) => $q->where('es_afectable', false))
             ->when($naturaleza !== '', fn($q) => $q->where('naturaleza', $naturaleza))
-            ->when($nivel !== '' && $nivel !== null, fn($q) => $q->where('nivel', (int) $nivel))
+            ->when($nivel !== '', fn($q) => $q->where('nivel', (int) $nivel))
             ->when($estado === 'activas', fn($q) => $q->activeFor($client->id))
             ->when($estado === 'inactivas', fn($q) => $q->inactiveFor($client->id))
             ->when(! $todas, fn($q) => $q->clientOwned($client->id))

@@ -19,8 +19,25 @@ export const reveal = {
                     obs.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.08 });
+        }, { threshold: 0 });
+        // threshold 0 = reveal as soon as any pixel enters the viewport. A positive
+        // threshold breaks for elements taller than the viewport (e.g. a 500-row
+        // table): their visible fraction can never reach it, so they'd stay hidden.
 
         items.forEach((el) => io.observe(el));
+
+        // Safety net: never leave content permanently hidden. If an element still
+        // hasn't revealed shortly after load (odd layout/observer edge cases),
+        // reveal it anyway.
+        setTimeout(() => {
+            items.forEach((el) => {
+                if (!el.classList.contains('revealed')) {
+                    const r = el.getBoundingClientRect();
+                    if (r.top < window.innerHeight && r.bottom > 0) {
+                        el.classList.add('revealed');
+                    }
+                }
+            });
+        }, 1200);
     },
 };

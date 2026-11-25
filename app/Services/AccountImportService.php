@@ -308,7 +308,14 @@ class AccountImportService
 
     private function norm(mixed $v): string
     {
-        return mb_strtolower(trim((string) ($v ?? '')));
+        $s = mb_strtolower(trim((string) ($v ?? '')));
+
+        // Fold accents so "Código" matches "codigo", "Clasificación" etc.
+        return strtr($s, [
+            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+            'à' => 'a', 'è' => 'e', 'ì' => 'i', 'ò' => 'o', 'ù' => 'u',
+            'ä' => 'a', 'ë' => 'e', 'ï' => 'i', 'ö' => 'o', 'ü' => 'u', 'ñ' => 'n',
+        ]);
     }
 
     /**

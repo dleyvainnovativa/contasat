@@ -160,6 +160,8 @@ class AccountController extends Controller
             'rows.*.descripcion' => ['nullable', 'string', 'max:255'],
             'rows.*.rfc'         => ['nullable', 'string', 'max:13'],
             'rows.*.saldo'       => ['nullable', 'numeric'],
+            'rows.*.year'        => ['nullable', 'integer'],
+            'rows.*.month'       => ['nullable', 'integer'],
             'rows.*.action'      => ['required', 'in:create,update,override'],
         ]);
 

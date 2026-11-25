@@ -31,6 +31,8 @@ class Account extends Model
         'rfc_asociado',
         'auto_generada',
         'saldo_inicial',
+        'saldo_inicial_year',
+        'saldo_inicial_month',
     ];
 
     protected function casts(): array

@@ -72,6 +72,10 @@ class AccountImportService
                     'client_id'        => $clientId,
                     'codigo_agrupador' => $codigo,
                     'numero_cuenta'    => $codigo,
+                    // Set sort_key explicitly: the update() path below is a mass
+                    // update that bypasses the model saving hook, so without this
+                    // re-imported rows keep a NULL sort_key and order breaks.
+                    'sort_key'         => Account::sortKeyFor($codigo),
                     'nombre'           => $row['nombre'] !== '' ? $row['nombre'] : $codigo,
                     'nombre_subcuenta' => $row['nombre_subcuenta'],
                     'nivel'            => substr_count($codigo, '.') + 1,   // structural depth
@@ -157,6 +161,13 @@ class AccountImportService
             if ($rich) {
                 $tipoRaw = mb_strtolower(trim($this->cell($cells, $map['tipo'] ?? null)));
                 $afectable = $tipoRaw === 'afectable';
+
+                // Activa/No Activa -> activo. If the Activa column can't be located,
+                // default to ACTIVE rather than hiding every account.
+                $activo = isset($map['activa'])
+                    ? mb_strtolower(trim($this->cell($cells, $map['activa']))) === 'activa'
+                    : true;
+
                 $rows[] = [
                     'codigo'           => $codigo,
                     'nombre'           => $nombre,
@@ -168,7 +179,7 @@ class AccountImportService
                     'nivel_nif'        => $this->nullable($this->cell($cells, $map['nivel_nif'] ?? null)),
                     'rubro_nif'        => $this->nullable($this->cell($cells, $map['rubro_nif'] ?? null)),
                     'es_afectable'     => $afectable,
-                    'activo'           => mb_strtolower(trim($this->cell($cells, $map['activa'] ?? null))) === 'activa',
+                    'activo'           => $activo,
                 ];
             } else {
                 $nivelRaw = trim($this->cell($cells, $map['nivel'] ?? null));

@@ -44,6 +44,7 @@
                                     <th>Descripción</th>
                                     <th>RFC</th>
                                     <th class="text-end">Saldo</th>
+                                    <th>Periodo</th>
                                     <th>Estado</th>
                                 </tr>
                             </thead>
@@ -105,6 +106,7 @@
                 <td>${r.descripcion || ''}</td>
                 <td class="data text-muted">${r.rfc || '—'}</td>
                 <td class="text-end data">${Number(r.saldo).toLocaleString('es-MX', {minimumFractionDigits: 2})}</td>
+                <td class="data text-muted">${(r.month && r.year) ? String(r.month).padStart(2,'0') + '/' + r.year : '—'}</td>
                 <td>${badge(r.status)}${note}</td>`;
             rowsBody.appendChild(tr);
         });
@@ -145,7 +147,7 @@
         rowsBody.querySelectorAll('.is-row:checked').forEach(c => {
             const r = parsed[c.dataset.idx];
             const action = r.status === 'conflict' ? 'override' : (r.status === 'update' ? 'update' : 'create');
-            rows.push({ codigo: r.codigo, descripcion: r.descripcion, rfc: r.rfc, saldo: r.saldo, action });
+            rows.push({ codigo: r.codigo, descripcion: r.descripcion, rfc: r.rfc, saldo: r.saldo, year: r.year, month: r.month, action });
         });
         if (!rows.length) { App.toast.warning('Selecciona al menos una cuenta.'); return; }
         await App.loading.button(this, async () => {

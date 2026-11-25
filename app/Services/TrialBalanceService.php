@@ -8,13 +8,14 @@ use App\Models\PolizaLine;
 use Carbon\Carbon;
 
 /**
- * Balanza de Comprobación (trial balance) for a client, accumulated from the
- * client's FIRST period through the selected period (historic running balance).
+ * Balanza de Comprobación (trial balance) for a client, a historic running
+ * balance up to the selected period.
  *
  * Per active, postable (afectable) account:
  *   - Saldo inicial = account.saldo_inicial (the opening balance).
- *   - Cargos / Abonos = sum of all póliza movements from the client's first
- *     period up to and including the selected period (month-year).
+ *   - Cargos / Abonos = sum of póliza movements from the account's own saldo
+ *     period (saldo_inicial_year/month) — or the client's first period when it
+ *     has none — up to and including the selected period (month-year).
  *   - Saldo = saldo inicial ± (cargos − abonos) by naturaleza — the running
  *     balance as of the selected period.
  *
@@ -29,15 +30,15 @@ class TrialBalanceService
     {
         $clientId = $period->client_id;
 
-        // Accumulate from the client's FIRST period through the selected period.
+        // Accumulate up to the selected period. Each account starts accumulating
+        // from its own saldo-inicial period (month/year); when it has none, fall
+        // back to the client's first period.
         $selectedEnd = Carbon::create($period->year, $period->month, 1)->endOfMonth()->endOfDay();
         $first = Period::where('client_id', $clientId)
             ->orderBy('year')->orderBy('month')->first();
-        $firstStart = $first
-            ? Carbon::create($first->year, $first->month, 1)->startOfDay()
-            : null;
+        $firstKey = $first ? $first->year * 100 + $first->month : 0;
 
-        $mov = $this->movements($clientId, $firstStart, $selectedEnd);
+        $byMonth = $this->movementsByMonth($clientId, $selectedEnd);
 
         $accounts = Account::forClient($clientId)
             ->where('es_afectable', true)
@@ -49,10 +50,19 @@ class TrialBalanceService
         $cards = ['activos' => 0.0, 'pasivos' => 0.0, 'capital' => 0.0, 'ingresos' => 0.0, 'egresos' => 0.0];
 
         foreach ($accounts as $a) {
-            $m = $mov[$a->id] ?? ['cargo' => 0.0, 'abono' => 0.0];
+            // Lower bound (YYYYMM) = the account's saldo period, else first period.
+            $startKey = ($a->saldo_inicial_year && $a->saldo_inicial_month)
+                ? $a->saldo_inicial_year * 100 + $a->saldo_inicial_month
+                : $firstKey;
 
-            $cargos = (float) $m['cargo'];   // cumulative to the selected period
-            $abonos = (float) $m['abono'];
+            $cargos = 0.0;
+            $abonos = 0.0;
+            foreach ($byMonth[$a->id] ?? [] as $ym => $ca) {
+                if ($ym >= $startKey) {
+                    $cargos += $ca['cargo'];
+                    $abonos += $ca['abono'];
+                }
+            }
 
             $saldoInicial = (float) $a->saldo_inicial;                         // opening balance
             $saldo        = $saldoInicial + $this->net($a->naturaleza, $cargos, $abonos);
@@ -92,29 +102,34 @@ class TrialBalanceService
     }
 
     /**
-     * Sum cargo/abono per account from póliza lines up to $to (inclusive), and
-     * from $from onward when given (the client's first period).
+     * Sum cargo/abono per account AND per year-month (YYYYMM) up to $to, so each
+     * account can be accumulated from its own saldo period in one query.
      *
-     * @return array<int, array{cargo:float, abono:float}>
+     * @return array<int, array<int, array{cargo:float, abono:float}>>  [account_id => [ym => …]]
      */
-    private function movements(int $clientId, ?Carbon $from, Carbon $to): array
+    private function movementsByMonth(int $clientId, Carbon $to): array
     {
-        $q = PolizaLine::query()
+        $rows = PolizaLine::query()
             ->join('polizas', 'polizas.id', '=', 'poliza_lines.poliza_id')
             ->where('polizas.client_id', $clientId)
             ->whereNotNull('poliza_lines.account_id')
-            ->where('polizas.fecha', '<=', $to);
+            ->where('polizas.fecha', '<=', $to)
+            ->groupBy('poliza_lines.account_id')
+            ->groupByRaw('YEAR(polizas.fecha) * 100 + MONTH(polizas.fecha)')
+            ->selectRaw('poliza_lines.account_id,
+                YEAR(polizas.fecha) * 100 + MONTH(polizas.fecha) AS ym,
+                SUM(poliza_lines.cargo) AS cargo, SUM(poliza_lines.abono) AS abono')
+            ->get();
 
-        if ($from) {
-            $q->where('polizas.fecha', '>=', $from);
+        $map = [];
+        foreach ($rows as $r) {
+            $map[(int) $r->account_id][(int) $r->ym] = [
+                'cargo' => (float) $r->cargo,
+                'abono' => (float) $r->abono,
+            ];
         }
 
-        return $q->groupBy('poliza_lines.account_id')
-            ->selectRaw('poliza_lines.account_id, SUM(poliza_lines.cargo) AS cargo, SUM(poliza_lines.abono) AS abono')
-            ->get()
-            ->keyBy('account_id')
-            ->map(fn ($r) => ['cargo' => (float) $r->cargo, 'abono' => (float) $r->abono])
-            ->all();
+        return $map;
     }
 
     /** Net movement in the account's natural sense. */

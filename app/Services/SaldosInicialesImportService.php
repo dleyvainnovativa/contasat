@@ -60,6 +60,8 @@ class SaldosInicialesImportService
                 'descripcion' => $row['descripcion'],
                 'rfc'         => $rfc,
                 'saldo'       => $row['saldo'],
+                'year'        => $row['year'],
+                'month'       => $row['month'],
                 'parent_nombre' => $parent?->nombre,
                 'status'      => 'new',
                 'importable'  => true,
@@ -128,6 +130,8 @@ class SaldosInicialesImportService
                 $descripcion = trim((string) ($row['descripcion'] ?? ''));
                 $rfc         = $this->cleanRfc($row['rfc'] ?? null);
                 $saldo       = $this->toFloat($row['saldo'] ?? 0);
+                $year        = $this->parseYear($row['year'] ?? null);
+                $month       = $this->parseMonth($row['month'] ?? null);
                 $action      = $row['action'] ?? 'create';
 
                 $parent = $this->resolveParent($codigo, $client->id);
@@ -146,7 +150,11 @@ class SaldosInicialesImportService
                             $summary['skipped']++;      // ignore
                             continue;
                         }
-                        $existing->update(['saldo_inicial' => $saldo]); // saldo only
+                        $existing->update([
+                            'saldo_inicial'       => $saldo,
+                            'saldo_inicial_year'  => $year,
+                            'saldo_inicial_month' => $month,
+                        ]);
                         $summary['updated']++;
                         continue;
                     }
@@ -173,6 +181,8 @@ class SaldosInicialesImportService
                     'auto_generada'    => false,
                     'activo'           => true,
                     'saldo_inicial'    => $saldo,
+                    'saldo_inicial_year'  => $year,
+                    'saldo_inicial_month' => $month,
                 ]);
                 $summary['imported']++;
             }
@@ -216,10 +226,11 @@ class SaldosInicialesImportService
     }
 
     /**
-     * Read the 4-column file into normalized rows. Reads formatted values so
-     * numeric agrupador codes keep their dotted form.
+     * Read the file into normalized rows. Columns are located by header name
+     * (Código agrupador · Descripción · RFC · Saldo inicial, plus optional
+     * Mes/Month and Año/Year), with positional fallback for the core four.
      *
-     * @return array<int, array{codigo:string, descripcion:string, rfc:?string, saldo:float}>
+     * @return array<int, array{codigo:string, descripcion:string, rfc:?string, saldo:float, year:?int, month:?int}>
      */
     private function readRows(string $path): array
     {
@@ -237,29 +248,108 @@ class SaldosInicialesImportService
         // not come through the General formatter, which on some PHP builds leaks
         // the binary-float form "102.010000000000005"; canonicalCode normalizes it.
         $cells = $spreadsheet->getActiveSheet()->toArray(null, true, false);
+        if (empty($cells)) {
+            return [];
+        }
+
+        $map = $this->mapColumns($cells);
         $out = [];
 
         foreach ($cells as $i => $r) {
-            $codigo = $this->canonicalCode($r[0] ?? '');
-            $desc   = isset($r[1]) ? trim((string) $r[1]) : '';
-            $rfc    = $this->cleanRfc($r[2] ?? null);
-            $saldo  = $this->toFloat($r[3] ?? 0);
-
-            // Skip the header row.
-            if ($i === 0 && (mb_stripos((string) ($r[0] ?? ''), 'agrupador') !== false
-                || mb_stripos((string) ($r[1] ?? ''), 'descrip') !== false)) {
+            if ($i === $map['_headerRow']) {
                 continue;
             }
 
-            // A data row needs a dotted/numeric código.
+            $codigo = $this->canonicalCode($r[$map['codigo']] ?? '');
             if ($codigo === '' || ! preg_match('/^\d+(\.\d+)*$/', $codigo)) {
                 continue;
             }
 
-            $out[] = ['codigo' => $codigo, 'descripcion' => $desc, 'rfc' => $rfc, 'saldo' => $saldo];
+            $out[] = [
+                'codigo'      => $codigo,
+                'descripcion' => isset($r[$map['descripcion']]) ? trim((string) $r[$map['descripcion']]) : '',
+                'rfc'         => $this->cleanRfc($r[$map['rfc']] ?? null),
+                'saldo'       => $this->toFloat($r[$map['saldo']] ?? 0),
+                'year'        => $map['year'] !== null ? $this->parseYear($r[$map['year']] ?? null) : null,
+                'month'       => $map['month'] !== null ? $this->parseMonth($r[$map['month']] ?? null) : null,
+            ];
         }
 
         return $out;
+    }
+
+    /**
+     * Locate columns by header name. Falls back to the original positions
+     * (0=código, 1=descripción, 2=rfc, 3=saldo) when no header row is found.
+     *
+     * @return array{codigo:int, descripcion:int, rfc:int, saldo:int, year:?int, month:?int, _headerRow:int}
+     */
+    private function mapColumns(array $cells): array
+    {
+        $map = ['codigo' => 0, 'descripcion' => 1, 'rfc' => 2, 'saldo' => 3, 'year' => null, 'month' => null, '_headerRow' => -1];
+
+        foreach (array_slice($cells, 0, 5, true) as $i => $r) {
+            $found = false;
+            foreach ($r as $idx => $v) {
+                $h = $this->norm($v);
+                if ($h === '') {
+                    continue;
+                }
+                if (str_contains($h, 'agrupador') || str_contains($h, 'codigo')) { $map['codigo'] = $idx; $found = true; }
+                elseif (str_contains($h, 'descrip') || str_contains($h, 'nombre')) { $map['descripcion'] = $idx; $found = true; }
+                elseif (str_contains($h, 'rfc')) { $map['rfc'] = $idx; $found = true; }
+                elseif (str_contains($h, 'saldo')) { $map['saldo'] = $idx; $found = true; }
+                elseif ($h === 'mes' || str_contains($h, 'month')) { $map['month'] = $idx; $found = true; }
+                elseif (str_contains($h, 'ano') || str_contains($h, 'anio') || str_contains($h, 'year') || str_contains($h, 'ejercicio')) { $map['year'] = $idx; $found = true; }
+            }
+            if ($found) {
+                $map['_headerRow'] = $i;
+                break;
+            }
+        }
+
+        return $map;
+    }
+
+    private function norm(mixed $v): string
+    {
+        $s = mb_strtolower(trim((string) ($v ?? '')));
+
+        return strtr($s, ['á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ñ' => 'n', 'ü' => 'u']);
+    }
+
+    private function parseYear(mixed $v): ?int
+    {
+        if ($v === null || $v === '' || ! is_numeric($v)) {
+            return null;
+        }
+        $y = (int) $v;
+
+        return ($y >= 2000 && $y <= 2100) ? $y : null;
+    }
+
+    /** Month as 1-12, from a number or a Spanish month name. */
+    private function parseMonth(mixed $v): ?int
+    {
+        if ($v === null || $v === '') {
+            return null;
+        }
+        if (is_numeric($v)) {
+            $m = (int) $v;
+
+            return ($m >= 1 && $m <= 12) ? $m : null;
+        }
+
+        $s = $this->norm((string) $v);
+        $names = ['ene' => 1, 'feb' => 2, 'mar' => 3, 'abr' => 4, 'may' => 5, 'jun' => 6,
+                  'jul' => 7, 'ago' => 8, 'sep' => 9, 'set' => 9, 'oct' => 10, 'nov' => 11, 'dic' => 12];
+        foreach ($names as $prefix => $num) {
+            if (str_starts_with($s, $prefix)) {
+                return $num;
+            }
+        }
+
+        return null;
     }
 
     /**

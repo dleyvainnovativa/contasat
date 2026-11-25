@@ -124,7 +124,7 @@ class SaldosInicialesImportService
 
         DB::transaction(function () use ($client, $rows, &$summary, &$counters) {
             foreach ($rows as $row) {
-                $codigo      = $this->cleanCode((string) ($row['codigo'] ?? ''));
+                $codigo      = $this->canonicalCode($row['codigo'] ?? '');
                 $descripcion = trim((string) ($row['descripcion'] ?? ''));
                 $rfc         = $this->cleanRfc($row['rfc'] ?? null);
                 $saldo       = $this->toFloat($row['saldo'] ?? 0);
@@ -233,12 +233,14 @@ class SaldosInicialesImportService
             throw new RuntimeException('No se pudo leer el archivo: ' . $e->getMessage(), previous: $e);
         }
 
-        // formatData = true keeps codes like 105.01 as text instead of floats.
-        $cells = $spreadsheet->getActiveSheet()->toArray(null, true, true);
+        // Read RAW values (formatData = false). A numeric código like 102.01 must
+        // not come through the General formatter, which on some PHP builds leaks
+        // the binary-float form "102.010000000000005"; canonicalCode normalizes it.
+        $cells = $spreadsheet->getActiveSheet()->toArray(null, true, false);
         $out = [];
 
         foreach ($cells as $i => $r) {
-            $codigo = $this->cleanCode(isset($r[0]) ? (string) $r[0] : '');
+            $codigo = $this->canonicalCode($r[0] ?? '');
             $desc   = isset($r[1]) ? trim((string) $r[1]) : '';
             $rfc    = $this->cleanRfc($r[2] ?? null);
             $saldo  = $this->toFloat($r[3] ?? 0);
@@ -260,11 +262,35 @@ class SaldosInicialesImportService
         return $out;
     }
 
-    private function cleanCode(string $codigo): string
+    /**
+     * Normalize a código agrupador to the catalog's canonical form, tolerant of
+     * how Excel stored it: a number (102.01 -> "102.01"), an integer (100 -> "100"),
+     * or text ("105.01"). Numeric values are rounded to 2 decimals so binary-float
+     * noise ("102.010000000000005") can't leak in, and an all-zero decimal collapses
+     * to an integer. Agrupadores are NNN.NN at most, so 2-decimal rounding is exact.
+     */
+    private function canonicalCode(mixed $raw): string
     {
-        // Keep digits and dots; trim a trailing dot if any.
-        $c = preg_replace('/[^\d.]/', '', trim($codigo)) ?? '';
-        return rtrim($c, '.');
+        if (is_int($raw) || is_float($raw)) {
+            $s = number_format((float) $raw, 2, '.', '');
+        } else {
+            $s = trim((string) $raw);
+            if ($s === '') {
+                return '';
+            }
+            if (is_numeric($s)) {
+                $s = number_format(round((float) $s, 2), 2, '.', '');
+            } else {
+                // Non-numeric (e.g. a multi-level 105.01.3): keep digits and dots.
+                return rtrim(preg_replace('/[^\d.]/', '', $s) ?? '', '.');
+            }
+        }
+
+        if (preg_match('/^(\d+)\.(\d+)$/', $s, $m)) {
+            return preg_match('/^0+$/', $m[2]) ? $m[1] : "{$m[1]}.{$m[2]}";
+        }
+
+        return $s;
     }
 
     private function cleanRfc(mixed $rfc): ?string

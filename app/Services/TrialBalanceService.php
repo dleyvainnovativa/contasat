@@ -8,20 +8,19 @@ use App\Models\PolizaLine;
 use Carbon\Carbon;
 
 /**
- * Balanza de Comprobación (trial balance) for a client + period.
+ * Balanza de Comprobación (trial balance) for a client, accumulated from the
+ * client's FIRST period through the selected period (historic running balance).
  *
  * Per active, postable (afectable) account:
- *   - Saldo inicial = account.saldo_inicial + net of all póliza movements dated
- *     BEFORE the period (carry-forward), in the account's natural sense.
- *   - Cargos / Abonos = póliza movements within the period.
- *   - Saldo = saldo inicial ± (cargos − abonos) by naturaleza.
+ *   - Saldo inicial = account.saldo_inicial (the opening balance).
+ *   - Cargos / Abonos = sum of all póliza movements from the client's first
+ *     period up to and including the selected period (month-year).
+ *   - Saldo = saldo inicial ± (cargos − abonos) by naturaleza — the running
+ *     balance as of the selected period.
  *
  * The six headline cards roll the saldos up by major group (first code digit):
  *   Activos (1) · Pasivos (2) · Capital (3) · Ingresos (4) · Egresos (5,6)
  *   · Remanente/Utilidad = Ingresos − Egresos.
- *
- * Movement windows are date-based (month start/end) so carry-forward and the
- * current period never overlap, independent of how póliza rows are tagged.
  */
 class TrialBalanceService
 {
@@ -29,11 +28,16 @@ class TrialBalanceService
     public function build(Period $period): array
     {
         $clientId = $period->client_id;
-        $start = Carbon::create($period->year, $period->month, 1)->startOfDay();
-        $end   = (clone $start)->endOfMonth()->endOfDay();
 
-        $periodMov = $this->movements($clientId, $start, $end, null);
-        $priorMov  = $this->movements($clientId, null, null, $start);
+        // Accumulate from the client's FIRST period through the selected period.
+        $selectedEnd = Carbon::create($period->year, $period->month, 1)->endOfMonth()->endOfDay();
+        $first = Period::where('client_id', $clientId)
+            ->orderBy('year')->orderBy('month')->first();
+        $firstStart = $first
+            ? Carbon::create($first->year, $first->month, 1)->startOfDay()
+            : null;
+
+        $mov = $this->movements($clientId, $firstStart, $selectedEnd);
 
         $accounts = Account::forClient($clientId)
             ->where('es_afectable', true)
@@ -45,13 +49,12 @@ class TrialBalanceService
         $cards = ['activos' => 0.0, 'pasivos' => 0.0, 'capital' => 0.0, 'ingresos' => 0.0, 'egresos' => 0.0];
 
         foreach ($accounts as $a) {
-            $pm  = $periodMov[$a->id] ?? ['cargo' => 0.0, 'abono' => 0.0];
-            $prm = $priorMov[$a->id]  ?? ['cargo' => 0.0, 'abono' => 0.0];
+            $m = $mov[$a->id] ?? ['cargo' => 0.0, 'abono' => 0.0];
 
-            $cargos = (float) $pm['cargo'];
-            $abonos = (float) $pm['abono'];
+            $cargos = (float) $m['cargo'];   // cumulative to the selected period
+            $abonos = (float) $m['abono'];
 
-            $saldoInicial = (float) $a->saldo_inicial + $this->net($a->naturaleza, (float) $prm['cargo'], (float) $prm['abono']);
+            $saldoInicial = (float) $a->saldo_inicial;                         // opening balance
             $saldo        = $saldoInicial + $this->net($a->naturaleza, $cargos, $abonos);
 
             [$tipoKey, $tipoLabel] = $this->tipo($a->numero_cuenta);
@@ -89,22 +92,21 @@ class TrialBalanceService
     }
 
     /**
-     * Sum cargo/abono per account from póliza lines in a date window.
-     * Pass ($start,$end) for a closed window, or ($before) for everything before it.
+     * Sum cargo/abono per account from póliza lines up to $to (inclusive), and
+     * from $from onward when given (the client's first period).
      *
      * @return array<int, array{cargo:float, abono:float}>
      */
-    private function movements(int $clientId, ?Carbon $start, ?Carbon $end, ?Carbon $before): array
+    private function movements(int $clientId, ?Carbon $from, Carbon $to): array
     {
         $q = PolizaLine::query()
             ->join('polizas', 'polizas.id', '=', 'poliza_lines.poliza_id')
             ->where('polizas.client_id', $clientId)
-            ->whereNotNull('poliza_lines.account_id');
+            ->whereNotNull('poliza_lines.account_id')
+            ->where('polizas.fecha', '<=', $to);
 
-        if ($before) {
-            $q->where('polizas.fecha', '<', $before);
-        } else {
-            $q->whereBetween('polizas.fecha', [$start, $end]);
+        if ($from) {
+            $q->where('polizas.fecha', '>=', $from);
         }
 
         return $q->groupBy('poliza_lines.account_id')

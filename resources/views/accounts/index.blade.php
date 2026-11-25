@@ -196,7 +196,13 @@
                     @empty
                         <tr>
                             <td colspan="15" class="text-center text-muted" style="padding:1.5rem;">
-                                Sin resultados para los filtros aplicados.
+                                @if(empty($filters['todas']))
+                                    Este cliente aún no tiene cuentas propias con estos filtros.<br>
+                                    Cambia <strong>Ámbito</strong> a «Incluir catálogo global» para ver el catálogo,
+                                    o importa los saldos iniciales para crear sus cuentas.
+                                @else
+                                    Sin resultados para los filtros aplicados.
+                                @endif
                             </td>
                         </tr>
                     @endforelse

@@ -5,7 +5,7 @@
 <div class="page-head" data-reveal>
     <div>
         <h1>Balanza de comprobación</h1>
-        <div class="subtitle">{{ $period->client->display_name }} · {{ $period->label }}</div>
+        <div class="subtitle">{{ $period->client->display_name }} · Acumulado al {{ $period->label }}</div>
     </div>
     <div class="d-flex gap-2">
         <a href="{{ route('reports.index') }}" class="btn btn-soft btn-icon">

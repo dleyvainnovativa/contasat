@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Account;
+use App\Models\AccountClientStatus;
 use App\Models\Period;
 use App\Models\PolizaLine;
 use Carbon\Carbon;
@@ -40,6 +41,12 @@ class TrialBalanceService
 
         $byMonth = $this->movementsByMonth($clientId, $selectedEnd);
 
+        // Per-client saldos for shared (global) accounts live in the overlay.
+        $overlaySaldos = AccountClientStatus::where('client_id', $clientId)
+            ->whereNotNull('saldo_inicial')
+            ->get(['account_id', 'saldo_inicial', 'saldo_inicial_year', 'saldo_inicial_month'])
+            ->keyBy('account_id');
+
         $accounts = Account::forClient($clientId)
             ->where('es_afectable', true)
             ->activeFor($clientId)
@@ -50,10 +57,21 @@ class TrialBalanceService
         $cards = ['activos' => 0.0, 'pasivos' => 0.0, 'capital' => 0.0, 'ingresos' => 0.0, 'egresos' => 0.0];
 
         foreach ($accounts as $a) {
+            // Per-client opening balance: overlay for a shared (global) account,
+            // the account row for a client-owned one.
+            if ($a->client_id === null) {
+                $ov = $overlaySaldos[$a->id] ?? null;
+                $saldoInicial = $ov ? (float) $ov->saldo_inicial : 0.0;
+                $sYear  = $ov->saldo_inicial_year  ?? null;
+                $sMonth = $ov->saldo_inicial_month ?? null;
+            } else {
+                $saldoInicial = (float) $a->saldo_inicial;
+                $sYear  = $a->saldo_inicial_year;
+                $sMonth = $a->saldo_inicial_month;
+            }
+
             // Lower bound (YYYYMM) = the account's saldo period, else first period.
-            $startKey = ($a->saldo_inicial_year && $a->saldo_inicial_month)
-                ? $a->saldo_inicial_year * 100 + $a->saldo_inicial_month
-                : $firstKey;
+            $startKey = ($sYear && $sMonth) ? $sYear * 100 + $sMonth : $firstKey;
 
             $cargos = 0.0;
             $abonos = 0.0;
@@ -64,8 +82,7 @@ class TrialBalanceService
                 }
             }
 
-            $saldoInicial = (float) $a->saldo_inicial;                         // opening balance
-            $saldo        = $saldoInicial + $this->net($a->naturaleza, $cargos, $abonos);
+            $saldo = $saldoInicial + $this->net($a->naturaleza, $cargos, $abonos);
 
             [$tipoKey, $tipoLabel] = $this->tipo($a->numero_cuenta);
 

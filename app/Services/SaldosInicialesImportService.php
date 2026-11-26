@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Account;
+use App\Models\AccountClientStatus;
 use App\Models\Client;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -81,6 +82,34 @@ class SaldosInicialesImportService
                 continue;
             }
 
+            // If the código points to an afectable (postable) account, the saldo
+            // is charged directly on it — no child subaccount is created. For a
+            // GLOBAL account the saldo is per-client (overlay); for a client-owned
+            // account it lives on the row.
+            if ($parent->es_afectable) {
+                if ($parent->client_id === null) {
+                    $overlay = AccountClientStatus::where('client_id', $client->id)
+                        ->where('account_id', $parent->id)->first();
+                    $current = (float) ($overlay->saldo_inicial ?? 0);
+                    $scope = ' (global, saldo por cliente)';
+                } else {
+                    $current = (float) $parent->saldo_inicial;
+                    $scope = '';
+                }
+                $hasSaldo = $current != 0.0;
+                $preview[] = array_merge($entry, [
+                    'status'          => $hasSaldo ? 'conflict' : 'self',
+                    'existing_numero' => $parent->numero_cuenta,
+                    'existing_saldo'  => $current,
+                    'default_checked' => ! $hasSaldo,
+                    'proposed_numero' => $parent->numero_cuenta,
+                    'note'            => $hasSaldo
+                        ? "{$parent->numero_cuenta} (afectable{$scope}) ya tiene saldo. Marca para sobrescribir."
+                        : "Afectable: el saldo se asigna directamente a {$parent->numero_cuenta}{$scope}.",
+                ]);
+                continue;
+            }
+
             // RFC match under this parent?
             $existing = $rfc ? $this->existingByRfc($parent->id, $client->id, $rfc) : null;
 
@@ -138,6 +167,42 @@ class SaldosInicialesImportService
                 if (! $parent) {
                     $summary['skipped']++;
                     $summary['errors'][] = "Cuenta padre {$codigo} no encontrada.";
+                    continue;
+                }
+
+                // Afectable código => charge the saldo directly on that account.
+                if ($parent->es_afectable) {
+                    if ($parent->client_id === null) {
+                        // Global account → per-client saldo in the overlay.
+                        $overlay = AccountClientStatus::firstOrNew([
+                            'client_id'  => $client->id,
+                            'account_id' => $parent->id,
+                        ]);
+                        $current = (float) ($overlay->saldo_inicial ?? 0);
+                        if ($current != 0.0 && $action !== 'override') {
+                            $summary['skipped']++;
+                            continue;
+                        }
+                        if (! $overlay->exists) {
+                            $overlay->activo = (bool) $parent->activo;   // keep current visibility
+                        }
+                        $overlay->saldo_inicial       = $saldo;
+                        $overlay->saldo_inicial_year  = $year;
+                        $overlay->saldo_inicial_month = $month;
+                        $overlay->save();
+                    } else {
+                        // Client-owned account → saldo on its own row.
+                        if ((float) $parent->saldo_inicial != 0.0 && $action !== 'override') {
+                            $summary['skipped']++;
+                            continue;
+                        }
+                        $parent->update([
+                            'saldo_inicial'       => $saldo,
+                            'saldo_inicial_year'  => $year,
+                            'saldo_inicial_month' => $month,
+                        ]);
+                    }
+                    $summary['updated']++;
                     continue;
                 }
 

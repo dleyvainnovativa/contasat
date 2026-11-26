@@ -86,6 +86,7 @@
     function badge(status) {
         switch (status) {
             case 'new':      return '<span class="badge-status s-success" style="font-size:10px;">Nueva</span>';
+            case 'self':     return '<span class="badge-status s-info" style="font-size:10px;">Cargo directo</span>';
             case 'update':   return '<span class="badge-status s-info" style="font-size:10px;">Asignar saldo</span>';
             case 'conflict': return '<span class="badge-status s-warning" style="font-size:10px;">Conflicto: sobrescribir</span>';
             case 'error':    return '<span class="badge-status s-danger" style="font-size:10px;">Sin cuenta padre</span>';
